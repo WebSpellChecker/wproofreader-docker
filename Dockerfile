@@ -32,4 +32,4 @@ COPY $FilesDir/configureFiles.pl $AppServerDir
 COPY $FilesDir/startService.sh $AppServerDir
 RUN chmod +x $AppServerDir/startService.sh
 
-ENTRYPOINT ["$AppServerDir/startService.sh"]
+ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]
