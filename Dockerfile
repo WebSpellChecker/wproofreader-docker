@@ -13,19 +13,20 @@ ARG DeploymentDir=downloads
 ARG DictionariesDir=dictionaries
 ARG FilesDir=./files
 ARG AppServerDir=/opt/WSC/AppServer
+ARG AppRootFolder=WSC
+ARG AppNameMask=wsc_app*
 
 RUN mkdir $DeploymentDir
 RUN mkdir $DictionariesDir
 
 WORKDIR /$DeploymentDir
-COPY $FilesDir/wsc_app* /$DeploymentDir
-RUN tar -xvf wsc_app*
-RUN rm wsc_app*
+COPY $FilesDir/$AppNameMask /$DeploymentDir
+RUN tar -xvf $AppNameMask
+RUN rm $AppNameMask
+RUN mv $AppRootFolder* $AppRootFolder
 
-ARG VERSION
-COPY ./files/config.ini /downloads/WSC_$VERSION
-
-WORKDIR /downloads/WSC_$VERSION
+COPY ./files/config.ini /downloads/$AppRootFolder
+WORKDIR /downloads/$AppRootFolder
 RUN perl automated_install.pl config.ini
 
 COPY $FilesDir/configureFiles.pl $AppServerDir
