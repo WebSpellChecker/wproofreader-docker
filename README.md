@@ -1,6 +1,7 @@
 # WProofreader Docker
 
-This is a Docker configuration that you can use to build a WProofreader image.
+This is a Docker configuration that you can use to build a WProofreader image. 
+Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that you build and published on Doker Hub.
 
 1. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.5.4.0_57.tar.gz`) to files directory.
 2. Modify installation settings in `config.ini` file.
