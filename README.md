@@ -1,9 +1,18 @@
-# wproofreader-docker
-Docker configuration to automatic build Wproofreader image.
+# WProofreader Docker
 
-1. Copy webspellchecker installation package (like wsc_app_x64_5.5.4.0_57.tar.gz) to files directory.
-2. Modify installation settings into config.ini file.
-3. Build package like: docker build -t webspellchecker/wproofreader .
-4. Launch package like: docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>
-5. If your want to use custom and user dictionaries your need to share directory for the dictionaries with the docker container, so run container like this:
-docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 -v <your_directory_path>:/dictionaries webspellchecker/wproofreader <license_ticket_id> <your_host_name>
+This is a Docker configuration that you can use to build a WProofreader image.
+
+1. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.5.4.0_57.tar.gz`) to files directory.
+2. Modify installation settings in `config.ini` file.
+
+## Build Image
+
+```docker build -t webspellchecker/wproofreader```
+
+## Run WProofreader
+
+```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
+
+If your want to use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
+
+```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 -v <your_directory_path>:/dictionaries webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
