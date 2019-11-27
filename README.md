@@ -4,12 +4,21 @@ This is a Docker configuration that you can use to build a WProofreader image.
 
 Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Doker Hub.
 
-1. Clone this [repo](https://github.com/WebSpellChecker/wproofreader-docker)).
+To create and use a custom Docker image with WProofreader Server: 
+
+1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
 2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.5.4.0_57.tar.gz`) to `wproofreader-docker/files` directory.
-3. If needed, adjust the default installation options by modifying the `wproofreader-docker/files/config.ini` file. For details about available options refer to the guide [here](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux).
+3. If needed, adjust the default installation options by modifying the `wproofreader-docker/files/config.ini` file. For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
 4. Build a Docker image using the command below:
 
 ```docker build -t webspellchecker/wproofreader <path_to_Dockerfile_directory>```
+
+where:
+
+* `-t` assign a tag name `webspellchecker/wproofreader`.
+* `<path_to_Dockerfile_directory> ` the path to a Dockerfile directory (not to Dockerfile itself). If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
+
+```docker build -t webspellchecker/wproofreader .```
 
 5. Run the latest Docker image with the following options:
 
