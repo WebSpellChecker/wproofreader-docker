@@ -1,7 +1,7 @@
 #!/bin/sh
-# obtain the name of the directory containing a script
+# change the name of the directory containing a script
 cd `dirname $0`
-# assign the path for a variable where AppServer is located
+# assign the current path to a variable where AppServer is located
 appserver_path=`pwd`
 # export the libraries required for the service start
 export LD_LIBRARY_PATH=${appserver_path}/lib
