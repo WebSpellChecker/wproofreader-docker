@@ -9,7 +9,7 @@ export LD_LIBRARY_PATH=${appserver_path}/lib
 perl configureFiles.pl $2
 # activate a license automatically
 ./AppServerX -activateLicense $1 -y
-#service apache2 start #start Apache HTTP Server
+#start Apache HTTP Server
 service apache2 start
 # start AppServer service
 ./AppServerX
