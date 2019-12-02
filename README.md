@@ -20,7 +20,7 @@ where:
 
 ```docker build -t webspellchecker/wproofreader .```
 
-5. Run the latest Docker image with the following options:
+5. Create and run a Docker container from the latest Docker image with the following options:
 
 ```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
@@ -37,3 +37,33 @@ where:
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
 * `license_ticket_id` your license ticket ID.
 * `your_host_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http://localhost/wscservice/samples/).
+
+
+## Working with Container
+
+1. Going further if you need to restart the service or container, you should use Docker [start](https://docs.docker.com/engine/reference/commandline/start/) or [stop](https://docs.docker.com/engine/reference/commandline/stop/) commands with a container Id as an option.
+
+```docker start <container_id>```
+
+2. If you are creating a new container (upgrade the version, migrate to another server, etc.), you must deactivate a license first. Otherwise, it will be broken.
+
+To deactive the license propely, the following steps are required:
+
+* Connect to a container where WProofreader is running using `docker exec` command:
+
+```docker exec -it <container_id> bash```
+* Deactivate a license following the steps described in the [manual](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/License+Deactivation+on+Linux).
+
+After that you can use your license safely with a new container. The steps how to start a new container are described above.
+
+## Further Steps
+
+Once a docker container with WProofreader is up and running, you need to integrate it into your web app.
+
+* [Get Started with WProofreader Server (autoSearch)](https://docs.webspellchecker.net/pages/viewpage.action?pageId=454919195)
+* [Configuring WProofreader Server in WYSIWYG Editors](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Configuring+WProofreader+Server+in+WYSIWYG+Editors)
+* [Customization Options](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/WProofreader+Customization+Options)
+
+
+
+  
