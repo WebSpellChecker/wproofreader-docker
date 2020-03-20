@@ -2,6 +2,7 @@
 FROM ubuntu
 # the web server port address
 EXPOSE 80
+EXPOSE 443
 # AppServer port address
 EXPOSE 2880
 
@@ -20,11 +21,15 @@ ARG AppRootFolder=WSC
 ARG AppServerDir=/opt/$AppRootFolder/AppServer
 # defined a constant with the name of the application without its version
 ARG AppNameMask=wsc_app*
+ARG ssl=false
+ARG CertsDir=certificate
 
 # create a directory for deployment
 RUN mkdir $DeploymentDir
 # create a directory for shared dictionaries
 RUN mkdir $DictionariesDir
+#create a directory for certificates
+RUN mkdir $CertsDir
 
 # change the working directory to the deployment directory
 WORKDIR /$DeploymentDir
@@ -37,12 +42,17 @@ RUN rm $AppNameMask
 # rename WSC_x.x.x into WSC
 RUN mv $AppRootFolder* $AppRootFolder
 
+#enable ssl if need
+COPY $FilesDir/certs/ /$CertsDir
+COPY $FilesDir/enableSSL.pl /$DeploymentDir
+RUN if [ "$ssl" = "true" ]; then perl enableSSL.pl;  fi
+
 # copy  the config.ini file to the application root directory
-COPY $FilesDir/config.ini /$DeploymentDir/$AppRootFolder
+COPY $FilesDir/config.ini $FilesDir/configSSL.ini /$DeploymentDir/$AppRootFolder/
 # change the working directory to the application root directory
 WORKDIR /downloads/$AppRootFolder
 # run the automated installation using the config.ini file
-RUN perl automated_install.pl config.ini
+RUN if [ "$ssl" = "true" ]; then perl automated_install.pl configSSL.ini; else perl automated_install.pl config.ini; fi
 
 # copy the configureFiles.pl file to the directory with the application
 COPY $FilesDir/configureFiles.pl $AppServerDir
