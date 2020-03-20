@@ -22,7 +22,7 @@ ARG AppServerDir=/opt/$AppRootFolder/AppServer
 # defined a constant with the name of the application without its version
 ARG AppNameMask=wsc_app*
 ARG ssl=false
-ARG CertsDir=certs
+ARG CertsDir=certificate
 
 # create a directory for deployment
 RUN mkdir $DeploymentDir
@@ -44,15 +44,15 @@ RUN mv $AppRootFolder* $AppRootFolder
 
 #enable ssl if need
 COPY $FilesDir/certs/ /$CertsDir
-COPY $FilesDir/enableSsl.pl /$DeploymentDir
-RUN if [ "$ssl" = "true" ]; then perl enableSsl.pl;  fi
+COPY $FilesDir/enableSSL.pl /$DeploymentDir
+RUN if [ "$ssl" = "true" ]; then perl enableSSL.pl;  fi
 
 # copy  the config.ini file to the application root directory
-COPY $FilesDir/config.ini $FilesDir/configSsl.ini /$DeploymentDir/$AppRootFolder/
+COPY $FilesDir/config.ini $FilesDir/configSSL.ini /$DeploymentDir/$AppRootFolder/
 # change the working directory to the application root directory
 WORKDIR /downloads/$AppRootFolder
 # run the automated installation using the config.ini file
-RUN if [ "$ssl" = "true" ]; then perl automated_install.pl configSsl.ini; else perl automated_install.pl config.ini; fi
+RUN if [ "$ssl" = "true" ]; then perl automated_install.pl configSSL.ini; else perl automated_install.pl config.ini; fi
 
 # copy the configureFiles.pl file to the directory with the application
 COPY $FilesDir/configureFiles.pl $AppServerDir
