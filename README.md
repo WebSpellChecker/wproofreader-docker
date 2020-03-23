@@ -34,7 +34,7 @@ where:
 
 * `--mac-address="12:34:d7:b0:6b:61"` predefine a MAC address of Docker container to ensure the correct licensing process.
 * `-d` start a container in detached mode.
-* `-p 80:80` and `-p 2880:2880` map the host port and the exposed port of container, where port 80 is a web server port and 2880 is the service port.
+* `-p 80:80` and `-p 2880:2880` map the host port and the exposed port of container, where port 80 is a web server port and 2880 is the service port. With SSL you must use port 443 like `-p 443:443`.
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where personal user and global custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
 * `-v <your_certificate_directory_path>:/certificate` mount a shared directory where your personal SSL certificates are placed. You can use the option if you work under SSL and you want to use specific certificate for this contatiner. The names of the files must be cert.pem and key.pem.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
