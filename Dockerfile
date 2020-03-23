@@ -22,14 +22,14 @@ ARG AppServerDir=/opt/$AppRootFolder/AppServer
 # defined a constant with the name of the application without its version
 ARG AppNameMask=wsc_app*
 ARG ssl=false
-ARG CertsDir=certificate
+ARG CertDir=certificate
 
 # create a directory for deployment
 RUN mkdir $DeploymentDir
 # create a directory for shared dictionaries
 RUN mkdir $DictionariesDir
 #create a directory for certificates
-RUN mkdir $CertsDir
+RUN mkdir $CertDir
 
 # change the working directory to the deployment directory
 WORKDIR /$DeploymentDir
@@ -43,7 +43,7 @@ RUN rm $AppNameMask
 RUN mv $AppRootFolder* $AppRootFolder
 
 #enable ssl if need
-COPY $FilesDir/certs/ /$CertsDir
+COPY $FilesDir/$CertDir/ /$CertDir
 COPY $FilesDir/enableSSL.pl /$DeploymentDir
 RUN if [ "$ssl" = "true" ]; then perl enableSSL.pl;  fi
 
