@@ -7,9 +7,9 @@ Note! You can also use a [Docker image with WProofreader Server](https://hub.doc
 To create and use a custom Docker image with WProofreader Server: 
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
-2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.5.4.0_57.tar.gz`) to `wproofreader-docker/files` directory.
+2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.5.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory.
 3. If needed, adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
-4. If you need to use SSL you can put your SSL certificate and key files to `wproofreader-docker/files/certificate` directory. You need to rename your files to cert.pem and key.pem.
+4. If you need to use SSL, put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
 5. Build a Docker image using the command below:
 
 ```docker build -t webspellchecker/wproofreader --build-arg ssl=true <path_to_Dockerfile_directory>```
@@ -17,29 +17,37 @@ To create and use a custom Docker image with WProofreader Server:
 where:
 
 * `-t` assign a tag name `webspellchecker/wproofreader`.
-* `--build-arg ssl=true` the argument indicates whether to use the SSL connection.
-* `<path_to_Dockerfile_directory> ` the path to a Dockerfile directory (not to Dockerfile itself). If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
+* `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
+* `<path_to_Dockerfile_directory> ` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
-```docker build -t webspellchecker/wproofreader .```
+```docker build -t webspellchecker/wproofreader --build-arg ssl=true .```
 
 5. Create and run a Docker container from the latest Docker image with the following options:
 
 ```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
+or (for the SSL version)
+
+```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 443:443 -p 2880:2880 -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader  <license_ticket_id> <your_host_name>```
+
 To use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
 ```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 -v <your_directory_path>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
+
+or (for the SSL version)
+
+```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 443:443 -p 2880:2880 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
 where:
 
 * `--mac-address="12:34:d7:b0:6b:61"` predefine a MAC address of Docker container to ensure the correct licensing process.
 * `-d` start a container in detached mode.
-* `-p 80:80` and `-p 2880:2880` map the host port and the exposed port of container, where port 80 is a web server port and 2880 is the service port. With SSL you must use port 443 like `-p 443:443`.
+* `-p 80:80` and `-p 2880:2880` map the host port and the exposed port of container, where port 80 is a web server port and 2880 is the service port. With the SSL connection, you must use port 443 like `-p 443:443`.
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where personal user and global custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
-* `-v <your_certificate_directory_path>:/certificate` mount a shared directory where your personal SSL certificates are placed. You can use the option if you work under SSL and you want to use specific certificate for this contatiner. The names of the files must be cert.pem and key.pem.
+* `-v <your_certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
 * `license_ticket_id` your license ticket ID.
-* `your_host_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http://localhost/wscservice/samples/).
+* `your_host_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/).
 
 
 ## Working with Container
@@ -66,7 +74,3 @@ Once a docker container with WProofreader is up and running, you need to integra
 * [Get Started with WProofreader Server (autoSearch)](https://docs.webspellchecker.net/pages/viewpage.action?pageId=454919195)
 * [Configuring WProofreader Server in WYSIWYG Editors](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Configuring+WProofreader+Server+in+WYSIWYG+Editors)
 * [Customization Options](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/WProofreader+Customization+Options)
-
-
-
-  
