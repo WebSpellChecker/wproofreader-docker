@@ -28,7 +28,7 @@ ARG CertDir=certificate
 RUN mkdir $DeploymentDir
 # create a directory for shared dictionaries
 RUN mkdir $DictionariesDir
-#create a directory for certificates
+#create a directory for an SSL certificate files
 RUN mkdir $CertDir
 
 # change the working directory to the deployment directory
@@ -42,7 +42,7 @@ RUN rm $AppNameMask
 # rename WSC_x.x.x into WSC
 RUN mv $AppRootFolder* $AppRootFolder
 
-#enable ssl if need
+#enable SSL if needed
 COPY $FilesDir/$CertDir/ /$CertDir
 COPY $FilesDir/enableSSL.pl /$DeploymentDir
 RUN if [ "$ssl" = "true" ]; then perl enableSSL.pl;  fi
