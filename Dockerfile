@@ -6,6 +6,7 @@ EXPOSE 443
 # AppServer port address
 EXPOSE 2880
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y
 # install the latest stable version of Apache HTTP Server
 RUN apt-get install -y apache2
@@ -60,6 +61,9 @@ COPY $FilesDir/configureFiles.pl $AppServerDir
 COPY $FilesDir/startService.sh $AppServerDir
 # grant permissions to launch the file for any user
 RUN chmod +x $AppServerDir/startService.sh
+
+WORKDIR /opt/$AppRootFolder
+RUN rm -rf /$DeploymentDir
 
 # start the required services for the application when launching the container
 ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]
