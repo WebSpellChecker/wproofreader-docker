@@ -22,7 +22,7 @@ where:
 
 ```docker build -t webspellchecker/wproofreader --build-arg ssl=true .```
 
-5. Create and run a Docker container from the latest Docker image with the following options:
+6. Create and run a Docker container from the latest Docker image with the following options:
 
 ```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
