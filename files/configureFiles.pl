@@ -1,7 +1,9 @@
+my $serverPath = '/opt/WSC/AppServer';
+my $server_config_path = "$serverPath/AppServerX.xml";
 
 configureSamples();
-
 configureUserAndCustomDictionaries();
+configureSsl();
 
 sub configureSamples
 {
@@ -23,10 +25,7 @@ sub configureSamples
 
 sub configureUserAndCustomDictionaries
 {
-	my $serverPath = '/opt/WSC/AppServer';
 	my $dicts_path = '/dictionaries';
-
-	my $server_config_path = "$serverPath/AppServerX.xml";
 	my $cust_dicts_path = "$dicts_path/CustomDictionaries";
 	replaceFileContent('<CustDictDir>CustomDictionaries</CustDictDir>',
 	"<CustDictDir>$cust_dicts_path</CustDictDir>", $server_config_path);
@@ -59,6 +58,13 @@ sub configureUserAndCustomDictionaries
 	{
 		system("mv $serverPath/CustomDictionaries/sampleDic.tlx $cust_dict_sample");
 	}
+}
+
+sub configureSsl
+{
+	my $verificationMode = 'NONE';
+	replaceFileContent('<VerificationMode>RELAXED</VerificationMode>',
+		"<VerificationMode>$verificationMode</VerificationMode>", $server_config_path);
 }
 
 sub replaceFileContent
