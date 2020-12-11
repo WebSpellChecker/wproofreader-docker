@@ -25,7 +25,7 @@ RUN	mkdir $DictionariesDir &&\
 	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
 	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
 	apt-get update -y &&\
-	apt-get install -y apache2 default-jre &&\
+	apt-get install -y apache2 default-jre wget &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
