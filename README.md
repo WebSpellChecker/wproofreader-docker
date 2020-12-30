@@ -8,7 +8,17 @@ To create and use a custom Docker image with WProofreader Server:
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
 2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.6.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory.
-3. If needed, adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
+3. Adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. 
+
+It is recommended to activate license during the image creation. The following options should be added to `config.ini` or `configSSL.ini` file.
+
+```
+activate_license = 1
+license_ticket_id = 6u*************ZO
+```
+
+For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
+
 4. If you need to use SSL, put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
 5. Build a Docker image using the command below:
 
