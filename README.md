@@ -49,7 +49,7 @@ docker build -t webspellchecker/wproofreader --build-arg ssl=true .
 docker run -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <domain_name>
 ```
 
-*Note!* If both `license_ticket_id` and `domain_name` were specified during the image creation, don't add `<license_ticket_id> <domain_name>` values during `docker run` command. See examples below.
+Note! If both `license_ticket_id` and `domain_name` were specified during the image creation, don't add `<license_ticket_id> <domain_name>` values during `docker run` command. See examples below.
 
 ```
 docker run -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader
