@@ -4,19 +4,21 @@ This is a Docker configuration that you can use to build a WProofreader image.
 
 Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Doker Hub.
 
-To create and use a custom Docker image with WProofreader Server: 
+## Create Docker image
+
+To create a custom Docker image with WProofreader Server: 
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
 2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.6.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory.
 3. Adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. 
 
-It is recommended to activate license during the image creation. The following options should be added to `config.ini` or `configSSL.ini` file.
+* Activate license during the image creation. Add the following options to `config.ini` or `configSSL.ini` file.
 
 ```
 activate_license = 1
 license_ticket_id = 6u*************ZO
 ```
-Also, during the image creation, you can specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+* Specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
 domain_name = domain_name
@@ -43,7 +45,9 @@ where:
 docker build -t webspellchecker/wproofreader --build-arg ssl=true .
 ```
 
-6. Create and run a Docker container from the latest Docker image with the following options:
+## Create and run Docker container
+
+Create and run a Docker container from the latest Docker image with the following options:
 
 ```
 docker run -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <domain_name>
@@ -85,7 +89,7 @@ where:
 * `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). Note! Can be skipped if you specified it during the image creation.
 
 
-## Working with Container
+## Working with container
 
 1. Going further if you need to restart the service or container, you should use Docker [start](https://docs.docker.com/engine/reference/commandline/start/) or [stop](https://docs.docker.com/engine/reference/commandline/stop/) commands with a container Id as an option.
 
@@ -100,7 +104,7 @@ docker exec -it <container_id> bash
 ```
 
 
-## Further Steps
+## Further steps
 
 Once a docker container with WProofreader is up and running, you need to integrate it into your web app.
 
