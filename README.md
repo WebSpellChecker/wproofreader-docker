@@ -24,19 +24,19 @@ where:
 
 6. Create and run a Docker container from the latest Docker image with the following options:
 
-```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
+```docker run -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
 or (for the SSL version)
 
-```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 443:443 -p 2880:2880 -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader  <license_ticket_id> <your_host_name>```
+```docker run -d -p 443:443 -p 2880:2880 -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader  <license_ticket_id> <your_host_name>```
 
 To use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
-```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 80:80 -p 2880:2880 -v <your_directory_path>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
+```docker run -d -p 80:80 -p 2880:2880 -v <your_directory_path>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
 or (for the SSL version)
 
-```docker run --mac-address="12:34:d7:b0:6b:61" -d -p 443:443 -p 2880:2880 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
+```docker run -d -p 443:443 -p 2880:2880 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader <license_ticket_id> <your_host_name>```
 
 where:
 
