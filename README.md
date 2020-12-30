@@ -16,7 +16,7 @@ It is recommended to activate license during the image creation. The following o
 activate_license = 1
 license_ticket_id = 6u*************ZO
 ```
-Also, you can during the image creation, you can specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+Also, during the image creation, you can specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
 domain_name = your_domain_name
