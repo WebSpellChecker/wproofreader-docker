@@ -93,18 +93,12 @@ where:
 docker start <container_id>
 ```
 
-2. If you are creating a new container (upgrade the version, migrate to another server, etc.), you must deactivate a license first. Otherwise, it will be broken.
-
-To deactive the license propely, the following steps are required:
-
-* Connect to a container where WProofreader is running using `docker exec` command:
+2. If you need to troubleshoot issues with the application, you may want to check log files in `opt/WSC/AppServer/Logs` directory. For this, you need to connect to a container. Use `docker exec` command to connect to a container where WProofreader is running:
 
 ```
 docker exec -it <container_id> bash
 ```
-* Deactivate a license following the steps described in the [manual](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/License+Deactivation+on+Linux).
 
-After that you can use your license safely with a new container. The steps how to start a new container are described above.
 
 ## Further Steps
 
