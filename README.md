@@ -40,7 +40,6 @@ or (for the SSL version)
 
 where:
 
-* `--mac-address="12:34:d7:b0:6b:61"` predefine a MAC address of Docker container to ensure the correct licensing process.
 * `-d` start a container in detached mode.
 * `-p 80:80` map the host port `80:` and the exposed port of container `80`, where port 80 is a web server port. With the SSL connection, you must use port 443 like `-p 443:443`. 
 * `-p 2880:2880` map the host port and the exposed port of container, where port 80 is a web server port and 2880 is the service port. With the SSL connection, you must use port 443 like `-p 443:443`.
