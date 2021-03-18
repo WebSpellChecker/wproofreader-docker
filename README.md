@@ -1,6 +1,6 @@
 # WProofreader Docker
 
-This is a Docker configuration that you can use to build a WProofreader image. 
+This is a Docker configuration that you can use to build a WProofreader image based on latest Ubuntu (default) or CentOS. 
 
 Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Doker Hub.
 
@@ -32,17 +32,18 @@ For details on the available options, refer to [Automated Installing WebSpellChe
 5. Build a Docker image using the command below:
 
 ```
-docker build -t webspellchecker/wproofreader --build-arg ssl=true <path_to_Dockerfile_directory>
+docker build -t webspellchecker/wproofreader --build-arg ssl=true -f <Dockerfile_name> <path_to_Dockerfile_directory>
 ```
 
 where:
 
 * `-t` assign a tag name `webspellchecker/wproofreader`.
 * `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
-* `<path_to_Dockerfile_directory> ` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
+* `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile` or `DockerfileCentOS`.
+* `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
 ```
-docker build -t webspellchecker/wproofreader --build-arg ssl=true .
+docker build -t webspellchecker/wproofreader --build-arg ssl=true -f Dockerfile .
 ```
 
 ## Create and run Docker container
