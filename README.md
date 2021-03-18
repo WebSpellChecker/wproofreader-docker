@@ -1,6 +1,6 @@
 # WProofreader Docker
 
-This is a Docker configuration that you can use to build a WProofreader image based on latest Ubuntu (default) or CentOS. 
+This is a Docker configuration that you can use to build a WProofreader Server image based on latest Ubuntu (default) or CentOS. 
 
 Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Doker Hub.
 
