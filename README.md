@@ -26,6 +26,16 @@ domain_name = domain_name
 
 If both `license_ticket_id` and `domain_name` were specified during the image creation, you don't need to specify these values during the launch of `docker run` command.
 
+* If you are using a proxy server to handle inbount/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
+
+```
+enable_proxy = 1
+proxy_host = host_name
+proxy_port = port_number
+proxy_user_name = user_name
+proxy_password = password
+```
+
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
 
 4. If you need to use SSL, put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
