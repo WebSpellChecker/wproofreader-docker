@@ -114,6 +114,16 @@ docker start <container_id>
 docker exec -it <container_id> bash
 ```
 
+## Create image from modified Docker container
+
+In case you need to make any changes to the configuration of the application which is running inside Docker container (e.g. changes to `AppServerX.xml`) and keep them persistent, you can create an image from the modified container. It can be easily done with a single command:
+
+```
+docker commit <existing_container_id> <new_name_image>
+```
+
+Then check that the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instrcutions how to run container above.
+
 
 ## Further steps
 
