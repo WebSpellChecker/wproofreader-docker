@@ -61,38 +61,37 @@ docker build -t webspellchecker/wproofreader --build-arg ssl=true -f Dockerfile 
 Create and run a Docker container from the latest Docker image with the following options:
 
 ```
-docker run -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader <license_ticket_id> <domain_name>
+docker run -d -p 80:80 webspellchecker/wproofreader <license_ticket_id> <domain_name>
 ```
 
 Note! If both `license_ticket_id` and `domain_name` were specified during the image creation, don't add `<license_ticket_id> <domain_name>` values during `docker run` command. See examples below.
 
 ```
-docker run -d -p 80:80 -p 2880:2880 webspellchecker/wproofreader
+docker run -d -p 80:80 webspellchecker/wproofreader
 ```
 
 or (for the SSL version)
 
 ```
-docker run -d -p 443:443 -p 2880:2880 -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 443:443 -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
 ```
 
 To use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
 ```
-docker run -d -p 80:80 -p 2880:2880 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 80:80 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
 ```
 
 or (for the SSL version)
 
 ```
-docker run -d -p 443:443 -p 2880:2880 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 443:443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader
 ```
 
 where:
 
 * `-d` start a container in detached mode.
 * `-p 80:80` map the host port `80:` and the exposed port of container `80`, where port 80 is a web server port. With the SSL connection, you must use port 443 like `-p 443:443`. 
-* `-p 2880:2880` map the host port and the exposed port of container, where port 80 is a web server port and 2880 is the service port. With the SSL connection, you must use port 443 like `-p 443:443`.
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where personal user and global custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
