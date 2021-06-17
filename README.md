@@ -98,6 +98,32 @@ where:
 * `license_ticket_id` your license ticket ID. Note! Can be skipped if you specified it during the image creation.
 * `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). Note! Can be skipped if you specified it during the image creation.
 
+## Verify work of WProofreader Server
+
+After successful launch of a container with WProofreader Server, and the license activation, you can verify the version and status of WProofreader Server using the commands below:
+
+* Version: http://localhost/wscservice/api/?cmd=ver
+
+```{"COPYRIGHT":"(c) 2000-2021 WebSpellChecker LLC","PRODUCT WEBSITE":"webspellchecker.com","PROGRAM VERSION":"5.x.x.0 x64 master:xxxxxxx (xxxx) #xx"}```
+
+* Status: http://localhost/wscservice/api/?cmd=status
+
+```
+{
+    "Spell Check Engine": {
+        "active": true
+    },
+    "Grammar Check Engine": {
+        "active": true
+    },
+    "Thesaurus Engine": {
+        "active": true
+    }
+}
+```
+
+* Demo samples: http://localhost/wscservice/samples/
+
 
 ## Working with container
 
