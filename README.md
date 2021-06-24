@@ -1,8 +1,8 @@
 # WProofreader Docker
 
-This is a Docker configuration that you can use to build a WProofreader Server image based on latest Ubuntu (default) or CentOS. 
+This is a Docker configuration that you can use to build a WProofreader Server image based on the latest Ubuntu (default) or CentOS. 
 
-Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Doker Hub.
+Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
 
 ## Create Docker image
 
@@ -26,7 +26,7 @@ domain_name = domain_name
 
 If both `license_ticket_id` and `domain_name` were specified during the image creation, you don't need to specify these values during the launch of `docker run` command.
 
-* If you are using a proxy server to handle inbount/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
+* If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
 
 ```
 enable_proxy = 1
@@ -147,7 +147,7 @@ In case you need to make any changes to the configuration of the application whi
 docker commit <existing_container_id> <new_name_image>
 ```
 
-Then check that the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instrcutions how to run container above.
+Then check that the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run container above.
 
 
 ## Further steps
