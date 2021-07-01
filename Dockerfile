@@ -36,7 +36,9 @@ RUN	mkdir $DictionariesDir &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
-	rm -rf /$DeploymentDir
+	rm -rf /$DeploymentDir &&\
+	mkdir -p /var/lib/wsc/license &&\
+	chown -R www-data:www-data /var/lib/wsc/license /var/run/apache2 /var/log/apache2 /var/lock/apache2
 
 WORKDIR /opt/$AppRootName
 ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]
