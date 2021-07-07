@@ -4,6 +4,7 @@ my $server_config_path = "$serverPath/AppServerX.xml";
 configureSamples();
 configureUserAndCustomDictionaries();
 configureSsl();
+configureApachePorts();
 
 sub configureSamples
 {
@@ -65,6 +66,13 @@ sub configureSsl
 	my $verificationMode = 'NONE';
 	replaceFileContent('<VerificationMode>RELAXED</VerificationMode>',
 		"<VerificationMode>$verificationMode</VerificationMode>", $server_config_path);
+}
+
+sub configureApachePorts
+{
+	my $portsConfPath = '/etc/apache2/ports.conf';
+	replaceFileContent('Listen 80', "Listen 8080", $portsConfPath);
+	replaceFileContent('Listen 443', "Listen 8080", $portsConfPath);
 }
 
 sub replaceFileContent
