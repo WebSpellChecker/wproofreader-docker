@@ -16,6 +16,8 @@ ARG AppRootDir=$DeploymentDir/$AppRootName
 ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
 ARG ssl=false
+ARG User=www-data
+ARG LicenseDir=/var/lib/wsc/license
 
 COPY $FilesDir/* $DeploymentDir/
 
@@ -36,10 +38,10 @@ RUN	mkdir $DictionariesDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
-	mkdir -p /var/lib/wsc/license &&\
-	chown -R www-data:www-data /var/lib/wsc/license /var/run/apache2 /var/log/apache2 /var/lock/apache2 /etc/apache2/ports.conf
+	mkdir -p $LicenseDir &&\
+	chown -R $User $LicenseDir /var/run/apache2 /var/log/apache2 /var/lock/apache2 /etc/apache2/ports.conf
 
-USER www-data
+USER $User
 
 WORKDIR /opt/$AppRootName
 ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]
