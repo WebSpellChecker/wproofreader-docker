@@ -1,6 +1,7 @@
 my $serverPath = '/opt/WSC/AppServer';
 my $server_config_path = "$serverPath/AppServerX.xml";
 my $apachePort = '8080';
+my $apacheSSLPort = '80443';
 
 configureSamples();
 configureUserAndCustomDictionaries();
@@ -73,7 +74,7 @@ sub configureApachePorts
 {
 	my $portsConfPath = '/etc/apache2/ports.conf';
 	replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPath);
-	replaceFileContent('Listen 443', "Listen $apachePort", $portsConfPath);
+	replaceFileContent('Listen 443', "Listen $apacheSSLPort", $portsConfPath);
 }
 
 sub replaceFileContent
