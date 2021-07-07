@@ -1,7 +1,7 @@
 my $serverPath = '/opt/WSC/AppServer';
 my $server_config_path = "$serverPath/AppServerX.xml";
 my $apachePort = '8080';
-my $apacheSSLPort = '80443';
+my $apacheSSLPort = '8443';
 
 configureSamples();
 configureUserAndCustomDictionaries();
