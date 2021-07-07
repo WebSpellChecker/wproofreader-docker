@@ -75,6 +75,8 @@ sub configureApachePorts
 	my $portsConfPath = '/etc/apache2/ports.conf';
 	replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPath);
 	replaceFileContent('Listen 443', "Listen $apacheSSLPort", $portsConfPath);
+	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
+	replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
 }
 
 sub replaceFileContent

@@ -40,7 +40,7 @@ RUN	mkdir $DictionariesDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
-	chown -R $User $LicenseDir /var/run/apache2 /var/log/apache2 /var/lock/apache2 /etc/apache2/ports.conf
+	chown -R $User $LicenseDir /var/run/apache2 /var/log/apache2 /var/lock/apache2 /etc/apache2/ports.conf /etc/apache2/sites-available/
 
 USER $User
 
