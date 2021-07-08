@@ -4,10 +4,10 @@ configureApachePorts();
 sub configureApachePorts
 {
 	if ($#ARGV < 1) { return; }
-	
+
 	my $apachePort = $ARGV[0];
 	my $apacheSSLPort = $ARGV[1];
-	
+
 	my $portsConfPath = '/etc/apache2/ports.conf';
 	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
 	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
@@ -21,5 +21,22 @@ sub configureApachePorts
 	if (-e $defaultSSLConfPath)
 	{
 		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
+	}
+}
+
+sub replaceFileContent
+{
+	my ($source, $dest, $path) = @_;
+	local $/ = undef;
+	open (F,$path) || die "Error: Couldn't open '${path}'. $! - Aborting.\n";
+	my $file = <F>;
+	close(F);
+
+	my $n = ($file =~ s/$source/$dest/g);
+	if ($n > 0)
+	{
+		open(F,">$path");
+		print F $file;
+		close(F);
 	}
 }
