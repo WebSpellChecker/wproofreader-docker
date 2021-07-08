@@ -1,7 +1,5 @@
 my $serverPath = '/opt/WSC/AppServer';
 my $server_config_path = "$serverPath/AppServerX.xml";
-my $apachePort = '8080';
-my $apacheSSLPort = '8443';
 
 configureSamples();
 configureUserAndCustomDictionaries();
@@ -72,11 +70,22 @@ sub configureSsl
 
 sub configureApachePorts
 {
+	my $apachePort = '8080';
+	my $apacheSSLPort = '8443';
 	my $portsConfPath = '/etc/apache2/ports.conf';
+	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
+	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
+
 	replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPath);
 	replaceFileContent('Listen 443', "Listen $apacheSSLPort", $portsConfPath);
-	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
-	replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
+	if (-e $defaultConfPath)
+	{
+		replaceFileContent('<VirtualHost *:80>', "<VirtualHost *:$apachePort>", $defaultConfPath);
+	}
+	if (-e $defaultSSLConfPath)
+	{
+		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
+	}
 }
 
 sub replaceFileContent
