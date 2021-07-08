@@ -4,7 +4,6 @@ my $server_config_path = "$serverPath/AppServerX.xml";
 configureSamples();
 configureUserAndCustomDictionaries();
 configureSsl();
-configureApachePorts();
 
 sub configureSamples
 {
@@ -66,26 +65,6 @@ sub configureSsl
 	my $verificationMode = 'NONE';
 	replaceFileContent('<VerificationMode>RELAXED</VerificationMode>',
 		"<VerificationMode>$verificationMode</VerificationMode>", $server_config_path);
-}
-
-sub configureApachePorts
-{
-	my $apachePort = '8080';
-	my $apacheSSLPort = '8443';
-	my $portsConfPath = '/etc/apache2/ports.conf';
-	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
-	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
-
-	replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPath);
-	replaceFileContent('Listen 443', "Listen $apacheSSLPort", $portsConfPath);
-	if (-e $defaultConfPath)
-	{
-		replaceFileContent('<VirtualHost *:80>', "<VirtualHost *:$apachePort>", $defaultConfPath);
-	}
-	if (-e $defaultSSLConfPath)
-	{
-		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
-	}
 }
 
 sub replaceFileContent

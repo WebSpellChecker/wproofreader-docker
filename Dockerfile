@@ -1,7 +1,10 @@
 FROM ubuntu
 
-EXPOSE 8080
-EXPOSE 8443
+ARG ApachePort=8080
+ARG ApacheSSLPort=8443
+
+EXPOSE $ApachePort
+EXPOSE $ApacheSSLPort
 EXPOSE 2880
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -31,6 +34,7 @@ RUN	mkdir $DictionariesDir &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
+	perl $DeploymentDir/configureApachePorts.pl $ApachePort $ApacheSSLPort &&\
 	if [ "$ssl" = "true" ]; then perl $DeploymentDir/enableSSL.pl; fi &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
@@ -40,7 +44,7 @@ RUN	mkdir $DictionariesDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
-	chown -R $User $LicenseDir /var/run/apache2 /var/log/apache2 /var/lock/apache2 /etc/apache2/ports.conf /etc/apache2/sites-available/
+	chown -R $User $LicenseDir /var/run/apache2 /var/log/apache2 /var/lock/apache2
 
 USER $User
 
