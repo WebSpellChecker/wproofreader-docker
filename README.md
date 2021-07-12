@@ -39,6 +39,7 @@ proxy_password = password
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
 
 4. If you need to use SSL, put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
+
 5. Build a Docker image using the command below:
 
 ```
@@ -59,12 +60,6 @@ docker build -t webspellchecker/wproofreader --build-arg ssl=true -f Dockerfile 
 ## Create and run Docker container
 
 Create and run a Docker container from the latest Docker image with the following options:
-
-```
-docker run -d -p 80:8080 webspellchecker/wproofreader <license_ticket_id> <domain_name>
-```
-
-Note! If both `license_ticket_id` and `domain_name` were specified during the image creation, don't add `<license_ticket_id> <domain_name>` values during `docker run` command. See examples below.
 
 ```
 docker run -d -p 80:8080 webspellchecker/wproofreader
@@ -91,12 +86,12 @@ docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <y
 where:
 
 * `-d` start a container in detached mode.
-* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port 8080 is a web server port. With the SSL connection, you must use port 443 like `-p 443:8443`. 
-* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where personal user and global custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
+* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default Apache HTTP Server). With the SSL connection, you must use port `443` like `-p 443:8443`. 
+* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
-* `license_ticket_id` your license ticket ID. Note! Can be skipped if you specified it during the image creation.
-* `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). Note! Can be skipped if you specified it during the image creation.
+* `license_ticket_id` your license ticket ID. *Note!* Can be skipped if you specified it during the image creation.
+* `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). *Note!* Can be skipped if you specified it during the image creation.
 
 ## Verify work of WProofreader Server
 
