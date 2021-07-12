@@ -91,7 +91,7 @@ docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <y
 where:
 
 * `-d` start a container in detached mode.
-* `-p 80:80` map the host port `80:` and the exposed port of container `80`, where port 80 is a web server port. With the SSL connection, you must use port 443 like `-p 443:443`. 
+* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port 8080 is a web server port. With the SSL connection, you must use port 443 like `-p 443:8443`. 
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where personal user and global custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
