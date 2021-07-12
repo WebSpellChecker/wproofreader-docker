@@ -1,7 +1,10 @@
 FROM ubuntu
 
-EXPOSE 80
-EXPOSE 443
+ARG ApachePort=8080
+ARG ApacheSSLPort=8443
+
+EXPOSE $ApachePort
+EXPOSE $ApacheSSLPort
 EXPOSE 2880
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -17,6 +20,8 @@ ARG AppRootDir=$DeploymentDir/$AppRootName
 ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
 ARG ssl=false
+ARG User=www-data
+ARG LicenseDir=/var/lib/wsc/license
 
 COPY $FilesDir/* $DeploymentDir/
 
@@ -29,6 +34,7 @@ RUN	mkdir $DictionariesDir &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
+	perl $DeploymentDir/configureApachePorts.pl $ApachePort $ApacheSSLPort &&\
 	if [ "$ssl" = "true" ]; then perl $DeploymentDir/enableSSL.pl; fi &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
@@ -36,7 +42,11 @@ RUN	mkdir $DictionariesDir &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
-	rm -rf /$DeploymentDir
+	rm -rf /$DeploymentDir &&\
+	mkdir -p $LicenseDir &&\
+	chown -R $User:$User $LicenseDir /opt/WSC /var/run/apache2 /var/log/apache2 /var/lock/apache2
+
+USER $User
 
 WORKDIR /opt/$AppRootName
 ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]
