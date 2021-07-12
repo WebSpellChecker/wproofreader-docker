@@ -61,31 +61,31 @@ docker build -t webspellchecker/wproofreader --build-arg ssl=true -f Dockerfile 
 Create and run a Docker container from the latest Docker image with the following options:
 
 ```
-docker run -d -p 80:80 webspellchecker/wproofreader <license_ticket_id> <domain_name>
+docker run -d -p 80:8080 webspellchecker/wproofreader <license_ticket_id> <domain_name>
 ```
 
 Note! If both `license_ticket_id` and `domain_name` were specified during the image creation, don't add `<license_ticket_id> <domain_name>` values during `docker run` command. See examples below.
 
 ```
-docker run -d -p 80:80 webspellchecker/wproofreader
+docker run -d -p 80:8080 webspellchecker/wproofreader
 ```
 
 or (for the SSL version)
 
 ```
-docker run -d -p 443:443 -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 443:8443 -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
 ```
 
 To use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
 ```
-docker run -d -p 80:80 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
 ```
 
 or (for the SSL version)
 
 ```
-docker run -d -p 443:443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader
 ```
 
 where:
