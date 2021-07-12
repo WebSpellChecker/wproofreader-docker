@@ -2,7 +2,7 @@
 
 This is a Docker configuration that you can use to build a WProofreader Server image based on the latest Ubuntu (default) or CentOS. 
 
-Note! You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
+**Note!** You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
 
 ## Create Docker image
 
@@ -90,8 +90,8 @@ where:
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
-* `license_ticket_id` your license ticket ID. *Note!* Can be skipped if you specified it during the image creation.
-* `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). *Note!* Can be skipped if you specified it during the image creation.
+* `license_ticket_id` your license ticket ID. **Note!** Can be skipped if you specified it during the image creation.
+* `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). **Note!** Can be skipped if you specified it during the image creation.
 
 ## Verify work of WProofreader Server
 
