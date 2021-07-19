@@ -12,7 +12,7 @@ sub configureApachePorts
 	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
 	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
 
-	my $portsConfPathCentos = '/etc/httpd/ports.conf';
+	my $portsConfPathCentos = '/etc/httpd/conf/httpd.conf';
 	my $defaultSSLConfPathCentos = '/etc/httpd/conf.d/ssl.conf';
 
 	if (-e $portsConfPath)
@@ -36,7 +36,8 @@ sub configureApachePorts
 	}
 	if (-e $defaultSSLConfPathCentos)
 	{
-		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPathCentos);
+		replaceFileContent('Listen 80', "Listen $apachePort", $defaultSSLConfPathCentos);
+		replaceFileContent('Listen 443', "Listen $apacheSSLPort", $defaultSSLConfPathCentos);
 	}
 }
 
