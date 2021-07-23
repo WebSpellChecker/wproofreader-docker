@@ -13,6 +13,7 @@ ARG FilesDir=./files
 ARG DeploymentDir=/home
 ARG DictionariesDir=/dictionaries
 ARG CustomDictionariesDir=$DictionariesDir/CustomDictionaries
+ARG UserDictionariesDir=$DictionariesDir/UserDictionaries
 ARG CertDir=/certificate
 ARG CertKeyName=key.pem
 ARG CertFileName=cert.pem
@@ -28,7 +29,7 @@ ARG GROUP_ID=1000
 
 COPY $FilesDir/* $DeploymentDir/
 
-RUN	mkdir -p $CustomDictionariesDir &&\
+RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	mkdir $CertDir &&\
 	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
 	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
