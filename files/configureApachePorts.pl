@@ -28,7 +28,7 @@ sub replaceFileContent
 {
 	my ($source, $dest, $path) = @_;
 	local $/ = undef;
-	open (F,$path) || die "Error: Couldn't open '${path}'. $! - Aborting.\n";
+	open (F,$path) || die "Error! Failed to open '${path}'. $! - Aborting.\n";
 	my $file = <F>;
 	close(F);
 

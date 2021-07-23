@@ -1,10 +1,10 @@
 FROM ubuntu
 
-ARG ApachePort=8080
-ARG ApacheSSLPort=8443
+ARG WebServerPort=8080
+ARG WebServerSSLPort=8443
 
-EXPOSE $ApachePort
-EXPOSE $ApacheSSLPort
+EXPOSE $WebServerPort
+EXPOSE $WebServerSSLPort
 EXPOSE 2880
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,7 @@ ARG AppRootDir=$DeploymentDir/$AppRootName
 ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
 ARG ssl=false
-ARG UserName=webspellchecker
+ARG UserName=wsc
 ARG LicenseDir=/var/lib/wsc/license
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -37,7 +37,7 @@ RUN	mkdir -p $CustomDictionariesDir &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
-	perl $DeploymentDir/configureApachePorts.pl $ApachePort $ApacheSSLPort &&\
+	perl $DeploymentDir/configureApachePorts.pl $WebServerPort $WebServerSSLPort &&\
 	if [ "$ssl" = "true" ]; then perl $DeploymentDir/enableSSL.pl; fi &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
