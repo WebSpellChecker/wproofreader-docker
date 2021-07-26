@@ -65,7 +65,7 @@ sub replaceFileContent
 sub addLineToFile
 {
 	my ($line, $path) = @_;
-	open (F,$path) || die "Error! Failed to open '${path}'. $! - Aborting.\n";
+	open (F,">>$path") || die "Error! Failed to open '${path}'. $! - Aborting.\n";
 	print F $line;
 	close(F);
 }
