@@ -25,4 +25,4 @@ else
 fi
 
 # start AppServer service
-./AppServerX -daemon
+./AppServerX
