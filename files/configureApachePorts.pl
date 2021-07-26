@@ -18,7 +18,7 @@ sub configureApachePorts
 
 	if (-e $apache2Conf)
 	{
-		addLineToFile("ServerName 127.0.0.1\n");
+		addLineToFile("ServerName 127.0.0.1\n", $apache2Conf);
 	}
 	if (-e $portsConfPath)
 	{
