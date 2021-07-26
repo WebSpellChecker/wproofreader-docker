@@ -8,7 +8,7 @@ sub configureApachePorts
 	my $apachePort = $ARGV[0];
 	my $apacheSSLPort = $ARGV[1];
 
-	my $apache2Conf = '/etc/apache2/apache2.conf'
+	my $apache2Conf = '/etc/apache2/apache2.conf';
 	my $portsConfPath = '/etc/apache2/ports.conf';
 	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
 	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
