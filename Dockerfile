@@ -48,8 +48,7 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
-	groupadd -g ${GROUP_ID} $UserName && useradd -l -u ${USER_ID} -g $UserName $UserName &&\
-	install -d -m 0755 -o $UserName -g $UserName /home/$UserName &&\
+	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
 	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/run/apache2 /var/log/apache2 /var/lock/apache2
 
 USER $UserName
