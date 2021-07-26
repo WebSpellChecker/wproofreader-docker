@@ -7,10 +7,16 @@ my $pathToKey = '\\/certificate\\/key.pem/';
 
 my $pathToApacheConfUbuntu = '/etc/apache2/sites-available/default-ssl.conf';
 
-`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfUbuntu`;
-`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfUbuntu`;
+if (-e $pathToApacheConfUbuntu)
+{
+	`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfUbuntu`;
+	`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfUbuntu`;
+}
 
 my $pathToApacheConfCentos = '/etc/httpd/conf.d/ssl.conf';
 
-`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfCentos`;
-`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfCentos`;
+if (-e $pathToApacheConfCentos)
+{
+	`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfCentos`;
+	`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfCentos`;
+}

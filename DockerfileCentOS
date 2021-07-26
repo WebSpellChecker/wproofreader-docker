@@ -1,15 +1,17 @@
 FROM centos
 
-ARG ApachePort=8080
-ARG ApacheSSLPort=8443
+ARG WebServerPort=8080
+ARG WebServerSSLPort=8443
 
-EXPOSE $ApachePort
-EXPOSE $ApacheSSLPort
+EXPOSE $WebServerPort
+EXPOSE $WebServerSSLPort
 EXPOSE 2880
 
 ARG FilesDir=./files
 ARG DeploymentDir=/home
 ARG DictionariesDir=/dictionaries
+ARG CustomDictionariesDir=$DictionariesDir/CustomDictionaries
+ARG UserDictionariesDir=$DictionariesDir/UserDictionaries
 ARG CertDir=/certificate
 ARG CertKeyName=key.pem
 ARG CertFileName=cert.pem
@@ -18,12 +20,14 @@ ARG AppRootDir=$DeploymentDir/$AppRootName
 ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
 ARG ssl=false
-ARG User=apache
+ARG UserName=wsc
 ARG LicenseDir=/var/lib/wsc/license
+ARG USER_ID=2000
+ARG GROUP_ID=2000
 
 COPY $FilesDir/* $DeploymentDir/
 
-RUN	mkdir $DictionariesDir &&\
+RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	mkdir $CertDir &&\
 	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
 	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
@@ -34,18 +38,19 @@ RUN	mkdir $DictionariesDir &&\
 	mv $AppRootDir* $AppRootDir &&\
 	if [ "$ssl" = "true" ]; then yum install -y mod_ssl openssl; fi &&\
 	if [ "$ssl" = "true" ]; then perl $DeploymentDir/enableSSL.pl; fi &&\
-	perl $DeploymentDir/configureApachePorts.pl $ApachePort $ApacheSSLPort &&\
+	perl $DeploymentDir/configureApachePorts.pl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
 	if [ "$ssl" = "true" ]; then perl $AppRootDir/automated_install.pl $AppRootDir/configSSL.ini; else perl $AppRootDir/automated_install.pl $AppRootDir/config.ini; fi &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
-	rm -rf /$DeploymentDir &&\
+	rm -rf /$DeploymentDir && mkdir /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
-	chown -R $User:$User $LicenseDir /opt/WSC /var/run/httpd /var/log/httpd
+	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
+	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/run/httpd /var/log/httpd
 
-USER $User
+USER $UserName
 
 WORKDIR /opt/$AppRootName
 ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]

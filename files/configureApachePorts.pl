@@ -36,7 +36,7 @@ sub configureApachePorts
 	if (-e $defaultSSLConfPathCentos)
 	{
 		replaceFileContent('Listen 443', "Listen $apacheSSLPort", $defaultSSLConfPathCentos);
-		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
+		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPathCentos);
 	}
 }
 
