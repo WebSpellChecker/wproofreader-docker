@@ -18,8 +18,11 @@ if ! [ -f "$LicenseFile" ]; then
 fi
 
 #start Apache HTTP Server for Ubuntu or Centos
-service apache2 start
-httpd -k start
+if [ -d "/etc/apache2" ]; then
+	service apache2 start
+else
+	httpd -k start
+fi
 
 # start AppServer service
 ./AppServerX
