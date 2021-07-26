@@ -8,6 +8,7 @@ sub configureApachePorts
 	my $apachePort = $ARGV[0];
 	my $apacheSSLPort = $ARGV[1];
 
+	my $apache2Conf = '/etc/apache2/apache2.conf';
 	my $portsConfPath = '/etc/apache2/ports.conf';
 	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
 	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
@@ -15,6 +16,10 @@ sub configureApachePorts
 	my $portsConfPathCentos = '/etc/httpd/conf/httpd.conf';
 	my $defaultSSLConfPathCentos = '/etc/httpd/conf.d/ssl.conf';
 
+	if (-e $apache2Conf)
+	{
+		addLineToFile("ServerName 127.0.0.1\n", $apache2Conf);
+	}
 	if (-e $portsConfPath)
 	{
 		replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPath);
@@ -31,6 +36,7 @@ sub configureApachePorts
 
 	if (-e $portsConfPathCentos)
 	{
+		addLineToFile("ServerName 127.0.0.1\n", $portsConfPathCentos);
 		replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPathCentos);
 	}
 	if (-e $defaultSSLConfPathCentos)
@@ -55,4 +61,12 @@ sub replaceFileContent
 		print F $file;
 		close(F);
 	}
+}
+
+sub addLineToFile
+{
+	my ($line, $path) = @_;
+	open (F,">>$path") || die "Error! Failed to open '${path}'. $! - Aborting.\n";
+	print F $line;
+	close(F);
 }
