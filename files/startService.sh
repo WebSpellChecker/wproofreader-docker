@@ -6,7 +6,7 @@ cd `dirname $0`
 appserver_path=`pwd`
 
 # export the libraries required for the service start
-export LD_LIBRARY_PATH=${appserver_path}/lib
+export LD_LIBRARY_PATH=${appserver_path}/libdokc
 
 # run script to configure samples and shared dictionaries using the host name
 perl configureFiles.pl $2
@@ -18,8 +18,11 @@ if ! [ -f "$LicenseFile" ]; then
 fi
 
 #start Apache HTTP Server for Ubuntu or Centos
-service apache2 start
-httpd -k start
+if [ -d "/etc/apache2" ]; then
+	service apache2 start
+else
+	httpd -k start
+fi
 
 # start AppServer service
-./AppServerX
+./AppServerX -daemon
