@@ -24,8 +24,8 @@ ARG AppNameMask=wsc_app*
 ARG ssl=false
 ARG UserName=wsc
 ARG LicenseDir=/var/lib/wsc/license
-ARG USER_ID=1000
-ARG GROUP_ID=1000
+ARG USER_ID=2000
+ARG GROUP_ID=2000
 
 COPY $FilesDir/* $DeploymentDir/
 
