@@ -36,6 +36,7 @@ sub configureApachePorts
 
 	if (-e $portsConfPathCentos)
 	{
+		addLineToFile("ServerName 127.0.0.1\n", $portsConfPathCentos);
 		replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPathCentos);
 	}
 	if (-e $defaultSSLConfPathCentos)
