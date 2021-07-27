@@ -50,13 +50,15 @@ where:
 
 * `-t` assign a tag name `webspellchecker/wproofreader`.
 * `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
-* `--build-arg USER_ID=YOUR_USER_ID` the argument set user with YOUR_USER_ID as default in the container. You can skip the argument in this case default user with id 2000 will be used.
-* `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument set user with YOUR_GROUP_ID as default in the container. You can skip the argument in this case default user with group id 2000 will be used.
+* `--build-arg USER_ID=YOUR_USER_ID` the argument sets a user ID for the default user in the container. If not specified, the default USER_ID=2000.
+* `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument sets a user group ID for the default user in the container.  If not specified, the default GROUP_ID=2000.
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile` or `DockerfileCentOS`.
 * `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
+For example:
+
 ```
-docker build -t webspellchecker/wproofreader --build-arg ssl=true -f Dockerfile .
+docker build -t webspellchecker/wproofreader --build-arg ssl=true --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
 ```
 
 ## Create and run Docker container
@@ -89,8 +91,8 @@ where:
 
 * `-d` start a container in detached mode.
 * `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default Apache HTTP Server). With the SSL connection, you must use port `443` like `-p 443:8443`. 
-* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. You must set permissions for container user to read and write to `<shared_dictionaries_directory>` to work properly with custom and user dictionaries functionality.
-* `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used. You must set permissions for container user to read certificate files.
+* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionaries directory.
+* `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
 * `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
 * `license_ticket_id` your license ticket ID. **Note!** Can be skipped if you specified it during the image creation.
 * `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). **Note!** Can be skipped if you specified it during the image creation.
