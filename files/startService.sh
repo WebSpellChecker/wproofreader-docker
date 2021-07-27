@@ -6,7 +6,7 @@ cd `dirname $0`
 appserver_path=`pwd`
 
 # export the libraries required for the service start
-export LD_LIBRARY_PATH=${appserver_path}/libdokc
+export LD_LIBRARY_PATH=${appserver_path}/lib
 
 # run script to configure samples and shared dictionaries using the host name
 perl configureFiles.pl $2
