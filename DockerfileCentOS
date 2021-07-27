@@ -37,8 +37,7 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
 	if [ "$ssl" = "true" ]; then yum install -y mod_ssl openssl; fi &&\
-	if [ "$ssl" = "true" ]; then perl $DeploymentDir/enableSSL.pl; fi &&\
-	perl $DeploymentDir/configureApachePorts.pl $WebServerPort $WebServerSSLPort &&\
+	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
 	if [ "$ssl" = "true" ]; then perl $AppRootDir/automated_install.pl $AppRootDir/configSSL.ini; else perl $AppRootDir/automated_install.pl $AppRootDir/config.ini; fi &&\

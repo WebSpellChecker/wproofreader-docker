@@ -1,12 +1,13 @@
 
 configureApachePorts();
+enableSSL();
 
 sub configureApachePorts
 {
-	if ($#ARGV < 1) { return; }
+	if ($#ARGV < 2) { return; }
 
-	my $apachePort = $ARGV[0];
-	my $apacheSSLPort = $ARGV[1];
+	my $apachePort = $ARGV[1];
+	my $apacheSSLPort = $ARGV[2];
 
 	my $apache2Conf = '/etc/apache2/apache2.conf';
 	my $portsConfPath = '/etc/apache2/ports.conf';
@@ -45,6 +46,36 @@ sub configureApachePorts
 		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPathCentos);
 	}
 }
+
+sub enableSSL
+{
+	if ($#ARGV < 1) { return; }
+
+	if ($ARGV[0] ne "true") { return; }
+
+	`a2enmod ssl`;
+	`a2ensite default-ssl`;
+
+	my $pathToCert = '\\/certificate\\/cert.pem/';
+	my $pathToKey = '\\/certificate\\/key.pem/';
+
+	my $pathToApacheConfUbuntu = '/etc/apache2/sites-available/default-ssl.conf';
+
+	if (-e $pathToApacheConfUbuntu)
+	{
+		`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfUbuntu`;
+		`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfUbuntu`;
+	}
+
+	my $pathToApacheConfCentos = '/etc/httpd/conf.d/ssl.conf';
+
+	if (-e $pathToApacheConfCentos)
+	{
+		`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfCentos`;
+		`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfCentos`;
+	}
+}
+
 
 sub replaceFileContent
 {

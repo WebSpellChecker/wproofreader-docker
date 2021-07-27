@@ -38,8 +38,7 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
-	perl $DeploymentDir/configureApachePorts.pl $WebServerPort $WebServerSSLPort &&\
-	if [ "$ssl" = "true" ]; then perl $DeploymentDir/enableSSL.pl; fi &&\
+	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
 	if [ "$ssl" = "true" ]; then perl $AppRootDir/automated_install.pl $AppRootDir/configSSL.ini; else perl $AppRootDir/automated_install.pl $AppRootDir/config.ini; fi &&\
