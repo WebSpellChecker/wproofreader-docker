@@ -43,13 +43,15 @@ For details on the available options, refer to [Automated Installing WebSpellChe
 5. Build a Docker image using the command below:
 
 ```
-docker build -t webspellchecker/wproofreader --build-arg ssl=true -f <Dockerfile_name> <path_to_Dockerfile_directory>
+docker build -t webspellchecker/wproofreader --build-arg ssl=true --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
 ```
 
 where:
 
 * `-t` assign a tag name `webspellchecker/wproofreader`.
 * `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
+* `--build-arg USER_ID=YOUR_USER_ID` the argument set user with YOUR_USER_ID as default in the container. You can skip the argument in this case default user with id 2000 will be used.
+* `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument set user with YOUR_GROUP_ID as default in the container. You can skip the argument in this case default user with group id 2000 will be used.
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile` or `DockerfileCentOS`.
 * `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
