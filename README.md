@@ -101,11 +101,11 @@ where:
 
 After successful launch of a container with WProofreader Server, and the license activation, you can verify the version and status of WProofreader Server using the commands below:
 
-* Version: http://localhost/wscservice/api/?cmd=ver
+* Version: http://localhost/wscservice/api?cmd=ver
 
 ```{"COPYRIGHT":"(c) 2000-2021 WebSpellChecker LLC","PRODUCT WEBSITE":"webspellchecker.com","PROGRAM VERSION":"5.x.x.0 x64 master:xxxxxxx (xxxx) #xx"}```
 
-* Status: http://localhost/wscservice/api/?cmd=status
+* Status: http://localhost/wscservice/api?cmd=status
 
 ```
 {
