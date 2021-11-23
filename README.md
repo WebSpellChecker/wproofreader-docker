@@ -1,12 +1,12 @@
-# WProofreader Docker
+# WebSpellChecker/WProofreader Docker
 
-This is a Docker configuration that you can use to build a WProofreader Server image based on the latest Ubuntu (default) or CentOS. 
+This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the latest Ubuntu (default) or CentOS. 
 
-**Note!** You can also use a [Docker image with WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
+**Note!** You can also use a [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
 
 ## Create Docker image
 
-To create a custom Docker image with WProofreader Server: 
+To create a custom Docker image: 
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
 2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory.
