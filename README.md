@@ -43,12 +43,12 @@ For details on the available options, refer to [Automated Installing WebSpellChe
 5. Build a Docker image using the command below:
 
 ```
-docker build -t webspellchecker/wproofreader --build-arg ssl=true --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
+docker build -t local/wsc_app:x.x.x --build-arg ssl=true --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
 ```
 
 where:
 
-* `-t` assign a tag name `webspellchecker/wproofreader`.
+* `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
 * `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
 * `--build-arg USER_ID=YOUR_USER_ID` the argument sets a user ID for the default user in the container. If not specified, the default USER_ID=2000.
 * `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument sets a user group ID for the default user in the container.  If not specified, the default GROUP_ID=2000.
@@ -58,7 +58,7 @@ where:
 For example:
 
 ```
-docker build -t webspellchecker/wproofreader --build-arg ssl=true --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg ssl=true --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
 ```
 
 ## Create and run Docker container
@@ -66,25 +66,25 @@ docker build -t webspellchecker/wproofreader --build-arg ssl=true --build-arg US
 Create and run a Docker container from the latest Docker image with the following options:
 
 ```
-docker run -d -p 80:8080 webspellchecker/wproofreader
+docker run -d -p 80:8080 local/wsc_app:x.x.x
 ```
 
 or (for the SSL version)
 
 ```
-docker run -d -p 443:8443 -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 443:8443 -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
 To use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
 ```
-docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
 or (for the SSL version)
 
 ```
-docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate webspellchecker/wproofreader
+docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
 where:
@@ -93,13 +93,13 @@ where:
 * `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default Apache HTTP Server). With the SSL connection, you must use port `443` like `-p 443:8443`. 
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionaries directory.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
-* `webspellchecker/wproofreader` the latest tag of WProofreader Server Docker image.
+* `webspellchecker/wproofreader` the latest tag of WebSpellChecker Server Docker image.
 * `license_ticket_id` your license ticket ID. **Note!** Can be skipped if you specified it during the image creation.
 * `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). **Note!** Can be skipped if you specified it during the image creation.
 
 ## Verify work of WProofreader Server
 
-After successful launch of a container with WProofreader Server, and the license activation, you can verify the version and status of WProofreader Server using the commands below:
+After successful launch of a container with WebSpellChecker/WProofreader Server, and the license activation, you can verify the version and status of WProofreader Server using the commands below:
 
 * Version: http://localhost/wscservice/api?cmd=ver
 
