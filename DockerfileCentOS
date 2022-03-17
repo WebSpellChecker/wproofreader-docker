@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:7
 
 ARG WebServerPort=8080
 ARG WebServerSSLPort=8443
