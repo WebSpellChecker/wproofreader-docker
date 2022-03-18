@@ -1,6 +1,6 @@
 # WebSpellChecker/WProofreader Docker
 
-This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the latest Ubuntu (latest LTS), CentOS Linux 7 or Red Hat Universal Base Image 8.
+This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the latest [Ubuntu Server (latest)](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8).
 
 **Note!** You can also use a [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
 
