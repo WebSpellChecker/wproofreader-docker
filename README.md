@@ -9,7 +9,7 @@ This is a Docker configuration that you can use to build a WebSpellChecker/WProo
 To create a custom Docker image: 
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
-2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory.
+2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
 3. Adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. 
 
 * Activate license during the image creation. Add the following options to `config.ini` or `configSSL.ini` file.
