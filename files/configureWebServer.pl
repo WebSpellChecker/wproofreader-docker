@@ -6,44 +6,23 @@ sub configureApachePorts
 {
 	if ($#ARGV < 2) { return; }
 
-	my $apachePort = $ARGV[1];
-	my $apacheSSLPort = $ARGV[2];
+	my $nginxPort = $ARGV[1];
+	my $nginxSSLPort = $ARGV[2];
 
-	my $apache2Conf = '/etc/apache2/apache2.conf';
-	my $portsConfPath = '/etc/apache2/ports.conf';
-	my $defaultConfPath = '/etc/apache2/sites-available/default.conf';
-	my $defaultSSLConfPath = '/etc/apache2/sites-available/default-ssl.conf';
+	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
-	my $portsConfPathCentos = '/etc/httpd/conf/httpd.conf';
-	my $defaultSSLConfPathCentos = '/etc/httpd/conf.d/ssl.conf';
-
-	if (-e $apache2Conf)
+	if (-e $nginxConf)
 	{
-		addLineToFile("ServerName 127.0.0.1\n", $apache2Conf);
+		replaceFileContent('listen 80', "listen $nginxPort", $nginxConf);
+		replaceFileContent('listen 443', "listen $nginxSSLPort", $nginxConf);
+		replaceFileContent('listen \\[::]:80', "listen \[::]:$nginxPort", $nginxConf);
+		replaceFileContent('listen \\[::]:443', "listen \[::]:$nginxSSLPort", $nginxConf);
 	}
-	if (-e $portsConfPath)
+	
+	my $nginxMainConf = '/etc/nginx/nginx.conf';
+	if (-e $nginxMainConf)
 	{
-		replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPath);
-		replaceFileContent('Listen 443', "Listen $apacheSSLPort", $portsConfPath);
-	}
-	if (-e $defaultConfPath)
-	{
-		replaceFileContent('<VirtualHost *:80>', "<VirtualHost *:$apachePort>", $defaultConfPath);
-	}
-	if (-e $defaultSSLConfPath)
-	{
-		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPath);
-	}
-
-	if (-e $portsConfPathCentos)
-	{
-		addLineToFile("ServerName 127.0.0.1\n", $portsConfPathCentos);
-		replaceFileContent('Listen 80', "Listen $apachePort", $portsConfPathCentos);
-	}
-	if (-e $defaultSSLConfPathCentos)
-	{
-		replaceFileContent('Listen 443', "Listen $apacheSSLPort", $defaultSSLConfPathCentos);
-		replaceFileContent('<VirtualHost _default_:443>', "<VirtualHost _default_:$apacheSSLPort>", $defaultSSLConfPathCentos);
+		replaceFileContent('pid /run/nginx.pid', 'pid /run/nginx/nginx.pid', $nginxMainConf);
 	}
 }
 
@@ -53,26 +32,15 @@ sub enableSSL
 
 	if ($ARGV[0] ne "true") { return; }
 
-	`a2enmod ssl`;
-	`a2ensite default-ssl`;
+	my $pathToCert = '/certificate/cert.pem';
+	my $pathToKey = '/certificate/key.pem';
 
-	my $pathToCert = '\\/certificate\\/cert.pem/';
-	my $pathToKey = '\\/certificate\\/key.pem/';
+	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
-	my $pathToApacheConfUbuntu = '/etc/apache2/sites-available/default-ssl.conf';
-
-	if (-e $pathToApacheConfUbuntu)
+	if (-e $nginxConf)
 	{
-		`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfUbuntu`;
-		`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfUbuntu`;
-	}
-
-	my $pathToApacheConfCentos = '/etc/httpd/conf.d/ssl.conf';
-
-	if (-e $pathToApacheConfCentos)
-	{
-		`sed -i "s/\\(\\s*\\)SSLCertificateFile.*\\/.*/\\1SSLCertificateFile $pathToCert" $pathToApacheConfCentos`;
-		`sed -i "s/\\(\\s*\\)SSLCertificateKeyFile.*\\/.*/\\1SSLCertificateKeyFile $pathToKey" $pathToApacheConfCentos`;
+		replaceFileContent('# Note: You should disable gzip for SSL traffic.', "ssl_certificate $pathToCert;", $nginxConf);
+		replaceFileContent('# See: https://bugs.debian.org/773332', "ssl_certificate_key $pathToKey;", $nginxConf);
 	}
 }
 

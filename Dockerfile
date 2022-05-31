@@ -34,21 +34,23 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
 	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
 	apt-get update -y &&\
-	apt-get install -y apache2 default-jre wget &&\
+	apt-get install -y nginx default-jre wget &&\
+	apt-get upgrade -y perl &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
-	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
+	mkdir /var/run/nginx &&\
 	if [ "$ssl" = "true" ]; then perl $AppRootDir/automated_install.pl $AppRootDir/configSSL.ini; else perl $AppRootDir/automated_install.pl $AppRootDir/config.ini; fi &&\
+	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
 	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
-	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/run/apache2 /var/log/apache2 /var/lock/apache2
+	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx
 
 USER $UserName
 

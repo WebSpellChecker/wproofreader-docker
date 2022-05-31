@@ -32,22 +32,26 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
 	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
 	yum update -y &&\
-	yum install -y httpd java-11-openjdk-devel wget perl &&\
+	yum install -y java-11-openjdk-devel wget perl &&\
+	yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm &&\
+	yum install -y nginx &&\
 	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
 	if [ "$ssl" = "true" ]; then yum install -y mod_ssl openssl; fi &&\
-	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
 	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
+	mkdir /var/run/nginx &&\
 	if [ "$ssl" = "true" ]; then perl $AppRootDir/automated_install.pl $AppRootDir/configSSL.ini; else perl $AppRootDir/automated_install.pl $AppRootDir/config.ini; fi &&\
+	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
 	chmod +x $AppServerDir/startService.sh &&\
-	rm -rf /$DeploymentDir && mkdir /$DeploymentDir &&\
+	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
+	mkdir -p /home &&\
 	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
-	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/run/httpd /var/log/httpd
+	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx
 
 USER $UserName
 

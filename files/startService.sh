@@ -17,12 +17,8 @@ if ! [ -f "$LicenseFile" ]; then
    ./AppServerX -activateLicense $1 -y
 fi
 
-#start Apache HTTP Server for Ubuntu or Centos
-if [ -d "/etc/apache2" ]; then
-	service apache2 start
-else
-	httpd -k start
-fi
+#start Nginx HTTP Server for Ubuntu or Centos
+nginx
 
 # start AppServer service
 ./AppServerX

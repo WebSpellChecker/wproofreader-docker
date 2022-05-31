@@ -56,7 +56,7 @@ sub configureUserAndCustomDictionaries
 	my $cust_dict_sample = "$cust_dicts_path/sampleDic.txt";
 	if (! -e $cust_dict_sample)
 	{
-		system("mv $serverPath/CustomDictionaries/sampleDic.txt $cust_dict_sample");
+		system("mv $serverPath/CustomDictionaries/customDictionary1.txt $cust_dict_sample");
 	}
 }
 
