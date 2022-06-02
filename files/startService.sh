@@ -9,12 +9,13 @@ appserver_path=`pwd`
 export LD_LIBRARY_PATH=${appserver_path}/lib
 
 # run script to configure samples and shared dictionaries using the host name
-perl configureFiles.pl $2
+perl configureWebServer.pl $1
+perl configureFiles.pl $3
 
 # activate a license automatically
 LicenseFile=/var/lib/wsc/license/license.xml
 if ! [ -f "$LicenseFile" ]; then
-   ./AppServerX -activateLicense $1 -y
+   ./AppServerX -activateLicense $2 -y
 fi
 
 #start Nginx HTTP Server for Ubuntu or Centos

@@ -4,19 +4,29 @@ enableSSL();
 
 sub configureApachePorts
 {
-	if ($#ARGV < 2) { return; }
+	my $nginxPort = <#NginxPort#>;
+	my $nginxSSLPort = <#NginxSSLPort#>;
 
-	my $nginxPort = $ARGV[1];
-	my $nginxSSLPort = $ARGV[2];
+	my $isSSL = $ARGV[0];
 
 	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 	if (-e $nginxConf)
 	{
-		replaceFileContent('listen 80', "listen $nginxPort", $nginxConf);
-		replaceFileContent('listen 443', "listen $nginxSSLPort", $nginxConf);
-		replaceFileContent('listen \\[::]:80', "listen \[::]:$nginxPort", $nginxConf);
-		replaceFileContent('listen \\[::]:443', "listen \[::]:$nginxSSLPort", $nginxConf);
+		if ($isSSL ne "true")
+		{
+			replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen 443 ssl;', "listen $nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+		}
+		else
+		{
+			replaceFileContent('listen 80;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+		}
 	}
 	
 	my $nginxMainConf = '/etc/nginx/nginx.conf';
@@ -27,15 +37,13 @@ sub configureApachePorts
 }
 
 sub enableSSL
-{
-	if ($#ARGV < 1) { return; }
-
+{	
 	if ($ARGV[0] ne "true") { return; }
+
+	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 	my $pathToCert = '/certificate/cert.pem';
 	my $pathToKey = '/certificate/key.pem';
-
-	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 	if (-e $nginxConf)
 	{

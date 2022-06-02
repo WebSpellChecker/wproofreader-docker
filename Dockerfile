@@ -21,7 +21,6 @@ ARG AppRootName=WSC
 ARG AppRootDir=$DeploymentDir/$AppRootName
 ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
-ARG ssl=false
 ARG UserName=wsc
 ARG LicenseDir=/var/lib/wsc/license
 ARG USER_ID=2000
@@ -40,17 +39,18 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	rm $DeploymentDir/$AppNameMask &&\
 	mv $AppRootDir* $AppRootDir &&\
 	mv $DeploymentDir/config.ini $AppRootDir/ &&\
-	mv $DeploymentDir/configSSL.ini $AppRootDir/ &&\
 	mkdir /var/run/nginx &&\
-	if [ "$ssl" = "true" ]; then perl $AppRootDir/automated_install.pl $AppRootDir/configSSL.ini; else perl $AppRootDir/automated_install.pl $AppRootDir/config.ini; fi &&\
-	perl $DeploymentDir/configureWebServer.pl $ssl $WebServerPort $WebServerSSLPort &&\
+	perl $AppRootDir/automated_install.pl $AppRootDir/config.ini &&\
+	mv $DeploymentDir/configureWebServer.pl $AppServerDir &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
+	perl $DeploymentDir/configureWebPorts.pl $WebServerPort $WebServerSSLPort &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
+	rm /etc/nginx/sites-enabled/default &&\
 	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
-	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx
+	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx /etc/nginx
 
 USER $UserName
 
