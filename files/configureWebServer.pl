@@ -13,10 +13,10 @@ sub configureApachePorts
 
 	if (-e $nginxConf)
 	{
-		replaceFileContent('listen 80', "listen $nginxPort", $nginxConf);
-		replaceFileContent('listen 443', "listen $nginxSSLPort", $nginxConf);
-		replaceFileContent('listen \\[::]:80', "listen \[::]:$nginxPort", $nginxConf);
-		replaceFileContent('listen \\[::]:443', "listen \[::]:$nginxSSLPort", $nginxConf);
+		replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
+		replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+		replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+		replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
 	}
 	
 	my $nginxMainConf = '/etc/nginx/nginx.conf';
@@ -39,8 +39,7 @@ sub enableSSL
 
 	if (-e $nginxConf)
 	{
-		replaceFileContent('# Note: You should disable gzip for SSL traffic.', "ssl_certificate $pathToCert;", $nginxConf);
-		replaceFileContent('# See: https://bugs.debian.org/773332', "ssl_certificate_key $pathToKey;", $nginxConf);
+		replaceFileContent('# bindings of static files', "ssl_certificate $pathToCert;\n    ssl_certificate_key $pathToKey;\n", $nginxConf);
 	}
 }
 
