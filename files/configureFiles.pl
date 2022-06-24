@@ -1,3 +1,5 @@
+use File::Basename;
+
 my $serverPath = '/opt/WSC/AppServer';
 my $server_config_path = "$serverPath/AppServerX.xml";
 
@@ -52,11 +54,14 @@ sub configureUserAndCustomDictionaries
 	{
 		system("mv $serverPath/CustDictConfig.xml $cust_dict_conf");
 	}
-
-	my $cust_dict_sample = "$cust_dicts_path/sampleDic.txt";
-	if (! -e $cust_dict_sample)
+	
+	for my $file (<$serverPath/CustomDictionaries/*.txt>)
 	{
-		system("mv $serverPath/CustomDictionaries/customDictionary1.txt $cust_dict_sample");
+		my $file_name = basename($file);
+		if (! -e "$cust_dicts_path/$file_name")
+		{
+			system("mv $file $cust_dicts_path/");
+		}
 	}
 }
 
