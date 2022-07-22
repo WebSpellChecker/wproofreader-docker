@@ -9,7 +9,7 @@ This is a Docker configuration that you can use to build a WebSpellChecker/WProo
 To create a custom Docker image: 
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
-2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory.
+2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
 3. Adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. 
 
 * Activate license during the image creation. Add the following options to `config.ini` or `configSSL.ini` file.
@@ -90,7 +90,7 @@ docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <y
 where:
 
 * `-d` start a container in detached mode.
-* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default Apache HTTP Server). With the SSL connection, you must use port `443` like `-p 443:8443`. 
+* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`. 
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionaries directory.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
 * `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
