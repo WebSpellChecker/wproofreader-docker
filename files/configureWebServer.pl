@@ -7,13 +7,13 @@ sub configureApachePorts
 	my $nginxPort = <#NginxPort#>;
 	my $nginxSSLPort = <#NginxSSLPort#>;
 
-	my $isSSL = $ARGV[0];
+	my $protocol = $ARGV[0];
 
 	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 	if (-e $nginxConf)
 	{
-		if ($isSSL ne "true")
+		if ($protocol ne "https")
 		{
 			replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
 			replaceFileContent('listen 443 ssl;', "listen $nginxPort default_server;", $nginxConf);
@@ -38,7 +38,7 @@ sub configureApachePorts
 
 sub enableSSL
 {	
-	if ($ARGV[0] ne "true") { return; }
+	if ($ARGV[0] ne "https") { return; }
 
 	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
@@ -47,8 +47,7 @@ sub enableSSL
 
 	if (-e $nginxConf)
 	{
-		replaceFileContent('# Note: You should disable gzip for SSL traffic.', "ssl_certificate $pathToCert;", $nginxConf);
-		replaceFileContent('# See: https://bugs.debian.org/773332', "ssl_certificate_key $pathToKey;", $nginxConf);
+		replaceFileContent('# bindings of static files', "ssl_certificate $pathToCert;\n    ssl_certificate_key $pathToKey;\n", $nginxConf);
 	}
 }
 
