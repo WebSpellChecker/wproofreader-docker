@@ -26,6 +26,12 @@ ARG LicenseDir=/var/lib/wsc/license
 ARG USER_ID=2000
 ARG GROUP_ID=2000
 
+ARG PROTOCOL=http
+
+ENV PROTOCOL=${PROTOCOL}
+ENV DOMAIN=""
+ENV LICENSE=""
+
 COPY $FilesDir/* $DeploymentDir/
 
 RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\

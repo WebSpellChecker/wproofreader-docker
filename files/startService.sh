@@ -8,40 +8,28 @@ appserver_path=`pwd`
 # export the libraries required for the service start
 export LD_LIBRARY_PATH=${appserver_path}/lib
 
-usage() { echo "Wrong parameters passed. Usage: sh $0 [-l <licenseid>] [-p <https|http>] [-d <domain>]"; exit 1; }
+pr=${PROTOCOL}
+dm=${DOMAIN}
+lic=${LICENSE}
 
-while getopts "l:p:d:" opt
-do
-    case $opt in
-        l)
-            license=${OPTARG};;
-        p)
-            protocol=${OPTARG};;
-		d)
-            domain=${OPTARG};;
-        *)
-            usage;;
-    esac
-done
-
-if [ -z $protocol ]
+if [ -z $pr ]
 then
-	protocol="https"
+	pr="http"
 fi
 
-if [ $protocol != 'https' ] && [ $protocol != 'http' ]
+if [ $pr != 'https' ] && [ $pr != 'http' ]
 then
-	usage
+	echo "Unknown protocol passed: $pr. Please use http or https."; exit 1;
 fi
 
 # run script to configure samples and shared dictionaries using the host name
-perl configureWebServer.pl $protocol
-perl configureFiles.pl $domain
+perl configureWebServer.pl $pr
+perl configureFiles.pl $dm
 
 # activate a license automatically
 LicenseFile=/var/lib/wsc/license/license.xml
 if ! [ -f "$LicenseFile" ]; then
-   ./AppServerX -activateLicense $license -y
+   ./AppServerX -activateLicense $lic -y
 fi
 
 #start Nginx HTTP Server for Ubuntu or Centos
