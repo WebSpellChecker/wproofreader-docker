@@ -8,23 +8,11 @@ appserver_path=`pwd`
 # export the libraries required for the service start
 export LD_LIBRARY_PATH=${appserver_path}/lib
 
-pr=${PROTOCOL}
-dm=${DOMAIN}
-lic=${LICENSE}
-
-if [ -z $pr ]
-then
-	pr="http"
-fi
-
-if [ $pr != 'https' ] && [ $pr != 'http' ]
-then
-	echo "Unknown protocol passed: $pr. Please use http or https."; exit 1;
-fi
-
 # run script to configure samples and shared dictionaries using the host name
-perl configureWebServer.pl $pr
-perl configureFiles.pl $dm
+perl configureWebServer.pl
+perl configureFiles.pl
+
+lic=${LICENSE_TICKET_ID}
 
 # activate a license automatically
 LicenseFile=/var/lib/wsc/license/license.xml
