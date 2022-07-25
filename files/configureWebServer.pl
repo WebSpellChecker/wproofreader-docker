@@ -1,5 +1,7 @@
+my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 configureNGINX();
+configureNginxConfig();
 
 sub configureNGINX
 {
@@ -12,8 +14,6 @@ sub configureNGINX
 	{
 		die "Unknown protocol passed: $protocol";
 	}
-
-	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 	if (-e $nginxConf)
 	{
@@ -68,11 +68,21 @@ sub configureNGINX
 			print "Container started on HTTPS protocol.\n";
 		}
 	}
-	
+}
+
+sub configureNginxConfig
+{
 	my $nginxMainConf = '/etc/nginx/nginx.conf';
 	if (-e $nginxMainConf)
 	{
 		replaceFileContent('pid /run/nginx.pid', 'pid /run/nginx/nginx.pid', $nginxMainConf);
+	}
+	
+	my $host = $ENV{'HOST_NAME'};
+	
+	if (-e $nginxConf && $host ne "")
+	{
+		replaceFileContent('localhost', $host, $nginxConf);
 	}
 }
 
