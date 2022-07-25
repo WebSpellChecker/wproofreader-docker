@@ -3,8 +3,8 @@ configureNGINX();
 
 sub configureNGINX
 {
-	my $nginxPort = <#NginxPort#>;
-	my $nginxSSLPort = <#NginxSSLPort#>;
+	my $nginxPort = $ENV{'WebServerPort'};
+	my $nginxSSLPort = $ENV{'WebServerSSLPort'};
 
 	my $protocol = $ENV{'PROTOCOL'};
 

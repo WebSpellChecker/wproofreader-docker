@@ -3,6 +3,9 @@ FROM ubuntu
 ARG WebServerPort=8080
 ARG WebServerSSLPort=8443
 
+ENV WebServerPort=${WebServerPort}
+ENV WebServerSSLPort=${WebServerSSLPort}
+
 EXPOSE $WebServerPort
 EXPOSE $WebServerSSLPort
 EXPOSE 2880
@@ -48,7 +51,6 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	mv $DeploymentDir/configureWebServer.pl $AppServerDir &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
-	perl $DeploymentDir/configureWebPorts.pl $WebServerPort $WebServerSSLPort &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\

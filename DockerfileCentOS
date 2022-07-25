@@ -3,6 +3,9 @@ FROM centos:7
 ARG WebServerPort=8080
 ARG WebServerSSLPort=8443
 
+ENV WebServerPort=${WebServerPort}
+ENV WebServerSSLPort=${WebServerSSLPort}
+
 EXPOSE $WebServerPort
 EXPOSE $WebServerSSLPort
 EXPOSE 2880
@@ -19,11 +22,14 @@ ARG AppRootName=WSC
 ARG AppRootDir=$DeploymentDir/$AppRootName
 ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
-ARG ssl=false
 ARG UserName=wsc
 ARG LicenseDir=/var/lib/wsc/license
 ARG USER_ID=2000
 ARG GROUP_ID=2000
+
+ENV PROTOCOL=""
+ENV HOST_NAME=""
+ENV LICENSE_TICKET_ID=""
 
 COPY $FilesDir/* $DeploymentDir/
 
@@ -45,7 +51,6 @@ RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
 	mv $DeploymentDir/configureWebServer.pl $AppServerDir &&\
 	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
 	mv $DeploymentDir/startService.sh $AppServerDir &&\
-	perl $DeploymentDir/configureWebPorts.pl $WebServerPort $WebServerSSLPort &&\
 	chmod +x $AppServerDir/startService.sh &&\
 	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
