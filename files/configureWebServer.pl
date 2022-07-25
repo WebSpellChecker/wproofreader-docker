@@ -19,11 +19,11 @@ sub configureNGINX
 	{
 		if ($protocol eq "")
 		{
-			if ( open(LOGFILE, "<$nginxConf") ) 
+			if ( open(CONFFILE, "<$nginxConf") ) 
 			{ 
 				my $isSSL = 0;
 			
-				while (<LOGFILE>){
+				while (<CONFFILE>){
 					if ($_ =~ /listen 443 ssl/)
 					{
 						enableSSL();
@@ -38,7 +38,7 @@ sub configureNGINX
 					print "Container automatically started on HTTP protocol.\n";
 				}
 				
-				close (LOGFILE);
+				close (CONFFILE);
 			}
 			
 			replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
