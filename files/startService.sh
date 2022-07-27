@@ -8,8 +8,9 @@ appserver_path=`pwd`
 # export the libraries required for the service start
 export LD_LIBRARY_PATH=${appserver_path}/lib
 
-# run script to configure samples and shared dictionaries using the host name
+# run script to configure web server files
 perl configureWebServer.pl
+# run script to configure samples and shared dictionaries
 perl configureFiles.pl
 
 lic=${LICENSE_TICKET_ID}
@@ -20,7 +21,7 @@ if ! [ -f "$LicenseFile" ]; then
    ./AppServerX -activateLicense $lic -y
 fi
 
-#start Nginx HTTP Server for Ubuntu or Centos
+#start NGINX for Ubuntu or Centos
 nginx
 
 # start AppServer service

@@ -1,9 +1,9 @@
 my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
-configureNGINX();
+configureNginx();
 configureNginxConfig();
 
-sub configureNGINX
+sub configureNginx
 {
 	my $nginxPort = $ENV{'WebServerPort'};
 	my $nginxSSLPort = $ENV{'WebServerSSLPort'};
@@ -17,7 +17,7 @@ sub configureNGINX
 
 	if (-e $nginxConf)
 	{
-		if ($protocol eq "")
+		if ($protocol eq "") # protocol was not specified on start, using predefined
 		{
 			if ( open(CONFFILE, "<$nginxConf") ) 
 			{ 
@@ -47,7 +47,7 @@ sub configureNGINX
 			replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
 			replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
 		}
-		elsif ($protocol ne "https")
+		elsif ($protocol ne "https") # using http protocol
 		{	
 			replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
 			replaceFileContent('listen 443 ssl;', "listen $nginxPort default_server;", $nginxConf);
@@ -56,7 +56,7 @@ sub configureNGINX
 			
 			print "Container started on HTTP protocol.\n";
 		}
-		else
+		else # using https protocol
 		{
 			replaceFileContent('listen 80;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
 			replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
