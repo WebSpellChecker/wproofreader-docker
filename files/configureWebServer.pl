@@ -5,8 +5,8 @@ configureNginxConfig();
 
 sub configureNginx
 {
-	my $nginxPort = $ENV{'WebServerPort'};
-	my $nginxSSLPort = $ENV{'WebServerSSLPort'};
+	my $nginxPort = $ENV{'WEB_SERVER_PORT'};
+	my $nginxSSLPort = $ENV{'WEB_SERVER_SSL_PORT'};
 
 	my $protocol = $ENV{'PROTOCOL'};
 
