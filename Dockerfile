@@ -35,7 +35,8 @@ ENV LICENSE_TICKET_ID=
 
 COPY $FilesDir/* $DeploymentDir/
 
-RUN	mkdir -p $CustomDictionariesDir && mkdir -p $UserDictionariesDir &&\
+RUN	mkdir -p $CustomDictionariesDir &&\
+	mkdir -p $UserDictionariesDir &&\
 	mkdir $CertDir &&\
 	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
 	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
