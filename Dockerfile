@@ -67,30 +67,32 @@ ENV proxy_port=${proxy_port}
 ENV proxy_user_name=${proxy_user_name}
 ENV proxy_password=${proxy_password}
 
-COPY $FilesDir/* $DeploymentDir/
+RUN apt-get update -y &&\
+	apt-get install -y nginx default-jre wget &&\
+	apt-get upgrade -y perl &&\
+	apt-get clean
 
 RUN	mkdir -p $CustomDictionariesDir &&\
 	mkdir -p $UserDictionariesDir &&\
-	mkdir $CertDir &&\
-	mv $DeploymentDir/$CertKeyName $CertDir/$CertKeyName &&\
-	mv $DeploymentDir/$CertFileName $CertDir/$CertFileName &&\
-	apt-get update -y &&\
-	apt-get install -y nginx default-jre wget &&\
-	apt-get upgrade -y perl &&\
-	tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
-	rm $DeploymentDir/$AppNameMask &&\
-	mv $AppRootDir* $AppRootDir &&\
-	mkdir /var/run/nginx &&\
-	perl $AppRootDir/automated_install.pl &&\
-	mv $DeploymentDir/configureWebServer.pl $AppServerDir &&\
-	mv $DeploymentDir/configureFiles.pl $AppServerDir &&\
-	mv $DeploymentDir/startService.sh $AppServerDir &&\
-	chmod +x $AppServerDir/startService.sh &&\
-	rm -rf /$DeploymentDir &&\
 	mkdir -p $LicenseDir &&\
-	rm -f /etc/nginx/sites-enabled/default &&\
+	mkdir /var/run/nginx
+
+COPY $FilesDir/certificate $CertDir
+
+COPY $FilesDir/$AppNameMask $DeploymentDir/
+
+RUN tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
+	rm $DeploymentDir/$AppNameMask &&\
+	perl $AppRootDir*/automated_install.pl &&\
+	rm -rf $AppRootDir &&\
 	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
 	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx /etc/nginx
+
+COPY $FilesDir/configure* $AppServerDir
+COPY $FilesDir/startService.sh $AppServerDir
+
+RUN chmod +x $AppServerDir/startService.sh &&\
+	rm -f /etc/nginx/sites-enabled/default
 
 USER $UserName
 
