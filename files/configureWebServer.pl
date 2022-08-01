@@ -8,60 +8,25 @@ sub configureNginx
 	my $nginxPort = $ENV{'WEB_SERVER_PORT'};
 	my $nginxSSLPort = $ENV{'WEB_SERVER_SSL_PORT'};
 
-	my $protocol = $ENV{'PROTOCOL'};
-
-	if ( $protocol ne "" && $protocol ne "http" && $protocol ne "https")
-	{
-		die "Unknown protocol passed: $protocol";
-	}
+	my $protocol = $ENV{'protocol'};
 
 	if (-e $nginxConf)
 	{
-		if ($protocol eq "") # protocol was not specified on start, using predefined
-		{
-			if ( open(CONFFILE, "<$nginxConf") ) 
-			{ 
-				my $isSSL = 0;
-			
-				while (<CONFFILE>){
-					if ($_ =~ /listen 443 ssl/)
-					{
-						enableSSL();
-						print "Container automatically started on HTTPS protocol.\n";
-						$isSSL = 1;
-						break;
-					}
-				}
-				
-				if ($isSSL eq 0)
-				{
-					print "Container automatically started on HTTP protocol.\n";
-				}
-				
-				close (CONFFILE);
-			}
-			
-			replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
-			replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxPort default_server;", $nginxConf);
-			
-			replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
-			replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
-		}
-		elsif ($protocol ne "https") # using http protocol
+		if ($protocol eq "2") # using http protocol
 		{	
-			replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
-			replaceFileContent('listen 443 ssl;', "listen $nginxPort default_server;", $nginxConf);
-			replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxPort default_server;", $nginxConf);
-			replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \d*;', "listen $nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \d* ssl;', "listen $nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d*;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d* ssl;', "listen \[::]:$nginxPort default_server;", $nginxConf);
 			
 			print "Container started on HTTP protocol.\n";
 		}
 		else # using https protocol
 		{
-			replaceFileContent('listen 80;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
-			replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
-			replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
-			replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \d*;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \d* ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d*;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d* ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
 			
 			enableSSL();
 			
@@ -78,9 +43,9 @@ sub configureNginxConfig
 		replaceFileContent('pid /run/nginx.pid', 'pid /run/nginx/nginx.pid', $nginxMainConf);
 	}
 	
-	my $host = $ENV{'HOST_NAME'};
+	my $host = $ENV{'domain_name'};
 	
-	if (-e $nginxConf && $host ne "")
+	if (-e $nginxConf)
 	{
 		replaceFileContent('localhost', $host, $nginxConf);
 	}

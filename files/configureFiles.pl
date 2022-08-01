@@ -9,45 +9,28 @@ configureSsl();
 
 sub configureSamples
 {
-	my $protocol = $ENV{'PROTOCOL'};
-	my $host = $ENV{'HOST_NAME'};
-	
-	if ( $host eq "" ) { $host = "localhost"; }
-
-	if ( $protocol ne "" && $protocol ne "http" && $protocol ne "https")
-	{
-		die "Unknown protocol passed: $protocol";
-	}
+	my $protocol = $ENV{'protocol'} eq '1' ? 'https' : 'http';
+	my $host = $ENV{'domain_name'};
 
 	my $samples_dir_path = '/opt/WSC/WebComponents/Samples/';
 	opendir my $dir, $samples_dir_path or die "Cannot open directory: $!";
 	my @files = readdir $dir;
 	closedir $dir;
 
+	# If user don't specify web_port, using default 80 for http and 443 for https
+	my $web_port = $ENV{'web_port'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'web_port'};
+	my $virtual_dir = $ENV{'virtual_dir'};
+
 	foreach ( @files )
 	{
 		if ( $_ eq '.' || $_ eq '..' ) { next; }
 			
-		if ( $protocol ne "" )
-		{
-			replaceFileContent("serviceProtocol: 'http'", "serviceProtocol: '$protocol'", "$samples_dir_path/$_");
-			
-			if ($protocol eq "https")
-			{
-				replaceFileContent("servicePort: '80'", "servicePort: '443'", "$samples_dir_path/$_");
-				
-				replaceFileContent("http://localhost:80/", "https://localhost:443/", "$samples_dir_path/$_");
-			}
-			else
-			{
-				replaceFileContent("servicePort: '443'", "servicePort: '80'", "$samples_dir_path/$_");
-				
-				replaceFileContent("https://localhost:443/", "http://localhost:80/", "$samples_dir_path/$_");
-			}
-		}
-			
-		replaceFileContent('localhost', $host, "$samples_dir_path/$_");
+		replaceFileContent('serviceProtocol: \'((http)|(https))\'', "serviceProtocol: '$protocol'", "$samples_dir_path/$_");
+		replaceFileContent('servicePort: \'\d*\'', "servicePort: '$web_port'", "$samples_dir_path/$_");
+		replaceFileContent('serviceHost: \'\w*\'', "serviceHost: '$host'", "$samples_dir_path/$_");
+		replaceFileContent('servicePath: \'\w*/api\'', "servicePath: '$virtual_dir/api'", "$samples_dir_path/$_");
 		
+		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/wscbundle/wscbundle.js', "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js", "$samples_dir_path/$_");
 	}
 }
 
