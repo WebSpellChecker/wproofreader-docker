@@ -6,6 +6,7 @@ my $server_config_path = "$serverPath/AppServerX.xml";
 configureSamples();
 configureUserAndCustomDictionaries();
 configureSsl();
+configureAppServerParams();
 
 sub configureSamples
 {
@@ -79,6 +80,11 @@ sub configureSsl
 	my $verificationMode = 'NONE';
 	replaceFileContent('<VerificationMode>RELAXED</VerificationMode>',
 		"<VerificationMode>$verificationMode</VerificationMode>", $server_config_path);
+}
+
+sub configureAppServerParams
+{
+	replaceFileContent('<Size>\d*</Size>', '<Size>0</Size>', "AppServerX.xml");
 }
 
 sub replaceFileContent
