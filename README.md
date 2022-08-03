@@ -10,30 +10,44 @@ To create a custom Docker image:
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
 2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
-3. Adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. 
+3. Adjust the default installation options by modifying one of the Dockerfiles that you want to use: `Dockerfile`, `DockerfileCentOS`, `DockerfileRedHat`:
+```
+ARG file_owner=33:33
+ARG products=4
+ARG languages_to_install=1,2
+ARG install_samples=1
+ARG protocol=2
+ARG domain_name=localhost
+ARG web_port
+ARG virtual_dir=wscservice
+ARG web_server_type=2
+ARG activate_license=0
+ARG license_ticket_id
+ARG restart_web_server=1
+```
 
-* Activate license during the image creation. Add the following options to `config.ini` or `configSSL.ini` file.
+* Activate license during the image creation. Change the following options.
 
 ```
-activate_license = 1
-license_ticket_id = 6u*************ZO
+ARG activate_license=1
+ARG license_ticket_id=6u*************ZO
 ```
 * Specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
-domain_name = domain_name
+ARG domain_name = domain_name
 ```
 
-If both `license_ticket_id` and `domain_name` were specified during the image creation, you don't need to specify these values during the launch of `docker run` command.
+If `license_ticket_id` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
 * If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
 
 ```
-enable_proxy = 1
-proxy_host = host_name
-proxy_port = port_number
-proxy_user_name = user_name
-proxy_password = password
+ARG enable_proxy=1
+ARG proxy_host=host_name
+ARG proxy_port=port_number
+ARG proxy_user_name=user_name
+ARG proxy_password=password
 ```
 
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
@@ -43,22 +57,21 @@ For details on the available options, refer to [Automated Installing WebSpellChe
 5. Build a Docker image using the command below:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ssl=true --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
+docker build -t local/wsc_app:x.x.x --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
 ```
 
 where:
 
 * `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
-* `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
 * `--build-arg USER_ID=YOUR_USER_ID` the argument sets a user ID for the default user in the container. If not specified, the default USER_ID=2000.
 * `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument sets a user group ID for the default user in the container.  If not specified, the default GROUP_ID=2000.
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
 * `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
-For example:
+Also if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ssl=true --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg activate_license=1 --build-arg license_ticket_id=6u*************ZO --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
 ```
 
 ## Create and run Docker container
@@ -84,7 +97,7 @@ docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_direc
 or (for the SSL version)
 
 ```
-docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate local/wsc_app:x.x.x
+docker run -d -p 443:8443 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
 where:
@@ -94,8 +107,22 @@ where:
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionaries directory.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
 * `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
-* `license_ticket_id` your license ticket ID. **Note!** Can be skipped if you specified it during the image creation.
-* `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). **Note!** Can be skipped if you specified it during the image creation.
+
+Also these parameters can be changed on container running by passing them as enviroment variables:
+
+* protocol
+* domain_name
+* web_port
+* virtual_dir
+* license_ticket_id
+
+For example:
+
+```
+docker run -d -p 8443:8443 -v -e protocol=1 -e domain_name=localhost -e web_port=8443 -e virtual_dir=wscservice -e license_ticket_id=6u*************ZO local/wsc_app:x.x.x
+```
+
+You can read about setting environment variables to docker container [here](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file).
 
 ## Verify work of WProofreader Server
 
@@ -109,13 +136,22 @@ After successful launch of a container with WebSpellChecker/WProofreader Server,
 
 ```
 {
-    "Spell Check Engine": {
+    "SpellCheckEngine": {
         "active": true
     },
-    "Grammar Check Engine": {
+    "GrammarCheckEngine": {
         "active": true
     },
-    "Thesaurus Engine": {
+    "EnglishAIModel": {
+        "active": true
+    },
+    "GermanAIModel": {
+        "active": true
+    },
+    "SpanishAIModel": {
+        "active": true
+    },
+    "EnglishAutocomplete": {
         "active": true
     }
 }
@@ -132,10 +168,16 @@ After successful launch of a container with WebSpellChecker/WProofreader Server,
 docker start <container_id>
 ```
 
-2. If you need to troubleshoot issues with the application, you may want to check log files in `opt/WSC/AppServer/Logs` directory. For this, you need to connect to a container. Use `docker exec` command to connect to a container where WProofreader is running:
+2. If you need to troubleshoot issues with the application, you may want to check logs. All application logs are stored in container [logs](https://docs.docker.com/engine/reference/commandline/logs/):
 
 ```
-docker exec -it <container_id> bash
+docker logs <container_id>
+```
+
+3. If you need to configure AppServer, for example edit `AppServerX.xml`, you need to connect to a container. Use `docker exec` command to connect to a container where WProofreader is running:
+
+```
+docker exec -it <container_id> /bin/bash
 ```
 
 ## Create image from modified Docker container
