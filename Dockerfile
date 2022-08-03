@@ -33,7 +33,7 @@ ENV WSC_AUTO_INSTALL=TRUE
 
 ARG file_owner=33:33
 ARG products=4
-ARG languages_to_install=0
+ARG languages_to_install=1,2
 ARG install_samples=1
 ARG protocol=2
 ARG domain_name=localhost
