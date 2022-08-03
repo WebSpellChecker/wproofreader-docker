@@ -31,6 +31,7 @@ ARG GROUP_ID=2000
 
 ENV WSC_AUTO_INSTALL=TRUE
 
+# Here you can configure installation parameters
 ARG file_owner=33:33
 ARG products=4
 ARG languages_to_install=1,2
@@ -43,6 +44,8 @@ ARG web_server_type=2
 ARG activate_license=0
 ARG license_ticket_id
 ARG restart_web_server=1
+
+# Here you can configure your proxy
 ARG enable_proxy=0
 ARG proxy_host
 ARG proxy_port
@@ -61,6 +64,7 @@ ENV web_server_type=${web_server_type}
 ENV activate_license=${activate_license}
 ENV license_ticket_id=${license_ticket_id}
 ENV restart_web_server=${restart_web_server}
+
 ENV enable_proxy=${enable_proxy}
 ENV proxy_host=${proxy_host}
 ENV proxy_port=${proxy_port}

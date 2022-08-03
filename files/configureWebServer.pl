@@ -47,7 +47,8 @@ sub configureNginxConfig
 	
 	if (-e $nginxConf)
 	{
-		replaceFileContent('localhost', $host, $nginxConf);
+		# Change server name inside NGINX config
+		replaceFileContent('server_name \w*;', "server_name $host;", $nginxConf);
 	}
 }
 
@@ -60,6 +61,7 @@ sub enableSSL
 
 	if (-e $nginxConf)
 	{
+		# Add ssl certificates to NGINX config
 		replaceFileContent('# bindings of static files', "ssl_certificate $pathToCert;\n    ssl_certificate_key $pathToKey;\n", $nginxConf);
 	}
 }
