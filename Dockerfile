@@ -32,15 +32,17 @@ ARG GROUP_ID=2000
 ENV WSC_AUTO_INSTALL=TRUE
 
 # Here you can configure installation parameters
-ARG products=4
-ARG languages_to_install=1,2
-ARG install_samples=1
+# Protocol of the server (1 - HTTPS, 2 - HTTP)
 ARG protocol=2
-ARG domain_name=localhost
+# Web port outside container. If nothing specified the default is used (443 for HTTPS and 80 for HTTP)
 ARG web_port
+ARG domain_name=localhost
 ARG virtual_dir=wscservice
 ARG activate_license=0
 ARG license_ticket_id
+ARG products=4
+ARG languages_to_install=1,2
+ARG install_samples=1
 
 # Here you can configure your proxy
 ARG enable_proxy=0
