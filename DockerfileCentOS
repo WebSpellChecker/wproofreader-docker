@@ -30,7 +30,6 @@ ARG GROUP_ID=2000
 ENV WSC_AUTO_INSTALL=TRUE
 
 # Here you can configure installation parameters
-ARG file_owner=33:33
 ARG products=4
 ARG languages_to_install=1,2
 ARG install_samples=1
@@ -48,7 +47,7 @@ ARG proxy_port
 ARG proxy_user_name
 ARG proxy_password
 
-ENV file_owner=${file_owner}
+ENV file_owner=${USER_ID}:${GROUP_ID}
 ENV products=${products}
 ENV languages_to_install=${languages_to_install}
 ENV install_samples=${install_samples}
