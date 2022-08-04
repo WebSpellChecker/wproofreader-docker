@@ -38,10 +38,8 @@ ARG protocol=2
 ARG domain_name=localhost
 ARG web_port
 ARG virtual_dir=wscservice
-ARG web_server_type=2
 ARG activate_license=0
 ARG license_ticket_id
-ARG restart_web_server=1
 
 # Here you can configure your proxy
 ARG enable_proxy=0
@@ -58,10 +56,10 @@ ENV protocol=${protocol}
 ENV domain_name=${domain_name}
 ENV web_port=${web_port}
 ENV virtual_dir=${virtual_dir}
-ENV web_server_type=${web_server_type}
+ENV web_server_type=2
 ENV activate_license=${activate_license}
 ENV license_ticket_id=${license_ticket_id}
-ENV restart_web_server=${restart_web_server}
+ENV restart_web_server=1
 
 ENV enable_proxy=${enable_proxy}
 ENV proxy_host=${proxy_host}
