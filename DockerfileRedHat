@@ -69,14 +69,10 @@ ENV proxy_user_name=${proxy_user_name}
 ENV proxy_password=${proxy_password}
 
 RUN yum update -y &&\
-    yum install -y java-11-openjdk-devel wget perl &&\
-    yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm &&\
+    yum install -y java-11-openjdk-devel wget perl http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm &&\
     yum install -y nginx 
 
-RUN mkdir -p $CustomDictionariesDir &&\
-    mkdir -p $UserDictionariesDir &&\
-    mkdir -p $LicenseDir &&\
-    mkdir /var/run/nginx
+RUN mkdir -p $CustomDictionariesDir $UserDictionariesDir $LicenseDir /var/run/nginx
 
 COPY $FilesDir/certificate $CertDir
 

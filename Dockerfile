@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:22.04
 
 ARG WEB_SERVER_PORT=8080
 ARG WEB_SERVER_SSL_PORT=8443
@@ -75,10 +75,7 @@ RUN apt-get update -y &&\
     apt-get upgrade -y perl &&\
     apt-get clean
 
-RUN	mkdir -p $CustomDictionariesDir &&\
-    mkdir -p $UserDictionariesDir &&\
-    mkdir -p $LicenseDir &&\
-    mkdir /var/run/nginx
+RUN	mkdir -p $CustomDictionariesDir $UserDictionariesDir $LicenseDir /var/run/nginx
 
 COPY $FilesDir/certificate $CertDir
 
