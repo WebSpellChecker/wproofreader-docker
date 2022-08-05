@@ -69,40 +69,40 @@ ENV proxy_user_name=${proxy_user_name}
 ENV proxy_password=${proxy_password}
 
 RUN yum update -y &&\
-	yum install -y java-11-openjdk-devel wget perl &&\
-	yum install -y epel-release &&\
-	yum install -y nginx &&\
-	yum install -y mod_ssl openssl
+    yum install -y java-11-openjdk-devel wget perl &&\
+    yum install -y epel-release &&\
+    yum install -y nginx &&\
+    yum install -y mod_ssl openssl
 
-RUN	mkdir -p $CustomDictionariesDir &&\
-	mkdir -p $UserDictionariesDir &&\
-	mkdir -p $LicenseDir &&\
-	mkdir /var/run/nginx
+RUN mkdir -p $CustomDictionariesDir &&\
+    mkdir -p $UserDictionariesDir &&\
+    mkdir -p $LicenseDir &&\
+    mkdir /var/run/nginx
 
 COPY $FilesDir/certificate $CertDir
 
 COPY $FilesDir/$AppNameMask $DeploymentDir/
 
 RUN tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
-	rm $DeploymentDir/$AppNameMask &&\
-	perl $AppRootDir*/automated_install.pl &&\
-	rm -rf $AppRootDir* &&\
-	groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
-	chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx /etc/nginx
+    rm $DeploymentDir/$AppNameMask &&\
+    perl $AppRootDir*/automated_install.pl &&\
+    rm -rf $AppRootDir* &&\
+    groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
+    chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx /etc/nginx
 
 COPY $FilesDir/configure* $AppServerDir
 COPY $FilesDir/startService.sh $AppServerDir
 
 RUN chmod +x $AppServerDir/startService.sh &&\
-	rm -f /etc/nginx/sites-enabled/default
+    rm -f /etc/nginx/sites-enabled/default
 
 RUN rm -rf $AppServerDir/Logs &&\
-	mkdir -p $AppServerDir/Logs &&\
-	ln -s /dev/stdout $AppServerDir/Logs/Main.log &&\
-	ln -s /dev/stdout $AppServerDir/Logs/Child-0.log &&\
-	ln -s /dev/stdout $AppServerDir/Logs/Child-1.log &&\
-	ln -s /dev/stdout $AppServerDir/Logs/Action.log &&\
-	chown -R ${USER_ID}:${GROUP_ID} $AppServerDir/Logs
+    mkdir -p $AppServerDir/Logs &&\
+    ln -s /dev/stdout $AppServerDir/Logs/Main.log &&\
+    ln -s /dev/stdout $AppServerDir/Logs/Child-0.log &&\
+    ln -s /dev/stdout $AppServerDir/Logs/Child-1.log &&\
+    ln -s /dev/stdout $AppServerDir/Logs/Action.log &&\
+    chown -R ${USER_ID}:${GROUP_ID} $AppServerDir/Logs
 
 USER $UserName
 
