@@ -71,7 +71,7 @@ ENV proxy_user_name=${proxy_user_name}
 ENV proxy_password=${proxy_password}
 
 RUN apt-get update -y &&\
-    apt-get install -y nginx default-jre wget &&\
+    apt-get install -y nginx default-jre wget vim nano mc &&\
     apt-get upgrade -y perl &&\
     apt-get clean
 

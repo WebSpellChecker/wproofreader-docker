@@ -69,7 +69,7 @@ ENV proxy_user_name=${proxy_user_name}
 ENV proxy_password=${proxy_password}
 
 RUN yum update -y &&\
-    yum install -y java-11-openjdk-devel wget perl epel-release mod_ssl openssl &&\
+    yum install -y java-11-openjdk-devel wget perl epel-release mod_ssl openssl vim nano mc &&\
     yum install -y nginx
 
 RUN mkdir -p $CustomDictionariesDir $UserDictionariesDir $LicenseDir /var/run/nginx
