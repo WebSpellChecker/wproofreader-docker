@@ -59,21 +59,19 @@ For details on the available options, refer to [Automated Installing WebSpellChe
 5. Build a Docker image using the command below:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
+docker build -t local/wsc_app:x.x.x -f <Dockerfile_name> <path_to_Dockerfile_directory>
 ```
 
 where:
 
 * `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
-* `--build-arg USER_ID=YOUR_USER_ID` the argument sets a user ID for the default user in the container. If not specified, the default USER_ID=2000.
-* `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument sets a user group ID for the default user in the container.  If not specified, the default GROUP_ID=2000.
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
 * `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
 Also if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO -f Dockerfile .
 ```
 
 ## Create and run Docker container
