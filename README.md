@@ -121,7 +121,21 @@ Alternatively, these parameters can be changed on container running by passing t
 For example:
 
 ```
-docker run -d -p 8443:8443 -v -e PROTOCOL=1 -e DOMAIN_NAME=localhost -e WEB_PORT=8443 -e VIRTUAL_DIR=wscservice -e LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+docker run -d -p 443:8443 -v --env PROTOCOL=1 --env DOMAIN_NAME=localhost --env WEB_PORT=443 --env VIRTUAL_DIR=wscservice --env LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+```
+
+where:
+
+* `--env PROTOCOL=1` start a container on HTTPS protocol
+* `--env DOMAIN_NAME=localhost` start a container on `localhost` domain name
+* `--env WEB_PORT=443` configure `443` port to be an external port of a container
+* `--env VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
+* `--env LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
+
+The container launched by the command above will be available at the following address:
+
+```
+https://localhost:443/wscservice/api?cmd=status
 ```
 
 Learn more how to [set environment variables in Docker container](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file).
