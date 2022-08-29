@@ -13,7 +13,7 @@ perl configureWebServer.pl
 # run script to configure samples and shared dictionaries
 perl configureFiles.pl
 
-lic=${license_ticket_id}
+lic=${LICENSE_TICKET_ID}
 
 # activate a license automatically
 LicenseFile=/var/lib/wsc/license/license.xml

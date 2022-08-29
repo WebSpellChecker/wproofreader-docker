@@ -8,7 +8,7 @@ sub configureNginx
 	my $nginxPort = $ENV{'WEB_SERVER_PORT'};
 	my $nginxSSLPort = $ENV{'WEB_SERVER_SSL_PORT'};
 
-	my $protocol = $ENV{'protocol'};
+	my $protocol = $ENV{'PROTOCOL'};
 
 	if (-e $nginxConf)
 	{
@@ -43,7 +43,7 @@ sub configureNginxConfig
 		replaceFileContent('pid /run/nginx.pid', 'pid /run/nginx/nginx.pid', $nginxMainConf);
 	}
 	
-	my $host = $ENV{'domain_name'};
+	my $host = $ENV{'DOMAIN_NAME'};
 	
 	if (-e $nginxConf)
 	{

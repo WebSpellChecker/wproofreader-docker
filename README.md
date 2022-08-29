@@ -17,39 +17,39 @@ For production purposes, it's recommended to create a custom Docker image:
 3. Adjust the default installation options by modifying one of Dockerfiles:
 
 ```
-ARG protocol=2
-ARG web_port
-ARG domain_name=localhost
-ARG virtual_dir=wscservice
-ARG activate_license=0
-ARG license_ticket_id
-ARG products=4
-ARG languages_to_install=1,2
-ARG install_samples=1
+ARG PROTOCOL=2
+ARG WEB_PORT
+ARG DOMAIN_NAME=localhost
+ARG VIRTUAL_DIR=wscservice
+ARG ACTIVATE_LICENSE=0
+ARG LICENSE_TICKET_ID
+ARG PRODUCTS=4
+ARG LANGUAGES_TO_INSTALL=1,2
+ARG INSTALL_SAMPLES=1
 ```
 
 * Activate license during the image creation. Change the following options.
 
 ```
-ARG activate_license=1
-ARG license_ticket_id=6u*************ZO
+ARG ACTIVATE_LICENSE=1
+ARG LICENSE_TICKET_ID=6u*************ZO
 ```
-* Specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+* Specify `DOMAIN_NAME` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
-ARG domain_name = domain_name
+ARG DOMAIN_NAME = DOMAIN_NAME
 ```
 
-If `license_ticket_id` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
+If `LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
 * If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
 
 ```
-ARG enable_proxy=1
-ARG proxy_host=host_name
-ARG proxy_port=port_number
-ARG proxy_user_name=user_name
-ARG proxy_password=password
+ARG ENABLE_PROXY=1
+ARG PROXY_HOST=host_name
+ARG PROXY_PORT=port_number
+ARG PROXY_USER_NAME=user_name
+ARG PROXY_PASSWORD=password
 ```
 
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
@@ -73,7 +73,7 @@ where:
 Also if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg activate_license=1 --build-arg license_ticket_id=6u*************ZO --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
 ```
 
 ## Create and run Docker container
@@ -112,16 +112,16 @@ where:
 
 Alternatively, these parameters can be changed on container running by passing them as enviroment variables:
 
-* `protocol`
-* `domain_name`
-* `web_port`
-* `virtual_dir`
-* `license_ticket_id`
+* `PROTOCOL`
+* `DOMAIN_NAME`
+* `WEB_PORT`
+* `VIRTUAL_DIR`
+* `LICENSE_TICKET_ID`
 
 For example:
 
 ```
-docker run -d -p 8443:8443 -v -e protocol=1 -e domain_name=localhost -e web_port=8443 -e virtual_dir=wscservice -e license_ticket_id=6u*************ZO local/wsc_app:x.x.x
+docker run -d -p 8443:8443 -v -e PROTOCOL=1 -e DOMAIN_NAME=localhost -e WEB_PORT=8443 -e VIRTUAL_DIR=wscservice -e LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
 ```
 
 Learn more how to [set environment variables in Docker container](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file).

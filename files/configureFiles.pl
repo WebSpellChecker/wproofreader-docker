@@ -10,17 +10,17 @@ configureAppServerParams();
 
 sub configureSamples
 {
-	my $protocol = $ENV{'protocol'} eq '1' ? 'https' : 'http';
-	my $host = $ENV{'domain_name'};
+	my $protocol = $ENV{'PROTOCOL'} eq '1' ? 'https' : 'http';
+	my $host = $ENV{'DOMAIN_NAME'};
 
 	my $samples_dir_path = '/opt/WSC/WebComponents/Samples/';
 	opendir my $dir, $samples_dir_path or die "Cannot open directory: $!";
 	my @files = readdir $dir;
 	closedir $dir;
 
-	# If user don't specify web_port, using default 80 for http and 443 for https
-	my $web_port = $ENV{'web_port'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'web_port'};
-	my $virtual_dir = $ENV{'virtual_dir'};
+	# If user don't specify WEB_PORT, using default 80 for http and 443 for https
+	my $web_port = $ENV{'WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WEB_PORT'};
+	my $virtual_dir = $ENV{'VIRTUAL_DIR'};
 
 	foreach ( @files )
 	{
