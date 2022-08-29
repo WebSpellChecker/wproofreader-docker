@@ -112,11 +112,11 @@ where:
 
 Alternatively, these parameters can be changed on container running by passing them as enviroment variables:
 
-* protocol
-* domain_name
-* web_port
-* virtual_dir
-* license_ticket_id
+* `protocol`
+* `domain_name`
+* `web_port`
+* `virtual_dir`
+* `license_ticket_id`
 
 For example:
 
