@@ -24,25 +24,30 @@ ARG AppServerDir=/opt/$AppRootName/AppServer
 ARG AppNameMask=wsc_app*
 ARG UserName=wsc
 ARG LicenseDir=/var/lib/wsc/license
+# Sets a user ID for the default user in the container. 
 ARG USER_ID=2000
+# Sets a user group ID for the default user in the container.
 ARG GROUP_ID=2000
 
 ENV WSC_AUTO_INSTALL=TRUE
 
-# Here you can configure installation parameters
-# Protocol of the server (1 - HTTPS, 2 - HTTP)
+# Application installation parameters
+# Protocol of the NGINX web server (1 - HTTPS, 2 - HTTP)
 ARG protocol=2
-# Web port outside container. If nothing specified the default is used (443 for HTTPS and 80 for HTTP)
+# Web port outside the container. If value isn't specified (e.g. empty), the default value will be used (443 for HTTPS and 80 for HTTP).
 ARG web_port
 ARG domain_name=localhost
 ARG virtual_dir=wscservice
+# Change to 1 to activate the license during the image build. 
 ARG activate_license=0
+# Specify license ticket ID if activate_license is set to 1. For example, license_ticket_id = 6u*************ZO
 ARG license_ticket_id
 ARG products=4
 ARG languages_to_install=1,2
 ARG install_samples=1
 
-# Here you can configure your proxy
+# Proxy server settings
+# If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
 ARG enable_proxy=0
 ARG proxy_host
 ARG proxy_port
