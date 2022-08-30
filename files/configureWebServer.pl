@@ -44,11 +44,21 @@ sub configureNginxConfig
 	}
 	
 	my $host = $ENV{'DOMAIN_NAME'};
+	my $virtual_dir = $ENV{'VIRTUAL_DIR'};
 	
 	if (-e $nginxConf)
 	{
-		# Change server name inside NGINX config
-		replaceFileContent('server_name \w*;', "server_name $host;", $nginxConf);
+		if ($host ne "")
+		{
+			# Change server name inside NGINX config
+			replaceFileContent('server_name \w*;', "server_name $host;", $nginxConf);
+		}
+		
+		if ($virtual_dir ne "")
+		{
+			# Change virtual dir inside NGINX config
+			replaceFileContent('location \/\w*', "location /$virtual_dir", $nginxConf);
+		}
 	}
 }
 

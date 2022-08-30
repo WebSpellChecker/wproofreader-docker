@@ -32,7 +32,10 @@ sub configureSamples
 		replaceFileContent('servicePath: \'\w*/api\'', "servicePath: '$virtual_dir/api'", "$samples_dir_path/$_");
 		
 		# Configure path to wscbundle
-		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/wscbundle/wscbundle.js', "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js", "$samples_dir_path/$_");
+		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/wscbundle\/wscbundle.js', "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js", "$samples_dir_path/$_");
+		
+		# Configure path to samples folder
+		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/samples\/', "$protocol://$host:$web_port/$virtual_dir/samples/", "$samples_dir_path/$_");
 	}
 }
 
