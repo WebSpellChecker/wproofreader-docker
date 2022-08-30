@@ -75,39 +75,48 @@ ENV PROXY_PORT=${PROXY_PORT}
 ENV PROXY_USER_NAME=${PROXY_USER_NAME}
 ENV PROXY_PASSWORD=${PROXY_PASSWORD}
 
-RUN apt-get update -y &&\
-    apt-get install -y nginx default-jre wget vim nano mc &&\
-    apt-get upgrade -y perl &&\
-    apt-get clean
+RUN apt-get update && \
+    apt-get upgrade -y perl && \
+    apt-get install -y --no-install-recommends nginx default-jre && \
+    rm -f /etc/nginx/sites-enabled/default && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN	mkdir -p $CustomDictionariesDir $UserDictionariesDir $LicenseDir /var/run/nginx
+RUN groupadd --gid ${GROUP_ID} $UserName && useradd --no-log-init --uid ${USER_ID} --gid ${GROUP_ID} $UserName
+
+RUN	mkdir -p $CustomDictionariesDir \
+             $UserDictionariesDir \
+             $LicenseDir \
+             $AppServerDir \
+             /var/run/nginx
 
 COPY $FilesDir/certificate $CertDir
+COPY $FilesDir/startService.sh $AppServerDir
+RUN chown ${USER_ID}:${GROUP_ID} $AppServerDir/startService.sh && \
+    chmod +x $AppServerDir/startService.sh
 
 COPY $FilesDir/$AppNameMask $DeploymentDir/
+RUN tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ && \
+    perl $AppRootDir*/automated_install.pl && \
+    rm -rf $AppRootDir* $DeploymentDir/$AppNameMask && \
+    rm -rf $AppServerDir/Logs/* && \
+    ln -s /dev/stdout $AppServerDir/Logs/Main.log && \
+    ln -s /dev/stdout $AppServerDir/Logs/Child-0.log && \
+    ln -s /dev/stdout $AppServerDir/Logs/Child-1.log && \
+    ln -s /dev/stdout $AppServerDir/Logs/Action.log && \
+    chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir $AppServerDir
 
-RUN tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ &&\
-    rm $DeploymentDir/$AppNameMask &&\
-    perl $AppRootDir*/automated_install.pl &&\
-    rm -rf $AppRootDir* &&\
-    groupadd -g ${GROUP_ID} $UserName && useradd -u ${USER_ID} -g ${GROUP_ID} $UserName &&\
-    chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir /opt/WSC /var/log/nginx /usr/sbin/nginx /var/lib/nginx /var/run/nginx /etc/nginx
-
-COPY $FilesDir/configure* $AppServerDir
-COPY $FilesDir/startService.sh $AppServerDir
-
-RUN chmod +x $AppServerDir/startService.sh &&\
-    rm -f /etc/nginx/sites-enabled/default
-
-RUN rm -rf $AppServerDir/Logs &&\
-    mkdir -p $AppServerDir/Logs &&\
-    ln -s /dev/stdout $AppServerDir/Logs/Main.log &&\
-    ln -s /dev/stdout $AppServerDir/Logs/Child-0.log &&\
-    ln -s /dev/stdout $AppServerDir/Logs/Child-1.log &&\
-    ln -s /dev/stdout $AppServerDir/Logs/Action.log &&\
-    chown -R ${USER_ID}:${GROUP_ID} $AppServerDir/Logs
+RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
+        /usr/sbin/nginx \
+        /var/lib/nginx \
+        /var/run/nginx \
+        /etc/nginx
 
 USER $UserName
+WORKDIR $AppServerDir
 
-WORKDIR /opt/$AppRootName
-ENTRYPOINT ["/opt/WSC/AppServer/startService.sh"]
+COPY $FilesDir/configure* $AppServerDir/
+RUN perl configureWebServer.pl && \
+    perl configureFiles.pl && \
+    rm -rf configureWebServer.pl configureFiles.pl
+
+ENTRYPOINT ["./startService.sh"]
