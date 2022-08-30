@@ -119,7 +119,7 @@ Alternatively, these parameters can be changed on container running by passing t
 For example:
 
 ```
-docker run -d -p 443:8443 -v --env PROTOCOL=1 --env DOMAIN_NAME=localhost --env WEB_PORT=443 --env VIRTUAL_DIR=wscservice --env LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+docker run -d -p 443:8443 --env PROTOCOL=1 --env DOMAIN_NAME=localhost --env WEB_PORT=443 --env VIRTUAL_DIR=wscservice --env LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
 ```
 
 where:
