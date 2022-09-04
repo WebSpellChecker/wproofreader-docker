@@ -29,53 +29,60 @@ ARG GROUP_ID=2000
 
 ENV WSC_AUTO_INSTALL=TRUE
 
-# Here you can configure installation parameters
-# Protocol of the server (1 - HTTPS, 2 - HTTP)
-ARG protocol=2
-# Web port outside container. If nothing specified the default is used (443 for HTTPS and 80 for HTTP)
-ARG web_port
-ARG domain_name=localhost
-ARG virtual_dir=wscservice
-ARG activate_license=0
-ARG license_ticket_id
-ARG products=4
-ARG languages_to_install=1,2
-ARG install_samples=1
+# Application installation parameters
+# Protocol of the NGINX web server (1 - HTTPS, 2 - HTTP)
+ARG PROTOCOL=2
+# Web port outside the container. If value isn't specified (e.g. empty), the default value will be used (443 for HTTPS and 80 for HTTP).
+ARG WEB_PORT
+ARG DOMAIN_NAME=localhost
+ARG VIRTUAL_DIR=wscservice
+# Change to 1 to activate the license during the image build. 
+ARG ACTIVATE_LICENSE=0
+# Specify license ticket ID if ACTIVATE_LICENSE is set to 1. For example, LICENSE_TICKET_ID = 6u*************ZO
+ARG LICENSE_TICKET_ID
+ARG PRODUCTS=4
+ARG LANGUAGES_TO_INSTALL=1,2
+ARG INSTALL_SAMPLES=1
 
-# Here you can configure your proxy
-ARG enable_proxy=0
-ARG proxy_host
-ARG proxy_port
-ARG proxy_user_name
-ARG proxy_password
+# Proxy server settings
+# If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
+ARG ENABLE_PROXY=0
+ARG PROXY_HOST
+ARG PROXY_PORT
+ARG PROXY_USER_NAME
+ARG PROXY_PASSWORD
 
-ENV file_owner=${USER_ID}:${GROUP_ID}
-ENV products=${products}
-ENV languages_to_install=${languages_to_install}
-ENV install_samples=${install_samples}
-ENV protocol=${protocol}
-ENV domain_name=${domain_name}
-ENV web_port=${web_port}
-ENV virtual_dir=${virtual_dir}
-ENV web_server_type=2
-ENV activate_license=${activate_license}
-ENV license_ticket_id=${license_ticket_id}
-ENV restart_web_server=1
+ENV FILE_OWNER=${USER_ID}:${GROUP_ID}
+ENV PRODUCTS=${PRODUCTS}
+ENV LANGUAGES_TO_INSTALL=${LANGUAGES_TO_INSTALL}
+ENV INSTALL_SAMPLES=${INSTALL_SAMPLES}
+ENV PROTOCOL=${PROTOCOL}
+ENV DOMAIN_NAME=${DOMAIN_NAME}
+ENV WEB_PORT=${WEB_PORT}
+ENV VIRTUAL_DIR=${VIRTUAL_DIR}
+ENV WEB_SERVER_TYPE=2
+ENV ACTIVATE_LICENSE=${ACTIVATE_LICENSE}
+ENV LICENSE_TICKET_ID=${LICENSE_TICKET_ID}
+ENV RESTART_WEB_SERVER=1
 
-ENV enable_proxy=${enable_proxy}
-ENV proxy_host=${proxy_host}
-ENV proxy_port=${proxy_port}
-ENV proxy_user_name=${proxy_user_name}
-ENV proxy_password=${proxy_password}
+ENV ENABLE_PROXY=${ENABLE_PROXY}
+ENV PROXY_HOST=${PROXY_HOST}
+ENV PROXY_PORT=${PROXY_PORT}
+ENV PROXY_USER_NAME=${PROXY_USER_NAME}
+ENV PROXY_PASSWORD=${PROXY_PASSWORD}
 
 RUN yum update -y --skip-broken && \
-    yum install -y epel-release \
-        nginx \
+    yum install -y epel-release && \
+    yum install -y nginx \
         java-11-openjdk-devel \
         perl \
         mod_ssl \
         openssl && \
-    yum clean all && rm -rf /var/cache/yum
+    yum clean all && rm -rf /var/cache/yum && \
+    rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
+    rm -rf /var/log/nginx/* && \
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
 
 RUN groupadd --gid ${GROUP_ID} $UserName && useradd --no-log-init --uid ${USER_ID} --gid ${GROUP_ID} $UserName
 
@@ -86,6 +93,7 @@ RUN	mkdir -p $CustomDictionariesDir \
              /var/run/nginx
 
 COPY $FilesDir/certificate $CertDir
+COPY $FilesDir/configure* $AppServerDir/
 COPY $FilesDir/startService.sh $AppServerDir
 RUN chown ${USER_ID}:${GROUP_ID} $AppServerDir/startService.sh && \
     chmod +x $AppServerDir/startService.sh
@@ -94,7 +102,8 @@ COPY $FilesDir/$AppNameMask $DeploymentDir/
 RUN tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ && \
     perl $AppRootDir*/automated_install.pl && \
     rm -rf $AppRootDir* $DeploymentDir/$AppNameMask && \
-    rm -rf $AppServerDir/Logs/* && \
+    [ -d "${AppServerDir}/Logs" ] && tar -czvf "${AppServerDir}"/Logs/img_build_logs.tar.gz ${AppServerDir}/Logs/* --remove-files || \
+    mkdir -p $AppServerDir/Logs && \
     ln -s /dev/stdout $AppServerDir/Logs/Main.log && \
     ln -s /dev/stdout $AppServerDir/Logs/Child-0.log && \
     ln -s /dev/stdout $AppServerDir/Logs/Child-1.log && \
@@ -109,10 +118,4 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
 
 USER $UserName
 WORKDIR $AppServerDir
-
-COPY $FilesDir/configure* $AppServerDir/
-RUN perl configureWebServer.pl && \
-    perl configureFiles.pl && \
-    rm -rf configureWebServer.pl configureFiles.pl
-
 ENTRYPOINT ["./startService.sh"]
