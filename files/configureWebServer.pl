@@ -40,7 +40,11 @@ sub configureNginxConfig
 	my $nginxMainConf = '/etc/nginx/nginx.conf';
 	if (-e $nginxMainConf)
 	{
-		replaceFileContent('pid /run/nginx.pid', 'pid /run/nginx/nginx.pid', $nginxMainConf);
+		# Make separate directory for nginx pid
+		replaceFileContent('pid .*;', 'pid /run/nginx/nginx.pid;', $nginxMainConf);
+		
+		# Disable access log
+		replaceFileContent('access_log .*;', 'access_log off;', $nginxMainConf);
 	}
 	
 	my $host = $ENV{'DOMAIN_NAME'};
