@@ -13,7 +13,7 @@ perl configureFiles.pl
 # activate a license automatically
 LicenseFile="${LICENSE_DIR}/license.xml"
 if ! [ -f "${LicenseFile}" ]; then
-   ./AppServerX -activateLicense ${license_ticket_id} -y
+   ./AppServerX -activateLicense ${LICENSE_TICKET_ID} -y
 fi
 
 #start NGINX for Ubuntu or Centos
