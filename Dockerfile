@@ -75,7 +75,7 @@ ENV PROXY_PASSWORD=${PROXY_PASSWORD}
 
 RUN apt-get update && \
     apt-get upgrade -y perl && \
-    apt-get install -y --no-install-recommends nginx default-jre && \
+    apt-get install -y --no-install-recommends nginx default-jre wget vim nano && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
     rm -rf /var/log/nginx/* && \
@@ -87,14 +87,7 @@ RUN groupadd --gid ${GROUP_ID} $USER_NAME && useradd --no-log-init --uid ${USER_
 RUN	mkdir -p $CUSTOM_DICTIONARIES_DIR \
              $USER_DICTIONARIES_DIR \
              $LICENSE_DIR \
-             $APP_SERVER_DIR \
              /var/run/nginx
-
-COPY $FILES_DIR/certificate $CERT_DIR
-COPY $FILES_DIR/configure* $APP_SERVER_DIR/
-COPY $FILES_DIR/startService.sh $APP_SERVER_DIR
-RUN chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/startService.sh && \
-    chmod +x $APP_SERVER_DIR/startService.sh
 
 COPY $FILES_DIR/$APP_NAME_MASK $DEPLOYMENT_DIR/
 RUN tar -xvf $DEPLOYMENT_DIR/$APP_NAME_MASK -C $DEPLOYMENT_DIR/ && \
@@ -107,6 +100,14 @@ RUN tar -xvf $DEPLOYMENT_DIR/$APP_NAME_MASK -C $DEPLOYMENT_DIR/ && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-1.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Action.log && \
     chown -R ${USER_ID}:${GROUP_ID} $LICENSE_DIR $DICTIONARIES_DIR $APP_SERVER_DIR
+
+COPY $FILES_DIR/certificate $CERT_DIR
+COPY $FILES_DIR/configure* $APP_SERVER_DIR/
+COPY $FILES_DIR/startService.sh $APP_SERVER_DIR
+RUN chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/startService.sh && \
+	chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/configureFiles.pl && \
+	chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/configureWebServer.pl && \
+    chmod +x $APP_SERVER_DIR/startService.sh
 
 RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /usr/sbin/nginx \
