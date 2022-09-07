@@ -75,7 +75,7 @@ ENV PROXY_PASSWORD=${PROXY_PASSWORD}
 
 RUN apt-get update && \
     apt-get upgrade -y perl && \
-    apt-get install -y --no-install-recommends nginx default-jre wget vim nano && \
+    apt-get install -y --no-install-recommends nginx default-jre wget vim nano mc && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
     rm -rf /var/log/nginx/* && \

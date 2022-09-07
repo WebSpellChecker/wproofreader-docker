@@ -80,6 +80,7 @@ RUN yum update -y --skip-broken && \
         openssl \
 		wget \
 		vim \
+		mc \
 		nano && \
     yum clean all && rm -rf /var/cache/yum && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
