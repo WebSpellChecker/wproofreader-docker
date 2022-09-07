@@ -105,8 +105,8 @@ COPY $FILES_DIR/certificate $CERT_DIR
 COPY $FILES_DIR/configure* $APP_SERVER_DIR/
 COPY $FILES_DIR/startService.sh $APP_SERVER_DIR
 RUN chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/startService.sh && \
-	chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/configureFiles.pl && \
-	chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/configureWebServer.pl && \
+    chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/configureFiles.pl && \
+    chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/configureWebServer.pl && \
     chmod +x $APP_SERVER_DIR/startService.sh
 
 RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
