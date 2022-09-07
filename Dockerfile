@@ -12,20 +12,20 @@ EXPOSE 2880
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ARG FilesDir=./files
-ARG DeploymentDir=/home
-ARG DictionariesDir=/dictionaries
-ARG CustomDictionariesDir=$DictionariesDir/CustomDictionaries
-ARG UserDictionariesDir=$DictionariesDir/UserDictionaries
-ARG CertDir=/certificate
-ARG CertKeyName=key.pem
-ARG CertFileName=cert.pem
-ARG AppRootName=WSC
-ARG AppRootDir=$DeploymentDir/$AppRootName
-ARG AppServerDir=/opt/$AppRootName/AppServer
-ARG AppNameMask=wsc_app*
-ARG UserName=wsc
-ARG LicenseDir=/var/lib/wsc/license
+ARG FILES_DIR=./files
+ARG DEPLOYMENT_DIR=/home
+ARG DICTIONARIES_DIR=/dictionaries
+ARG CUSTOM_DICTIONARIES_DIR=$DICTIONARIES_DIR/CustomDictionaries
+ARG USER_DICTIONARIES_DIR=$DICTIONARIES_DIR/UserDictionaries
+ARG CERT_DIR=/certificate
+ARG CERT_KEY_NAME=key.pem
+ARG CERT_FILE_NAME=cert.pem
+ARG APP_ROOT_NAME=WSC
+ARG APP_ROOT_DIR=$DEPLOYMENT_DIR/$APP_ROOT_NAME
+ARG APP_SERVER_DIR=/opt/$APP_ROOT_NAME/AppServer
+ARG APP_NAME_MASK=wsc_app*
+ARG USER_NAME=wsc
+ARG LICENSE_DIR=/var/lib/wsc/license
 ARG USER_ID=2000
 ARG GROUP_ID=2000
 
@@ -82,31 +82,31 @@ RUN apt-get update && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
-RUN groupadd --gid ${GROUP_ID} $UserName && useradd --no-log-init --uid ${USER_ID} --gid ${GROUP_ID} $UserName
+RUN groupadd --gid ${GROUP_ID} $USER_NAME && useradd --no-log-init --uid ${USER_ID} --gid ${GROUP_ID} $USER_NAME
 
-RUN	mkdir -p $CustomDictionariesDir \
-             $UserDictionariesDir \
-             $LicenseDir \
-             $AppServerDir \
+RUN	mkdir -p $CUSTOM_DICTIONARIES_DIR \
+             $USER_DICTIONARIES_DIR \
+             $LICENSE_DIR \
+             $APP_SERVER_DIR \
              /var/run/nginx
 
-COPY $FilesDir/certificate $CertDir
-COPY $FilesDir/configure* $AppServerDir/
-COPY $FilesDir/startService.sh $AppServerDir
-RUN chown ${USER_ID}:${GROUP_ID} $AppServerDir/startService.sh && \
-    chmod +x $AppServerDir/startService.sh
+COPY $FILES_DIR/certificate $CERT_DIR
+COPY $FILES_DIR/configure* $APP_SERVER_DIR/
+COPY $FILES_DIR/startService.sh $APP_SERVER_DIR
+RUN chown ${USER_ID}:${GROUP_ID} $APP_SERVER_DIR/startService.sh && \
+    chmod +x $APP_SERVER_DIR/startService.sh
 
-COPY $FilesDir/$AppNameMask $DeploymentDir/
-RUN tar -xvf $DeploymentDir/$AppNameMask -C $DeploymentDir/ && \
-    perl $AppRootDir*/automated_install.pl && \
-    rm -rf $AppRootDir* $DeploymentDir/$AppNameMask && \
-    [ -d "${AppServerDir}/Logs" ] && tar -czvf "${AppServerDir}"/Logs/img_build_logs.tar.gz ${AppServerDir}/Logs/* --remove-files || \
-    mkdir -p $AppServerDir/Logs && \
-    ln -s /dev/stdout $AppServerDir/Logs/Main.log && \
-    ln -s /dev/stdout $AppServerDir/Logs/Child-0.log && \
-    ln -s /dev/stdout $AppServerDir/Logs/Child-1.log && \
-    ln -s /dev/stdout $AppServerDir/Logs/Action.log && \
-    chown -R ${USER_ID}:${GROUP_ID} $LicenseDir $DictionariesDir $AppServerDir
+COPY $FILES_DIR/$APP_NAME_MASK $DEPLOYMENT_DIR/
+RUN tar -xvf $DEPLOYMENT_DIR/$APP_NAME_MASK -C $DEPLOYMENT_DIR/ && \
+    perl $APP_ROOT_DIR*/automated_install.pl && \
+    rm -rf $APP_ROOT_DIR* $DEPLOYMENT_DIR/$APP_NAME_MASK && \
+    [ -d "${APP_SERVER_DIR}/Logs" ] && tar -czvf "${APP_SERVER_DIR}"/Logs/img_build_logs.tar.gz ${APP_SERVER_DIR}/Logs/* --remove-files || \
+    mkdir -p $APP_SERVER_DIR/Logs && \
+    ln -s /dev/stdout $APP_SERVER_DIR/Logs/Main.log && \
+    ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-0.log && \
+    ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-1.log && \
+    ln -s /dev/stdout $APP_SERVER_DIR/Logs/Action.log && \
+    chown -R ${USER_ID}:${GROUP_ID} $LICENSE_DIR $DICTIONARIES_DIR $APP_SERVER_DIR
 
 RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /usr/sbin/nginx \
@@ -114,6 +114,6 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /var/run/nginx \
         /etc/nginx
 
-USER $UserName
-WORKDIR $AppServerDir
+USER $USER_NAME
+WORKDIR $APP_SERVER_DIR
 ENTRYPOINT ["./startService.sh"]
