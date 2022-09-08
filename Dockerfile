@@ -79,7 +79,6 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
     rm -rf /var/log/nginx/* && \
-    ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
 RUN groupadd --gid ${GROUP_ID} $USER_NAME && useradd --no-log-init --uid ${USER_ID} --gid ${GROUP_ID} $USER_NAME
