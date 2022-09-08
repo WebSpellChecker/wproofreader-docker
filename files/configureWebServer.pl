@@ -1,44 +1,81 @@
+my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
-configureApachePorts();
-enableSSL();
+configureNginx();
+configureNginxConfig();
 
-sub configureApachePorts
+sub configureNginx
 {
-	if ($#ARGV < 2) { return; }
+	my $nginxPort = $ENV{'WEB_SERVER_PORT'};
+	my $nginxSSLPort = $ENV{'WEB_SERVER_SSL_PORT'};
 
-	my $nginxPort = $ARGV[1];
-	my $nginxSSLPort = $ARGV[2];
-
-	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
+	my $protocol = $ENV{'PROTOCOL'};
 
 	if (-e $nginxConf)
 	{
-		replaceFileContent('listen 80;', "listen $nginxPort default_server;", $nginxConf);
-		replaceFileContent('listen 443 ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
-		replaceFileContent('listen \\[::]:80;', "listen \[::]:$nginxPort default_server;", $nginxConf);
-		replaceFileContent('listen \\[::]:443 ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+		if ($protocol eq "2") # using http protocol
+		{	
+			replaceFileContent('listen \d*;', "listen $nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \d* ssl;', "listen $nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d*;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d* ssl;', "listen \[::]:$nginxPort default_server;", $nginxConf);
+			
+			print "Container started on HTTP protocol.\n";
+		}
+		else # using https protocol
+		{
+			replaceFileContent('listen \d*;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \d* ssl;', "listen $nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d*;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+			replaceFileContent('listen \\[::]:\d* ssl;', "listen \[::]:$nginxSSLPort ssl default_server;", $nginxConf);
+			
+			enableSSL();
+			
+			print "Container started on HTTPS protocol.\n";
+		}
 	}
-	
+}
+
+sub configureNginxConfig
+{
 	my $nginxMainConf = '/etc/nginx/nginx.conf';
 	if (-e $nginxMainConf)
 	{
-		replaceFileContent('pid /run/nginx.pid', 'pid /run/nginx/nginx.pid', $nginxMainConf);
+		# Make separate directory for nginx pid
+		replaceFileContent('pid .*;', 'pid /run/nginx/nginx.pid;', $nginxMainConf);
+		
+		# Disable access log
+		replaceFileContent('access_log .*;', 'access_log off;', $nginxMainConf);
+	}
+	
+	my $host = $ENV{'DOMAIN_NAME'};
+	my $virtual_dir = $ENV{'VIRTUAL_DIR'};
+	
+	if (-e $nginxConf)
+	{
+		if ($host ne "")
+		{
+			# Change server name inside NGINX config
+			replaceFileContent('server_name \w*;', "server_name $host;", $nginxConf);
+		}
+		
+		if ($virtual_dir ne "")
+		{
+			# Change virtual dir inside NGINX config
+			replaceFileContent('location \/\w*', "location /$virtual_dir", $nginxConf);
+		}
 	}
 }
 
 sub enableSSL
 {
-	if ($#ARGV < 1) { return; }
-
-	if ($ARGV[0] ne "true") { return; }
+	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
 	my $pathToCert = '/certificate/cert.pem';
 	my $pathToKey = '/certificate/key.pem';
 
-	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
-
 	if (-e $nginxConf)
 	{
+		# Add ssl certificates to NGINX config
 		replaceFileContent('# bindings of static files', "ssl_certificate $pathToCert;\n    ssl_certificate_key $pathToKey;\n", $nginxConf);
 	}
 }
