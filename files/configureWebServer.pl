@@ -45,6 +45,9 @@ sub configureNginxConfig
 		
 		# Disable access log
 		replaceFileContent('access_log .*;', 'access_log off;', $nginxMainConf);
+		
+		# Remove default server from main log
+		replaceFileContent('    server {\n(?:.*\n){15}    }', '', $nginxMainConf);
 	}
 	
 	my $host = $ENV{'DOMAIN_NAME'};
