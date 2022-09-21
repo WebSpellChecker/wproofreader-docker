@@ -3,24 +3,33 @@ use File::Basename;
 my $serverPath = '/opt/WSC/AppServer';
 my $server_config_path = "$serverPath/AppServerX.xml";
 
-configureSamples();
+configureSamplesAndVirtualDir();
 configureUserAndCustomDictionaries();
 configureSsl();
 configureAppServerParams();
 
-sub configureSamples
+sub configureSamplesAndVirtualDir
 {
 	my $protocol = $ENV{'PROTOCOL'} eq '1' ? 'https' : 'http';
 	my $host = $ENV{'DOMAIN_NAME'};
 
-	my $samples_dir_path = '/opt/WSC/WebComponents/Samples/';
-	opendir my $dir, $samples_dir_path or die "Cannot open directory: $!";
-	my @files = readdir $dir;
-	closedir $dir;
-
 	# If user don't specify WEB_PORT, using default 80 for http and 443 for https
 	my $web_port = $ENV{'WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WEB_PORT'};
 	my $virtual_dir = $ENV{'VIRTUAL_DIR'};
+
+	configureVirtualDir($protocol, $host, $web_port, $virtual_dir);
+	
+	configureSamples($protocol, $host, $web_port, $virtual_dir);
+}
+
+sub configureSamples()
+{
+	my ($protocol, $host, $web_port, $virtual_dir) = @_;
+	
+	my $samples_dir_path = '/opt/WSC/WebComponents/Samples/';
+	opendir my $dir, $samples_dir_path or return;
+	my @files = readdir $dir;
+	closedir $dir;
 
 	foreach ( @files )
 	{
@@ -37,6 +46,17 @@ sub configureSamples
 		# Configure path to samples folder
 		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/samples\/', "$protocol://$host:$web_port/$virtual_dir/samples/", "$samples_dir_path/$_");
 	}
+}
+
+sub configureVirtualDir()
+{
+	my ($protocol, $host, $web_port, $virtual_dir) = @_;
+	
+	my $virtual_dir_file = '/opt/WSC/WebComponents/WebInterface/index.html';
+	
+	replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/', "$protocol://$host:$web_port/$virtual_dir/", $virtual_dir_file);
+	
+	print "Verify the WSC Application Operability: $protocol://$host:$web_port/$virtual_dir/ \n";
 }
 
 sub configureUserAndCustomDictionaries
