@@ -1,64 +1,77 @@
 # WebSpellChecker/WProofreader Docker
 
-This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the latest [Ubuntu Server (latest)](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8).
+This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the latest [Ubuntu Server (latest)](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8) using `Dockerfile`, `DockerfileCentOS`, `DockerfileRedHat` accordingly.
 
-**Note!** You can also use a [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
+All configurations use **NGINX** as a default web server for processing static files and service requests.
+
+**Note!** For evaluation purposes, you can also use a [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
+
+Before you begin, make sure you've acknowledged the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
 
 ## Create Docker image
 
-To create a custom Docker image: 
+For production purposes, it's recommended to create a custom Docker image: 
 
-1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker).
-2. Copy the WebSpellChecker/WProofreader installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
-3. Adjust the default installation options by modifying one of the `wproofreader-docker/files/config.ini` or `wproofreader-docker/files/configSSL.ini` (if you want to use SSL) file. 
-
-* Activate license during the image creation. Add the following options to `config.ini` or `configSSL.ini` file.
+1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases) taking into account to your app package version. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
+2. Copy the installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
+3. Adjust the default installation options by modifying one of Dockerfiles:
 
 ```
-activate_license = 1
-license_ticket_id = 6u*************ZO
+ARG PROTOCOL=2
+ARG WEB_PORT
+ARG DOMAIN_NAME=localhost
+ARG VIRTUAL_DIR=wscservice
+ARG ACTIVATE_LICENSE=0
+ARG LICENSE_TICKET_ID
+ARG PRODUCTS=4
+ARG LANGUAGES_TO_INSTALL=1,2
+ARG INSTALL_SAMPLES=1
 ```
-* Specify `domain_name` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+
+* Activate license during the image creation. Change the following options.
 
 ```
-domain_name = domain_name
+ARG ACTIVATE_LICENSE=1
+ARG LICENSE_TICKET_ID=6u*************ZO
+```
+* Specify `DOMAIN_NAME` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+
+```
+ARG DOMAIN_NAME = DOMAIN_NAME
 ```
 
-If both `license_ticket_id` and `domain_name` were specified during the image creation, you don't need to specify these values during the launch of `docker run` command.
+If `LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
 * If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
 
 ```
-enable_proxy = 1
-proxy_host = host_name
-proxy_port = port_number
-proxy_user_name = user_name
-proxy_password = password
+ARG ENABLE_PROXY=1
+ARG PROXY_HOST=host_name
+ARG PROXY_PORT=port_number
+ARG PROXY_USER_NAME=user_name
+ARG PROXY_PASSWORD=password
 ```
 
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
 
-4. If you need to use SSL, put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
+4. If you need to use SSL (access the service via HTTPS), put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
 
 5. Build a Docker image using the command below:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ssl=true --build-arg USER_ID=YOUR_USER_ID --build-arg GROUP_ID=YOUR_GROUP_ID -f <Dockerfile_name> <path_to_Dockerfile_directory>
+docker build -t local/wsc_app:x.x.x -f <Dockerfile_name> <path_to_Dockerfile_directory>
 ```
 
 where:
 
 * `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
-* `--build-arg ssl=true` the argument indicates if to use the SSL connection. Otherwise, just omit this option or use `false` as a value.
-* `--build-arg USER_ID=YOUR_USER_ID` the argument sets a user ID for the default user in the container. If not specified, the default USER_ID=2000.
-* `--build-arg GROUP_ID=YOUR_GROUP_ID` the argument sets a user group ID for the default user in the container.  If not specified, the default GROUP_ID=2000.
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
 * `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
-For example:
+Also if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ssl=true --build-arg USER_ID=2001 --build-arg GROUP_ID=2001 -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO -f Dockerfile .
 ```
 
 ## Create and run Docker container
@@ -75,7 +88,7 @@ or (for the SSL version)
 docker run -d -p 443:8443 -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
-To use global custom and user dictionaries your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
+To use user- and company-level custom dictionaries, your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
 ```
 docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
@@ -84,38 +97,75 @@ docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_direc
 or (for the SSL version)
 
 ```
-docker run -d -p 443:8443 -v <shared_dictionaries_directory>:/dictionaries -v <your_certificate_directory_path>:/certificate local/wsc_app:x.x.x
+docker run -d -p 443:8443 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
 where:
 
 * `-d` start a container in detached mode.
-* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`. 
+* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default, NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`. 
 * `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionaries directory.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
 * `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
-* `license_ticket_id` your license ticket ID. **Note!** Can be skipped if you specified it during the image creation.
-* `domain_name` the name of a host name that will be used for setup of demo samples with WProofreader. This is an optional parameter, and if nothing is specified, `localhost` will be used (e.g. http(s)://localhost/wscservice/samples/). **Note!** Can be skipped if you specified it during the image creation.
 
-## Verify work of WProofreader Server
+Alternatively, these parameters can be changed on container running by passing them as enviroment variables:
 
-After successful launch of a container with WebSpellChecker/WProofreader Server, and the license activation, you can verify the version and status of WProofreader Server using the commands below:
+* `PROTOCOL`
+* `DOMAIN_NAME`
+* `WEB_PORT`
+* `VIRTUAL_DIR`
+* `LICENSE_TICKET_ID`
+
+For example:
+
+```
+docker run -d -p 443:8443 --env PROTOCOL=1 --env DOMAIN_NAME=localhost --env WEB_PORT=443 --env VIRTUAL_DIR=wscservice --env LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+```
+
+where:
+
+* `--env PROTOCOL=1` start a container on HTTPS protocol
+* `--env DOMAIN_NAME=localhost` start a container on `localhost` domain name
+* `--env WEB_PORT=443` configure `443` port to be an external port of a container
+* `--env VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
+* `--env LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
+
+The container launched by the command above will be available at the following address:
+
+```
+https://localhost:443/wscservice/api?cmd=status
+```
+
+Learn more how to [set environment variables in Docker container](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file).
+
+## Verify work
+
+After successful launch of a container with the app (and the license activation), you can verify the version `ver` and `status` using the commands below from the browser or using `curl` in terminal:
 
 * Version: http://localhost/wscservice/api?cmd=ver
 
-```{"COPYRIGHT":"(c) 2000-2021 WebSpellChecker LLC","PRODUCT WEBSITE":"webspellchecker.com","PROGRAM VERSION":"5.x.x.0 x64 master:xxxxxxx (xxxx) #xx"}```
+```{"COPYRIGHT":"(c) 2000-202x WebSpellChecker LLC","PRODUCT WEBSITE":"webspellchecker.com","PROGRAM VERSION":"5.x.x.0 x64 master:xxxxxxx (xxxx) #xx"}```
 
 * Status: http://localhost/wscservice/api?cmd=status
 
 ```
 {
-    "Spell Check Engine": {
+    "SpellCheckEngine": {
         "active": true
     },
-    "Grammar Check Engine": {
+    "GrammarCheckEngine": {
         "active": true
     },
-    "Thesaurus Engine": {
+    "EnglishAIModel": {
+        "active": true
+    },
+    "GermanAIModel": {
+        "active": true
+    },
+    "SpanishAIModel": {
+        "active": true
+    },
+    "EnglishAutocomplete": {
         "active": true
     }
 }
@@ -132,28 +182,32 @@ After successful launch of a container with WebSpellChecker/WProofreader Server,
 docker start <container_id>
 ```
 
-2. If you need to troubleshoot issues with the application, you may want to check log files in `opt/WSC/AppServer/Logs` directory. For this, you need to connect to a container. Use `docker exec` command to connect to a container where WProofreader is running:
+2. If you need to troubleshoot issues with the application, you may want to check logs. All application logs are stored in container [logs](https://docs.docker.com/engine/reference/commandline/logs/):
 
 ```
-docker exec -it <container_id> bash
+docker logs <container_id>
+```
+
+3. If you need to configure application server (AppServer), for example, edit `AppServerX.xml`, you need to connect to a container. Use `docker exec` command to connect to a container where the app is running:
+
+```
+docker exec -it <container_id> /bin/bash
 ```
 
 ## Create image from modified Docker container
 
-In case you need to make any changes to the configuration of the application which is running inside Docker container (e.g. changes to `AppServerX.xml`) and keep them persistent, you can create an image from the modified container. It can be easily done with a single command:
+If you need to make any changes to the app configuration which is running inside Docker container (e.g. changes to `AppServerX.xml`) and keep them persistent, create an image from the modified container. It can be easily done with a single command:
 
 ```
 docker commit <existing_container_id> <new_name_image>
 ```
 
-Then check that the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run container above.
+Then check if the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run container above.
 
 
 ## Further steps
 
-Once a docker container with WProofreader is up and running, you need to integrate it into your web app.
+Once a docker container with the app is up and running, you can integrate JavaScript libs/components or plugin it into your web app.
 
-* [Get Started with WProofreader Server (autoSearch)](https://docs.webspellchecker.net/pages/viewpage.action?pageId=454919195)
-* [Configuring WProofreader Server in WYSIWYG Editors](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Configuring+WProofreader+Server+in+WYSIWYG+Editors)
-* [Customization options](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/WProofreader+Customization+Options)
-* [WProofreader API options](https://webspellchecker.com/docs/api/wscbundle/Options.html)
+* [WProofreader SDK API options](https://webspellchecker.com/docs/api/wscbundle/Options.html)
+* [WProofreader SDK demos](https://demos.webspellchecker.com/)
