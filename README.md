@@ -214,9 +214,9 @@ Sample `docker-compose.yml` content:
 ```yaml
 version: "3"
 services:
-  wscservice:
+  wproofreader:
     image: webspellchecker/wproofreader:latest
-    container_name: wscservice
+    container_name: wproofreader
     ports:
       - "80:8080"
     environment:
@@ -255,9 +255,9 @@ Finally, the whole config with activation, custom dictionaries and HTTPS would l
 ```yaml
 version: "3"
 services:
-  wscservice:
+  wproofreader:
     image: webspellchecker/wproofreader:latest
-    container_name: wscservice
+    container_name: wproofreader
     ports:
       - "443:8443"
     environment:
