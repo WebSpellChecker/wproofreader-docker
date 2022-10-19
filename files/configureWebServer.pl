@@ -73,13 +73,14 @@ sub enableSSL
 {
 	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
-	my $pathToCert = '/certificate/cert.pem';
-	my $pathToKey = '/certificate/key.pem';
+	my $certDir = $ENV{'CERT_DIR'};
+	my $certName = $ENV{'CERT_FILE_NAME'};
+	my $keyName = $ENV{'CERT_KEY_NAME'};
 
 	if (-e $nginxConf)
 	{
 		# Add ssl certificates to NGINX config
-		replaceFileContent('# bindings of static files', "ssl_certificate $pathToCert;\n    ssl_certificate_key $pathToKey;\n", $nginxConf);
+		replaceFileContent('# bindings of static files', "ssl_certificate $certDir/$certName;\n    ssl_certificate_key $certDir/$keyName;\n", $nginxConf);
 	}
 }
 
