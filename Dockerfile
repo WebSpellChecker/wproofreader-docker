@@ -29,6 +29,8 @@ ARG LICENSE_DIR=/var/lib/wsc/license
 ARG USER_ID=2000
 ARG GROUP_ID=2000
 
+ENV APP_SERVER_DIR=${APP_SERVER_DIR}
+
 ENV WSC_AUTO_INSTALL=TRUE
 
 # Application installation parameters
@@ -119,5 +121,7 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /etc/nginx
 
 USER $USER_NAME
+
 WORKDIR $APP_SERVER_DIR
-ENTRYPOINT ["./startService.sh"]
+
+ENTRYPOINT sh ${APP_SERVER_DIR}/startService.sh
