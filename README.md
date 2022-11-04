@@ -207,7 +207,7 @@ Then check if the image has been successfully created, using `docker images` com
 
 ## Docker Compose
 
-Instead of using lengthy `docker run` commands, it is possible to keep all the configuration in a `docker-compose.yml` file (name is important, extension can be `yaml` or `yml`) and deploy it using `docker compose up` from the same directory. For more information, please refer to the [documentation](https://docs.docker.com/compose/).
+Instead of using lengthy `docker run` commands, it is possible to keep all the configuration in a `docker-compose.yml` file (name is important, extension can be `yaml` or `yml`) and deploy it using `docker compose up` command from the same directory. For more information, please refer to the [documentation](https://docs.docker.com/compose/).
 
 
 Sample `docker-compose.yml` content:
