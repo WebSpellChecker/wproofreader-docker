@@ -216,7 +216,7 @@ version: "3"
 services:
   wproofreader:
     image: webspellchecker/wproofreader:latest
-    container_name: wproofreader
+    container_name: wproofreader-server
     ports:
       - "80:8080"
     environment:
@@ -230,7 +230,7 @@ Notes:
 1. If you have a licence key, pass it as an environment variable like that:
    ```  - LICENSE_TICKET_ID=<your Licence ID>```
    The server will be activated automatically upon startup.
-2. This deploys the WProofreader server working with HTTP protocol. To use it over HTTPS please change the following sections to:
+2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
  ```yaml
     ports:
       - "443:8443"
@@ -245,7 +245,7 @@ Notes:
     volumes:
       - /home/user/certificate:/certificate
  ```
-4. If you have to use custom dictionaries, mount the folder they are located in in the docker container the same way:
+4. If you have to use custom dictionaries, mount the folder they are located in the docker container the same way:
   ```yaml
     volumes:
       - /home/user/dictionaries:/dictionaries
@@ -257,7 +257,7 @@ version: "3"
 services:
   wproofreader:
     image: webspellchecker/wproofreader:latest
-    container_name: wproofreader
+    container_name: wproofreader-server
     ports:
       - "443:8443"
     environment:
