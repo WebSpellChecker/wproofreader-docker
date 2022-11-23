@@ -205,6 +205,72 @@ docker commit <existing_container_id> <new_name_image>
 Then check if the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run container above.
 
 
+## Docker Compose
+
+Instead of using lengthy `docker run` commands, it is possible to keep all the configuration in a `docker-compose.yml` file (name is important, extension can be `yaml` or `yml`) and deploy it using `docker compose up` command from the same directory. For more information, please refer to the [documentation](https://docs.docker.com/compose/).
+
+
+Sample `docker-compose.yml` content:
+```yaml
+version: "3"
+services:
+  wproofreader:
+    image: webspellchecker/wproofreader:latest
+    container_name: wproofreader-server
+    ports:
+      - "80:8080"
+    environment:
+      - PROTOCOL=2 
+      - WEB_PORT=80
+      - DOMAIN_NAME=localhost
+      - VIRTUAL_DIR=wscservice
+```
+
+Notes:
+1. If you have a licence key, pass it as an environment variable like that:
+   ```  - LICENSE_TICKET_ID=<your Licence ID>```
+   The server will be activated automatically upon startup.
+2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
+ ```yaml
+    ports:
+      - "443:8443"
+    environment:
+      - PROTOCOL=1 
+      - WEB_PORT=443
+      - DOMAIN_NAME=localhost
+      - VIRTUAL_DIR=wscservice
+```
+3. For HTTPS communication you have to provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem`, respectively. If, for instance, they are kept in a folder `/home/user/certificate`, one should add the following section to `docker-compose.yml`:
+ ```yaml
+    volumes:
+      - /home/user/certificate:/certificate
+ ```
+4. If you have to use custom dictionaries, mount the folder they are located in the docker container the same way:
+  ```yaml
+    volumes:
+      - /home/user/dictionaries:/dictionaries
+  ```
+
+Finally, the whole config with activation, custom dictionaries and HTTPS would look like this:
+```yaml
+version: "3"
+services:
+  wproofreader:
+    image: webspellchecker/wproofreader:latest
+    container_name: wproofreader-server
+    ports:
+      - "443:8443"
+    environment:
+      - PROTOCOL=1 
+      - WEB_PORT=443
+      - DOMAIN_NAME=localhost
+      - VIRTUAL_DIR=wscservice
+      - LICENSE_TICKET_ID=ABCD1234
+    volumes:
+      - /home/user/certificate:/certificate
+      - /home/user/dictionaries:/dictionaries
+```
+
 ## Further steps
 
 Once a docker container with the app is up and running, you can integrate JavaScript libs/components or plugin it into your web app.
