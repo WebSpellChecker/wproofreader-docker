@@ -89,7 +89,7 @@ RUN groupadd --gid ${GROUP_ID} $USER_NAME && useradd --no-log-init --uid ${USER_
 
 RUN	mkdir -p $CUSTOM_DICTIONARIES_DIR \
              $USER_DICTIONARIES_DIR \
-             $SERVICE_DIR \
+             $SERVICE_DIR/wsc \
              /var/run/nginx
 
 COPY $FILES_DIR/$APP_NAME_MASK $DEPLOYMENT_DIR/
@@ -102,7 +102,7 @@ RUN tar -xvf $DEPLOYMENT_DIR/$APP_NAME_MASK -C $DEPLOYMENT_DIR/ && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-0.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-1.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Action.log && \
-    chown -R ${USER_ID}:${GROUP_ID} $SERVICE_DIR $DICTIONARIES_DIR $APP_SERVER_DIR
+    chown -R ${USER_ID}:${GROUP_ID} $SERVICE_DIR/wsc $DICTIONARIES_DIR $APP_SERVER_DIR
 
 COPY $FILES_DIR/certificate/$CERT_KEY_NAME $CERT_DIR/$CERT_KEY_NAME
 COPY $FILES_DIR/certificate/$CERT_FILE_NAME $CERT_DIR/$CERT_FILE_NAME
