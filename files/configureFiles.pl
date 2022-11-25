@@ -108,7 +108,8 @@ sub configureSsl
 
 sub configureAppServerParams
 {
-	replaceFileContent('<Size>\d*</Size>', '<Size>0</Size>', "AppServerX.xml");
+	replaceFileContent('<Size>\d*</Size>', '<Size>0</Size>', $server_config_path);
+	replaceFileContent('</ServiceName>', "</ServiceName>\n	<PathToServiceFilesDirectory>$ENV{'SERVICE_FILES_DIR'}</PathToServiceFilesDirectory>", $server_config_path);
 }
 
 sub replaceFileContent
