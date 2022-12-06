@@ -120,8 +120,6 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
 
 # Database for collecting statistics
 ENV ENABLE_REQUEST_STATISTIC=0
-# Frequency of database syncronization in seconds
-ENV REQUEST_VALIDATION_SYNC_PERIOD=180
 ENV DATABASE_HOST=''
 ENV DATABASE_PORT=3306
 ENV DATABASE_SCHEMA=''

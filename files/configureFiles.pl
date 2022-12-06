@@ -114,7 +114,6 @@ sub configureDatabase
 		my %tags = (
 			'EnableRequestStatistic' => 'true',
 			'RequestStatisticDataType' => 'DATABASE',
-			'RequestValidationPeriodToSynchronize' => $ENV{'REQUEST_VALIDATION_SYNC_PERIOD'},
 			'EnableRequestValidation' => 'true',
 			'EnableUserActionStatistic' => 'true',
 			'EnableDatabaseProvider' => 'true',
