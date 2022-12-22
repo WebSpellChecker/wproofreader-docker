@@ -109,13 +109,13 @@ sub configureAppServerParams
 
 sub configureDatabase
 {
-	if ($ENV{'ENABLE_DATABASE'})
+	if ($ENV{'ENABLE_DATABASE'} eq 'true')
 	{
 		my %tags = (
-			'EnableRequestStatistic' => $ENV{'ENABLE_REQUEST_STATISTIC'} ? 'true' : 'false',
+			'EnableRequestStatistic' => $ENV{'ENABLE_REQUEST_STATISTIC'},
 			'RequestStatisticDataType' => 'DATABASE',
-			'EnableRequestValidation' => $ENV{'ENABLE_REQUEST_VALIDATION'} ? 'true' : 'false',
-			'EnableUserActionStatistic' => $ENV{'ENABLE_USER_ACTION_STATISTIC'} ? 'true' : 'false',
+			'EnableRequestValidation' => $ENV{'ENABLE_REQUEST_VALIDATION'},
+			'EnableUserActionStatistic' => $ENV{'ENABLE_USER_ACTION_STATISTIC'},
 			'EnableDatabaseProvider' => 'true',
 			'DatabaseHost' => $ENV{'DATABASE_HOST'},
 			'DatabasePort' => $ENV{'DATABASE_PORT'},

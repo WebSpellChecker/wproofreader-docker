@@ -76,6 +76,17 @@ ENV PROXY_PORT=${PROXY_PORT}
 ENV PROXY_USER_NAME=${PROXY_USER_NAME}
 ENV PROXY_PASSWORD=${PROXY_PASSWORD}
 
+# Database for collecting statistics
+ENV ENABLE_DATABASE=false
+ENV DATABASE_HOST=''
+ENV DATABASE_PORT=3306
+ENV DATABASE_SCHEMA=''
+ENV DATABASE_USER=''
+ENV DATABASE_PASSWORD=''
+ENV ENABLE_REQUEST_STATISTIC=flase
+ENV ENABLE_USER_ACTION_STATISTIC=fasle
+ENV ENABLE_REQUEST_VALIDATION=false
+
 RUN apt-get update && \
     apt-get upgrade -y perl && \
     apt-get install -y --no-install-recommends nginx default-jre wget vim nano mc && \
@@ -117,17 +128,6 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /var/lib/nginx \
         /var/run/nginx \
         /etc/nginx
-
-# Database for collecting statistics
-ENV ENABLE_DATABASE=0
-ENV DATABASE_HOST=''
-ENV DATABASE_PORT=3306
-ENV DATABASE_SCHEMA=''
-ENV DATABASE_USER=''
-ENV DATABASE_PASSWORD=''
-ENV ENABLE_REQUEST_STATISTIC=0
-ENV ENABLE_USER_ACTION_STATISTIC=0
-ENV ENABLE_REQUEST_VALIDATION=0
 
 USER $USER_NAME
 WORKDIR $APP_SERVER_DIR
