@@ -1,12 +1,14 @@
 use File::Basename;
 
-my $serverPath = '/opt/WSC/AppServer';
+my $installPath = '/opt/WSC';
+my $serverPath = "$installPath/AppServer";
 my $server_config_path = "$serverPath/AppServerX.xml";
 
 configureSamplesAndVirtualDir();
 configureUserAndCustomDictionaries();
 configureSsl();
 configureAppServerParams();
+configureDatabase();
 
 sub configureSamplesAndVirtualDir
 {
@@ -26,7 +28,7 @@ sub configureSamples()
 {
 	my ($protocol, $host, $web_port, $virtual_dir) = @_;
 	
-	my $samples_dir_path = '/opt/WSC/WebComponents/Samples/';
+	my $samples_dir_path = "$installPath/WebComponents/Samples/";
 	opendir my $dir, $samples_dir_path or return;
 	my @files = readdir $dir;
 	closedir $dir;
@@ -34,17 +36,16 @@ sub configureSamples()
 	foreach ( @files )
 	{
 		if ( $_ eq '.' || $_ eq '..' ) { next; }
-			
-		replaceFileContent('serviceProtocol: \'((http)|(https))\'', "serviceProtocol: '$protocol'", "$samples_dir_path/$_");
-		replaceFileContent('servicePort: \'\d*\'', "servicePort: '$web_port'", "$samples_dir_path/$_");
-		replaceFileContent('serviceHost: \'\w*\'', "serviceHost: '$host'", "$samples_dir_path/$_");
-		replaceFileContent('servicePath: \'\w*/api\'', "servicePath: '$virtual_dir/api'", "$samples_dir_path/$_");
-		
-		# Configure path to wscbundle
-		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/wscbundle\/wscbundle.js', "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js", "$samples_dir_path/$_");
-		
-		# Configure path to samples folder
-		replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/samples\/', "$protocol://$host:$web_port/$virtual_dir/samples/", "$samples_dir_path/$_");
+
+		my %pairs = (
+			'serviceProtocol: \'((http)|(https))\'' => "serviceProtocol: '$protocol'",
+			'servicePort: \'\d*\'' => "servicePort: '$web_port'",
+			'serviceHost: \'\w*\'' => "serviceHost: '$host'",
+			'servicePath: \'\w*/api\'' => "servicePath: '$virtual_dir/api'",
+			'((http)|(https)):\/\/\w*:\d*\/\w*\/wscbundle\/wscbundle.js' => "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js",
+			'((http)|(https)):\/\/\w*:\d*\/\w*\/samples\/' => "$protocol://$host:$web_port/$virtual_dir/samples/"
+		);
+		replaceFileContent(\%pairs, "$samples_dir_path/$_");
 	}
 }
 
@@ -52,9 +53,9 @@ sub configureVirtualDir()
 {
 	my ($protocol, $host, $web_port, $virtual_dir) = @_;
 	
-	my $virtual_dir_file = '/opt/WSC/WebComponents/WebInterface/index.html';
+	my $virtual_dir_file = "$installPath/WebComponents/WebInterface/index.html";
 	
-	replaceFileContent('((http)|(https)):\/\/\w*:\d*\/\w*\/', "$protocol://$host:$web_port/$virtual_dir/", $virtual_dir_file);
+	replaceFileContent({'((http)|(https)):\/\/\w*:\d*\/\w*\/' => "$protocol://$host:$web_port/$virtual_dir/"}, $virtual_dir_file);
 	
 	print "Verify the WSC Application Operability: $protocol://$host:$web_port/$virtual_dir/ \n";
 }
@@ -63,16 +64,13 @@ sub configureUserAndCustomDictionaries
 {
 	my $dicts_path = '/dictionaries';
 	my $cust_dicts_path = "$dicts_path/CustomDictionaries";
-	replaceFileContent('<CustDictDir>CustomDictionaries</CustDictDir>',
-	"<CustDictDir>$cust_dicts_path</CustDictDir>", $server_config_path);
-
 	my $cust_dict_conf = "$cust_dicts_path/CustDictConfig.xml";
-	replaceFileContent('<CustDictConfig>CustDictConfig.xml</CustDictConfig>',
-		"<CustDictConfig>$cust_dict_conf</CustDictConfig>", $server_config_path);
-
 	my $user_dicts_path = "$dicts_path/UserDictionaries";
-	replaceFileContent('<UserDictDir>UserDictionaries</UserDictDir>',
-		"<UserDictDir>$user_dicts_path</UserDictDir>", $server_config_path);
+
+	replaceXmlValues({'CustDictDir' => $cust_dicts_path,
+					 'CustDictConfig' => $cust_dict_conf,
+					 'UserDictDir' => $user_dicts_path},
+					 $server_config_path);
 
 	if (! -e $cust_dicts_path)
 	{
@@ -101,30 +99,57 @@ sub configureUserAndCustomDictionaries
 
 sub configureSsl
 {
-	my $verificationMode = 'NONE';
-	replaceFileContent('<VerificationMode>RELAXED</VerificationMode>',
-		"<VerificationMode>$verificationMode</VerificationMode>", $server_config_path);
+	replaceXmlValues({ 'VerificationMode' => 'NONE' }, $server_config_path);
 }
 
 sub configureAppServerParams
 {
-	replaceFileContent('<Size>\d*</Size>', '<Size>0</Size>', $server_config_path);
-	replaceFileContent('</ServiceName>', "</ServiceName>\n	<PathToServiceFilesDirectory>$ENV{'SERVICE_FILES_DIR'}</PathToServiceFilesDirectory>", $server_config_path);
+	replaceXmlValues({ 'Size' => '0' }, $server_config_path);
+	replaceFileContent({ '</ServiceName>' => "</ServiceName>\n	<PathToServiceFilesDirectory>$ENV{'SERVICE_FILES_DIR'}</PathToServiceFilesDirectory>" }, $server_config_path);
+}
+
+sub configureDatabase
+{
+	my %tags = (
+		'EnableRequestStatistic' => $ENV{'ENABLE_REQUEST_STATISTIC'},
+		'RequestStatisticDataType' => 'DATABASE',
+		'EnableRequestValidation' => $ENV{'ENABLE_REQUEST_VALIDATION'},
+		'EnableUserActionStatistic' => $ENV{'ENABLE_USER_ACTION_STATISTIC'},
+		'EnableDatabaseProvider' => $ENV{'ENABLE_DATABASE'},
+		'DatabaseHost' => $ENV{'DATABASE_HOST'},
+		'DatabasePort' => $ENV{'DATABASE_PORT'},
+		'DatabaseSchema' => $ENV{'DATABASE_SCHEMA'},
+		'DatabaseUser' => $ENV{'DATABASE_USER'},
+		'DatabasePassword' => $ENV{'DATABASE_PASSWORD'}
+	);
+	replaceXmlValues(\%tags, $server_config_path);
 }
 
 sub replaceFileContent
 {
-	my ($source, $dest, $path) = @_;
+	my ($pairs, $path) = @_;
 	local $/ = undef;
 	open (F,$path) || die "Error! Failed to open '${path}'. $! - Aborting.\n";
 	my $file = <F>;
 	close(F);
 
-	my $n = ($file =~ s/$source/$dest/g);
+	my $n = 0;
+	while (my ($key, $value) = each %$pairs)
+	{
+		$n += ($file =~ s/$key/$value/g);
+	}
+
 	if ($n > 0)
 	{
 		open(F,">$path");
 		print F $file;
 		close(F);
 	}
+}
+
+sub replaceXmlValues
+{
+	my ($pairs, $file) = @_;
+	my %tags = map { ("<$_>.*?</$_>" => "<$_>$$pairs{$_}</$_>") } keys %$pairs;
+	replaceFileContent(\%tags, $file);
 }
