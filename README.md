@@ -74,6 +74,14 @@ Also if you don't want to modify `Dockerfile` you are able to provide any instal
 docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO -f Dockerfile .
 ```
 
+### Building on Apple Silicon
+
+Docker on Mac with chips based on `arm64`/`aarch64` architecture (M1, M2 families) require an additional build flag to get a working image: `--platform linux/amd64`.
+This way, your build command would look something like
+```
+docker build -t local/wsc_app:x.x.x --platform linux/amd64 --build-arg <arguments as before> -f Dockerfile .
+```
+
 ## Create and run Docker container
 
 Create and run a Docker container from the latest Docker image with the following options:
