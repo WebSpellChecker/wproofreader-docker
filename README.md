@@ -68,7 +68,7 @@ where:
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
 * `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
 
-Also if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
+Also, if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
 
 ```
 docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO -f Dockerfile .
@@ -77,7 +77,7 @@ docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg L
 ### Building on Apple Silicon
 
 Docker on Mac with chips based on `arm64`/`aarch64` architecture (M1, M2 families) require an additional build flag to get a working image: `--platform linux/amd64`.
-This way, your build command would look something like
+So, the build command needs to be updated as follows:
 ```
 docker build -t local/wsc_app:x.x.x --platform linux/amd64 --build-arg <arguments as before> -f Dockerfile .
 ```
