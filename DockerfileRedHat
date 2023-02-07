@@ -77,6 +77,17 @@ ENV PROXY_PORT=${PROXY_PORT}
 ENV PROXY_USER_NAME=${PROXY_USER_NAME}
 ENV PROXY_PASSWORD=${PROXY_PASSWORD}
 
+# Database for collecting statistics
+ENV ENABLE_DATABASE=false
+ENV DATABASE_HOST=''
+ENV DATABASE_PORT=3306
+ENV DATABASE_SCHEMA=''
+ENV DATABASE_USER=''
+ENV DATABASE_PASSWORD=''
+ENV ENABLE_REQUEST_STATISTIC=false
+ENV ENABLE_USER_ACTION_STATISTIC=false
+ENV ENABLE_REQUEST_VALIDATION=false
+
 RUN yum update -y --skip-broken && \
     yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
     yum install -y nginx \
