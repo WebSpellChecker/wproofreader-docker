@@ -9,6 +9,7 @@ configureUserAndCustomDictionaries();
 configureSsl();
 configureAppServerParams();
 configureDatabase();
+configureProxyParams();
 
 sub configureSamplesAndVirtualDir
 {
@@ -121,6 +122,18 @@ sub configureDatabase
 		'DatabaseSchema' => $ENV{'DATABASE_SCHEMA'},
 		'DatabaseUser' => $ENV{'DATABASE_USER'},
 		'DatabasePassword' => $ENV{'DATABASE_PASSWORD'}
+	);
+	replaceXmlValues(\%tags, $server_config_path);
+}
+
+sub configureProxyParams
+{
+	my %tags = (
+		'EnableProxy' => $ENV{'ENABLE_PROXY'},
+		'ProxyHost' => $ENV{'PROXY_HOST'},
+		'ProxyPort' => $ENV{'PROXY_PORT'},
+		'ProxyUserName' => $ENV{'PROXY_USER_NAME'},
+		'ProxyPassword' => $ENV{'PROXY_PASSWORD'}
 	);
 	replaceXmlValues(\%tags, $server_config_path);
 }
