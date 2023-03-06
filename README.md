@@ -202,13 +202,11 @@ docker logs <container_id>
 docker exec -it <container_id> /bin/bash
 ```
 
-4. It's important to keep in mind and monitor the amount of resources allocated for and consumed by the application according the the minimal hardware requirements for it's proper work. You can check the resource usage statistics of a container using the `docker stats` command as shown below. [Read more] (https://docs.docker.com/engine/reference/commandline/stats/) about this command and its options in the official documentation.
+4. It's important to keep in mind and monitor the amount of resources allocated for and consumed by the application according the the minimal hardware requirements for it's proper work. You can check the resource usage statistics of a container using the `docker stats` command as shown below. [Read more](https://docs.docker.com/engine/reference/commandline/stats/) about this command and its options in the official documentation.
 
 ```
 docker stats <container_id>
 ```
-
-
 
 ## Create image from modified Docker container
 
