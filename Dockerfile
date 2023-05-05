@@ -132,6 +132,8 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /var/run/nginx \
         /etc/nginx
 
+RUN apt-get update && apt-get upgrade -y
+
 USER $USER_NAME
 
 WORKDIR $APP_SERVER_DIR
