@@ -93,7 +93,7 @@ ENV ENABLE_REQUEST_VALIDATION=false
 RUN apt-get update && \
     apt-get upgrade -y perl && \
     apt-get install -y --no-install-recommends nginx default-jre wget vim nano mc && \
-    apt-get clean && apt-get upgrade -y && \
+    apt-get clean && apt-get upgrade -y openssl && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
     rm -rf /var/log/nginx/* && \
