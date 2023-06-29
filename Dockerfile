@@ -92,7 +92,7 @@ ENV ENABLE_REQUEST_VALIDATION=false
 
 RUN apt-get update && \
     apt-get upgrade -y perl && \
-    apt-get install -y --no-install-recommends nginx default-jre wget vim nano mc && \
+    apt-get install -y --no-install-recommends nginx default-jre wget && \
     apt-get clean && apt-get upgrade -y openssl && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
@@ -132,6 +132,8 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /var/lib/nginx \
         /var/run/nginx \
         /etc/nginx
+
+RUN apt-get remove -y wget && apt-get autoremove -y
 
 USER $USER_NAME
 
