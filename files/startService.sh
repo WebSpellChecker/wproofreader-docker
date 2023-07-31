@@ -11,8 +11,8 @@ perl configureWebServer.pl
 perl configureFiles.pl
 
 # activate a license automatically
-LicenseFile="${SERVICE_FILES_DIR}/wsc/license/license.xml"
-if ! [ -f "${LicenseFile}" ]; then
+LicenseFile="${SERVICE_FILES_DIR}/WebSpellChecker/license/license.xml"
+if ! [ -f "${LicenseFile}" ] && ! [ -f "${SERVICE_FILES_DIR}/wsc/license/license.xml" ]; then
    ./AppServerX -activateLicense ${LICENSE_TICKET_ID} -y
 fi
 
