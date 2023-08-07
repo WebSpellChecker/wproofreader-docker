@@ -59,19 +59,19 @@ ENV ENABLE_REQUEST_VALIDATION=false
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 
 RUN if [ -z $(egrep -i "^${USER_NAME}" /etc/group) ]; then \
-    	groupadd -g ${GROUP_ID} ${USER_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME};  \
+        groupadd -g ${GROUP_ID} ${USER_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME};  \
     fi;
 
 RUN perl ${APP_SERVER_DIR}/install_languages.pl ${APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${SERVICE_FILES_DIR}/WebSpellChecker"
 
 RUN if [ "${ACTIVATE_LICENSE}" = 1 ] && [ ! -z "${LICENSE_TICKET_ID}" ]; then \
-    	sh ${APP_SERVER_DIR}/activateLicense.sh ${LICENSE_TICKET_ID} -y; \
+        sh ${APP_SERVER_DIR}/activateLicense.sh ${LICENSE_TICKET_ID} -y; \
     fi;
 
 RUN chown -R ${USER_ID}:${GROUP_ID} ${SERVICE_FILES_DIR}/WebSpellChecker \
-	/dictionaries \
-	/opt/WSC \
-	/var/run/nginx  \
+    /dictionaries \
+    /opt/WSC \
+    /var/run/nginx  \
     /var/log/nginx  \
     /usr/sbin/nginx  \
     /var/lib/nginx  \
