@@ -1,6 +1,6 @@
 # WebSpellChecker/WProofreader Docker
 
-This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8) using `Dockerfile`, `DockerfileCentOS`, `DockerfileRedHat`, respectively.
+This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8) using `Dockerfile`, `Dockerfile.centos`, `Dockerfile.redhat`, respectively.
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
@@ -10,11 +10,14 @@ Before you begin, make sure you've acknowledged the [installation requirements](
 
 ## Create Docker image
 
-For production purposes, it's recommended to create a custom Docker image: 
+For production purposes, it's recommended to create a custom Docker image. There are two approaches available: building using an installation package, or from a pre-made docker image (available since v5.30.0).
 
-1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases) taking into account to your app package version. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
-2. Copy the installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
-3. Adjust the default installation options by modifying one of Dockerfiles:
+The general procedure is as follows:
+
+1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases). If you already have a package that you would like to use for the installation, make sure that the WProofreader Docker release version matches that of the package. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
+If, on the other hand, you would like to use a prebuilt docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
+2. For the installation that uses a package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/). If you are using a prebuilt image, skip this step.
+3. Adjust the default installation options by modifying one of the Dockerfiles (`Dockerfile`, or `Dockerfile.centos`, or `Dockerfile.redhat` for the builds from the installation package, and `Dockerfile.ubuntu-prebuilt` to use a prebuilt image from DockerHub):
 
 ```
 ARG PROTOCOL=2

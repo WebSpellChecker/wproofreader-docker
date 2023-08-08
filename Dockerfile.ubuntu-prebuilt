@@ -1,0 +1,90 @@
+# Change TAG to your specific production version (v5.30.0 or higher). It's not recommended to keep "latest".
+# Full list available here: https://hub.docker.com/r/webspellchecker/wproofreader/tags.
+# When used for the first time, it is recommended to choose the latest available.
+ARG TAG=latest
+FROM webspellchecker/wproofreader:${TAG}
+
+USER root
+
+# Application installation parameters
+# Protocol of the NGINX web server (1 - HTTPS, 2 - HTTP)
+ARG PROTOCOL=2
+# Web port outside the container. If value isn't specified (e.g. empty), the default value will be used (443 for HTTPS and 80 for HTTP).
+ARG WEB_PORT
+ARG DOMAIN_NAME=localhost
+ARG VIRTUAL_DIR=wscservice
+# Change to 1 to activate the license during the image build.
+ARG ACTIVATE_LICENSE=0
+# Specify license ticket ID if ACTIVATE_LICENSE is set to 1. For example, LICENSE_TICKET_ID = 6u*************ZO
+ARG LICENSE_TICKET_ID
+ARG PRODUCTS=4
+ARG AI_MODELS=1,2
+ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
+ARG INSTALL_SAMPLES=1
+
+ARG USER_ID=2000
+ARG GROUP_ID=2000
+ARG USER_NAME=wsc
+
+# Proxy server settings
+# If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added.
+ARG ENABLE_PROXY=0
+ARG PROXY_HOST
+ARG PROXY_PORT
+ARG PROXY_USER_NAME
+ARG PROXY_PASSWORD
+
+ENV PROTOCOL=${PROTOCOL}
+ENV DOMAIN_NAME=${DOMAIN_NAME}
+ENV WEB_PORT=${WEB_PORT}
+ENV VIRTUAL_DIR=${VIRTUAL_DIR}
+ENV WEB_SERVER_TYPE=2
+ENV ACTIVATE_LICENSE=${ACTIVATE_LICENSE}
+ENV LICENSE_TICKET_ID=${LICENSE_TICKET_ID}
+ENV RESTART_WEB_SERVER=1
+
+ENV ENABLE_PROXY=${ENABLE_PROXY}
+ENV PROXY_HOST=${PROXY_HOST}
+ENV PROXY_PORT=${PROXY_PORT}
+ENV PROXY_USER_NAME=${PROXY_USER_NAME}
+ENV PROXY_PASSWORD=${PROXY_PASSWORD}
+
+# Database for collecting statistics
+ENV ENABLE_DATABASE=false
+ENV DATABASE_HOST=''
+ENV DATABASE_PORT=3306
+ENV DATABASE_SCHEMA=''
+ENV DATABASE_USER=''
+ENV DATABASE_PASSWORD=''
+ENV ENABLE_REQUEST_STATISTIC=false
+ENV ENABLE_USER_ACTION_STATISTIC=false
+ENV ENABLE_REQUEST_VALIDATION=false
+
+RUN apt-get update && apt-get install -y --no-install-recommends wget
+
+RUN if [ -z $(egrep -i "^${USER_NAME}" /etc/group) ]; then \
+        groupadd -g ${GROUP_ID} ${USER_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME};  \
+    fi;
+
+RUN perl ${APP_SERVER_DIR}/install_languages.pl ${APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${SERVICE_FILES_DIR}/WebSpellChecker"
+
+RUN if [ "${ACTIVATE_LICENSE}" = 1 ] && [ ! -z "${LICENSE_TICKET_ID}" ]; then \
+        sh ${APP_SERVER_DIR}/activateLicense.sh ${LICENSE_TICKET_ID} -y; \
+    fi;
+
+RUN chown -R ${USER_ID}:${GROUP_ID} ${SERVICE_FILES_DIR}/WebSpellChecker \
+    /dictionaries \
+    /opt/WSC \
+    /var/run/nginx  \
+    /var/log/nginx  \
+    /usr/sbin/nginx  \
+    /var/lib/nginx  \
+    /etc/nginx
+
+RUN apt-get remove -y wget && apt-get autoremove -y && apt-get clean
+
+USER $USER_NAME
+
+WORKDIR $APP_SERVER_DIR
+
+ENTRYPOINT sh ${APP_SERVER_DIR}/startService.sh
