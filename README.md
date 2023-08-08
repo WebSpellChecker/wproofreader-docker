@@ -24,13 +24,20 @@ ARG VIRTUAL_DIR=wscservice
 ARG ACTIVATE_LICENSE=0
 ARG LICENSE_TICKET_ID
 ARG PRODUCTS=4
-ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
-ARG AI_MODELS=1,2
 ARG INSTALL_SAMPLES=1
 ```
+* Choose languages to be installed:
+```
+ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
+ARG AI_MODELS=1,2
+```
+where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. The values are:
+1. English grammar
+2. English autocomplete
+3. German grammar
+4. Spanish grammar
 
-* Activate license during the image creation. Change the following options.
-
+* Activate license. Change the following options:
 ```
 ARG ACTIVATE_LICENSE=1
 ARG LICENSE_TICKET_ID=6u*************ZO
