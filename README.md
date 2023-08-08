@@ -31,13 +31,15 @@ ARG INSTALL_SAMPLES=1
 ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
 ARG AI_MODELS=1,2
 ```
-where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. The values are:
-1. English grammar
-2. English autocomplete
-3. German grammar
-4. Spanish grammar
+where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install English language model for enhanced text correction. The options for `AI_MODELS` parameter are:
+1. English language model
+2. English autocomplete model
+3. German language model
+4. Spanish language model
 
-* Activate license. Change the following options:
+English language and autocomplete models are available for en_US (American English), en_GB (British English), en_CA (Canadian English) and en_AU (Australian English).  German – for de_DE (Germany), Spanish – for es_ES (Spain).
+
+* Activate license. Update the values for the following options:
 ```
 ARG ACTIVATE_LICENSE=1
 ARG LICENSE_TICKET_ID=6u*************ZO
