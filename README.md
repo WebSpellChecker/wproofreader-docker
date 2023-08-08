@@ -10,14 +10,14 @@ Before you begin, make sure you've acknowledged the [installation requirements](
 
 ## Create Docker image
 
-For production purposes, it's recommended to create a custom Docker image. There are two approaches available: building using an installation package, or from a pre-made docker image (available since v5.30.0).
+For production purposes, it's recommended to create a custom Docker image. There are two approaches that you can consider: building using an installation package provided at the request by the support team or from a premade Docker image (available since v5.30.0).
 
 The general procedure is as follows:
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases). If you already have a package that you would like to use for the installation, make sure that the WProofreader Docker release version matches that of the package. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
-If, on the other hand, you would like to use a prebuilt docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
+If, on the other hand, you would like to use a prebuilt Docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
 2. For the installation that uses a package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/). If you are using a prebuilt image, skip this step.
-3. Adjust the default installation options by modifying one of the Dockerfiles (`Dockerfile`, or `Dockerfile.centos`, or `Dockerfile.redhat` for the builds from the installation package, and `Dockerfile.ubuntu-prebuilt` to use a prebuilt image from DockerHub):
+3. Tailor the installation to your needs by editing one of the Dockerfiles. Choose [Dockerfile](Dockerfile), [Dockerfile.centos](Dockerfile.centos), or [Dockerfile.redhat](Dockerfile.redhat) for installations from a package. If you're leveraging a prebuilt image from DockerHub, modify [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
 ```
 ARG PROTOCOL=2
