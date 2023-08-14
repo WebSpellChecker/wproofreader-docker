@@ -74,7 +74,7 @@ RUN if [ "${ACTIVATE_LICENSE}" = 1 ] && [ ! -z "${LICENSE_TICKET_ID}" ]; then \
 
 RUN chown -R ${USER_ID}:${GROUP_ID} ${SERVICE_FILES_DIR}/WebSpellChecker \
     /dictionaries \
-    /opt/WSC \
+    /opt/WebSpellChecker \
     /var/run/nginx  \
     /var/log/nginx  \
     /usr/sbin/nginx  \
