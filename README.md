@@ -1,6 +1,6 @@
 # WebSpellChecker/WProofreader Docker
 
-This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the latest [Ubuntu Server (latest)](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8) using `Dockerfile`, `DockerfileCentOS`, `DockerfileRedHat` accordingly.
+This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8) using `Dockerfile`, `Dockerfile.centos`, `Dockerfile.redhat`, respectively.
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
@@ -10,11 +10,14 @@ Before you begin, make sure you've acknowledged the [installation requirements](
 
 ## Create Docker image
 
-For production purposes, it's recommended to create a custom Docker image: 
+For production purposes, it's recommended to create a custom Docker image. There are two approaches that you can consider: building using an installation package provided at the request by the support team or from a premade Docker image (available since v5.30.0).
 
-1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases) taking into account to your app package version. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
-2. Copy the installation package (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/).
-3. Adjust the default installation options by modifying one of Dockerfiles:
+The general procedure is as follows:
+
+1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases). If you already have a package that you would like to use for the installation, make sure that the WProofreader Docker release version matches that of the package. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
+If, on the other hand, you would like to use a prebuilt Docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
+2. For the installation that uses a package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/). If you are using a prebuilt image, skip this step.
+3. Tailor the installation to your needs by editing one of the Dockerfiles. Choose [Dockerfile](Dockerfile), [Dockerfile.centos](Dockerfile.centos), or [Dockerfile.redhat](Dockerfile.redhat) for installations from a package. If you're leveraging a prebuilt image from DockerHub, modify [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
 ```
 ARG PROTOCOL=2
@@ -24,12 +27,22 @@ ARG VIRTUAL_DIR=wscservice
 ARG ACTIVATE_LICENSE=0
 ARG LICENSE_TICKET_ID
 ARG PRODUCTS=4
-ARG LANGUAGES_TO_INSTALL=1,2
 ARG INSTALL_SAMPLES=1
 ```
+* Choose languages to be installed:
+```
+ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
+ARG AI_MODELS=1,2
+```
+where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install English language model for enhanced text correction. The options for `AI_MODELS` parameter are:
+1. English language model
+2. English autocomplete model
+3. German language model
+4. Spanish language model
 
-* Activate license during the image creation. Change the following options.
+English language and autocomplete models are available for en_US (American English), en_GB (British English), en_CA (Canadian English) and en_AU (Australian English).  German – for de_DE (Germany), Spanish – for es_ES (Spain).
 
+* Activate license. Update the values for the following options:
 ```
 ARG ACTIVATE_LICENSE=1
 ARG LICENSE_TICKET_ID=6u*************ZO
@@ -66,12 +79,12 @@ where:
 
 * `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
 * `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
-* `<path_to_Dockerfile_directory>` the path to a Dockerfile directory, not to Dockerfile itself. If a Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you need to use to use `.` instead of the path.
+* `<path_to_Dockerfile_directory>` the path to the Dockerfile directory, not to the Dockerfile itself. If the Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you can use `.` instead of the path.
 
-Also, if you don't want to modify `Dockerfile` you are able to provide any installation parameter through `--build-arg`. For example:
+Also, if you don't want to modify the `Dockerfile` you can provide any installation parameter via CLI through the `--build-arg` flag. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg LANGUAGES=en_US,en_GB -f Dockerfile .
 ```
 
 ### Building on Apple Silicon

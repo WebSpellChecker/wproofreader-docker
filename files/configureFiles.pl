@@ -1,7 +1,7 @@
 use File::Basename;
 
-my $installPath = '/opt/WSC';
-my $serverPath = "$installPath/AppServer";
+my $serverPath = $ENV{'APP_SERVER_DIR'};
+my $installPath = "$serverPath/..";
 my $server_config_path = "$serverPath/AppServerX.xml";
 
 configureSamplesAndVirtualDir();
