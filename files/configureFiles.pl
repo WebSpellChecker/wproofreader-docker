@@ -106,7 +106,10 @@ sub configureSsl
 sub configureAppServerParams
 {
 	replaceXmlValues({ 'Size' => '0' }, $server_config_path);
-	replaceFileContent({ '</ServiceName>' => "</ServiceName>\n	<PathToServiceFilesDirectory>$ENV{'SERVICE_FILES_DIR'}</PathToServiceFilesDirectory>" }, $server_config_path);
+	if (replaceXmlValues({ 'PathToServiceFilesDirectory' => "$ENV{'SERVICE_FILES_DIR'}" }, $server_config_path) == 0)
+	{
+		replaceFileContent({ '</ServiceName>' => "</ServiceName>\n	<PathToServiceFilesDirectory>$ENV{'SERVICE_FILES_DIR'}</PathToServiceFilesDirectory>" }, $server_config_path);
+	}
 }
 
 sub configureDatabase
@@ -158,6 +161,8 @@ sub replaceFileContent
 		print F $file;
 		close(F);
 	}
+
+	return $n;
 }
 
 sub replaceXmlValues
