@@ -63,10 +63,10 @@ sub configureVirtualDir()
 
 sub configureUserAndCustomDictionaries
 {
-	my $dicts_path = '/dictionaries';
-	my $cust_dicts_path = "$dicts_path/CustomDictionaries";
+	my $dicts_path = $ENV{'DICTIONARIES_DIR'} eq '' ? '/dictionaries' : $ENV{'DICTIONARIES_DIR'};
+	my $cust_dicts_path = $ENV{'CUSTOM_DICTIONARIES_DIR'} eq '' ? "$dicts_path/CustomDictionaries" : $ENV{'CUSTOM_DICTIONARIES_DIR'};
 	my $cust_dict_conf = "$cust_dicts_path/CustDictConfig.xml";
-	my $user_dicts_path = "$dicts_path/UserDictionaries";
+	my $user_dicts_path = $ENV{'USER_DICTIONARIES_DIR'} eq '' ? "$dicts_path/UserDictionaries" : $ENV{'USER_DICTIONARIES_DIR'};
 
 	replaceXmlValues({'CustDictDir' => $cust_dicts_path,
 					 'CustDictConfig' => $cust_dict_conf,
