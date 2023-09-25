@@ -22,7 +22,7 @@ ARG CERT_KEY_NAME=key.pem
 ARG CERT_FILE_NAME=cert.pem
 ARG APP_ROOT_DIR=$DEPLOYMENT_DIR/WSC
 ARG APP_SERVER_DIR=/opt/WebSpellChecker/AppServer
-ARG APP_NAME_MASK=wsc_app*
+ARG APP_NAME_MASK=wsc_app*tar.gz
 ARG USER_NAME=wsc
 ARG SERVICE_FILES_DIR=/var/lib
 ARG USER_ID=2000
@@ -73,6 +73,9 @@ ENV RESTART_WEB_SERVER=1
 ENV CERT_DIR=${CERT_DIR}
 ENV CERT_KEY_NAME=${CERT_KEY_NAME}
 ENV CERT_FILE_NAME=${CERT_FILE_NAME}
+ENV DICTIONARIES_DIR=${DICTIONARIES_DIR}
+ENV CUSTOM_DICTIONARIES_DIR=${CUSTOM_DICTIONARIES_DIR}
+ENV USER_DICTIONARIES_DIR=${USER_DICTIONARIES_DIR}
 
 ENV ENABLE_PROXY=${ENABLE_PROXY}
 ENV PROXY_HOST=${PROXY_HOST}
@@ -102,16 +105,19 @@ RUN apt-get update && \
 
 RUN groupadd --gid ${GROUP_ID} $USER_NAME && useradd --no-log-init --uid ${USER_ID} --gid ${GROUP_ID} $USER_NAME
 
-RUN	mkdir -p $CUSTOM_DICTIONARIES_DIR \
+RUN mkdir -p $CUSTOM_DICTIONARIES_DIR \
              $USER_DICTIONARIES_DIR \
              $SERVICE_FILES_DIR/WebSpellChecker \
              /var/run/nginx
 
 COPY $FILES_DIR/$APP_NAME_MASK $DEPLOYMENT_DIR/
-RUN tar -xvf $DEPLOYMENT_DIR/$APP_NAME_MASK -C $DEPLOYMENT_DIR/ && \
+RUN PACKAGE_FILE=$(ls -1t $DEPLOYMENT_DIR/$APP_NAME_MASK 2>/dev/null | head -n 1) && \
+    [ -z "$PACKAGE_FILE" ] && echo "Error. Docker image build failed: No valid application package detected." && exit 1 || \
+    echo "Using package file: $PACKAGE_FILE" && \
+    tar -xvf $PACKAGE_FILE -C $DEPLOYMENT_DIR/ && \
     perl $APP_ROOT_DIR*/automated_install.pl && \
     rm -rf $APP_ROOT_DIR* $DEPLOYMENT_DIR/$APP_NAME_MASK && \
-    [ -d "${APP_SERVER_DIR}/Logs" ] && tar -czvf "${APP_SERVER_DIR}"/Logs/img_build_logs.tar.gz ${APP_SERVER_DIR}/Logs/* --remove-files || \
+    [ -d "${APP_SERVER_DIR}/Logs" ] && tar -czvf "${APP_SERVER_DIR}"/Logs/img_build_logs.tar.gz -C ${APP_SERVER_DIR} Logs/* --remove-files || \
     mkdir -p $APP_SERVER_DIR/Logs && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Main.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-0.log && \
