@@ -124,7 +124,8 @@ RUN PACKAGE_FILE=$(ls -1t $DEPLOYMENT_DIR/$APP_NAME_MASK 2>/dev/null | head -n 1
     tar -xvf $PACKAGE_FILE -C $DEPLOYMENT_DIR/ && \
     perl $APP_ROOT_DIR*/automated_install.pl && \
     rm -rf $APP_ROOT_DIR* $DEPLOYMENT_DIR/$APP_NAME_MASK && \
-    [ -d "${APP_SERVER_DIR}/Logs" ] && tar -czvf "${APP_SERVER_DIR}"/Logs/img_build_logs.tar.gz -C ${APP_SERVER_DIR} Logs/* --remove-files || \
+    [ -d "${APP_SERVER_DIR}/Logs" ] && \
+    tar czvf ${APP_SERVER_DIR}/Logs/img_build_logs.tar.gz -C ${APP_SERVER_DIR} Logs --remove-files 2> /dev/null || \
     mkdir -p $APP_SERVER_DIR/Logs && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Main.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-0.log && \
