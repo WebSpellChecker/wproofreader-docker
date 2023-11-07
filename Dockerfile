@@ -112,14 +112,14 @@ RUN mkdir -p $CUSTOM_DICTIONARIES_DIR \
 
 COPY $FILES_DIR/$APP_NAME_MASK $DEPLOYMENT_DIR/
 RUN PACKAGE_FILE=$(ls -1t $DEPLOYMENT_DIR/$APP_NAME_MASK 2>/dev/null | head -n 1) && \
-    [ -z "$PACKAGE_FILE" ] && echo "Error. Docker image build failed: No valid application package detected." && exit 1 || \
+    [ -z "$PACKAGE_FILE" ] && exit 1 || \
     echo "Using package file: $PACKAGE_FILE" && \
     tar -xvf $PACKAGE_FILE -C $DEPLOYMENT_DIR/ && \
     perl $APP_ROOT_DIR*/automated_install.pl || exit 1 && \
     rm -rf $APP_ROOT_DIR* $DEPLOYMENT_DIR/$APP_NAME_MASK && \
-    [ -d "${APP_SERVER_DIR}/Logs" ] && \
-    tar czvf ${APP_SERVER_DIR}/Logs/img_build_logs.tar.gz -C ${APP_SERVER_DIR} Logs --remove-files 2> /dev/null || \
     mkdir -p $APP_SERVER_DIR/Logs && \
+    cp -r $APP_SERVER_DIR/Logs $APP_SERVER_DIR/Build_Logs && \
+    rm -rf $APP_SERVER_DIR/Logs/* && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Main.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-0.log && \
     ln -s /dev/stdout $APP_SERVER_DIR/Logs/Child-1.log && \
