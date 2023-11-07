@@ -87,13 +87,32 @@ Also, if you don't want to modify the `Dockerfile` you can provide any installat
 docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg LANGUAGES=en_US,en_GB -f Dockerfile .
 ```
 
-### Building on Apple Silicon
+### Choosing platform
 
-Docker on Mac with chips based on `arm64`/`aarch64` architecture (M1, M2 families) require an additional build flag to get a working image: `--platform linux/amd64`.
+Currently, the docker configuration supports two platforms: `amd64`/`arm64`. In order to build image for the desired platform you need to use an appropriate `.tar.gz` package.
+
+* **amd64**:
+
+Put "wsc_app_**x64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an additional build flag: `--platform linux/amd64`.
 So, the build command needs to be updated as follows:
 ```
 docker build -t local/wsc_app:x.x.x --platform linux/amd64 --build-arg <arguments as before> -f Dockerfile .
 ```
+
+* **arm64**:
+
+Put "wsc_app_**arm64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an additional build flag: `--platform linux/arm64/v8`.
+So, the build command needs to be updated as follows:
+```
+docker build -t local/wsc_app:x.x.x --platform linux/arm64/v8 --build-arg <arguments as before> -f Dockerfile .
+```
+
+**Cross-Platform Consideration:**
+
+While Docker allows the build of images across different architectures, it's important to note that cross-platform compatibility might have limitations. For instance, building an image on an ARM-based system like a Mac M1 for the amd64 platform might result in an image that's compatible with amd64 environments but might not function correctly on ARM-based systems, such as the Mac M1.
+
+To ensure seamless execution within your target environment, it's advisable to build the image on a platform that matches the intended deployment architecture. When in doubt, confirm the target system's architecture and build the Docker image accordingly to guarantee compatibility and optimal performance.
+
 
 ## Create and run Docker container
 
