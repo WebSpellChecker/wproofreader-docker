@@ -107,7 +107,7 @@ So, the build command needs to be updated as follows:
 docker build -t local/wsc_app:x.x.x --platform linux/arm64/v8 --build-arg <arguments as before> -f Dockerfile .
 ```
 
-**Cross-platform consideration:**
+**Cross-platform consideration**
 
 While Docker allows building images across different architectures, it's important to note that cross-platform compatibility might have limitations. For instance, building an image on an ARM-based system like a Mac M1/M2 for the `amd64` platform might result in an image that's compatible with `amd64` environments but might not function correctly on ARM-based systems, such as the Mac M1/M2.
 
