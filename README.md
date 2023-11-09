@@ -47,7 +47,7 @@ English language and autocomplete models are available for en_US (American Engli
 ARG ACTIVATE_LICENSE=1
 ARG LICENSE_TICKET_ID=6u*************ZO
 ```
-* Specify `DOMAIN_NAME` which will be used for setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+* Specify `DOMAIN_NAME` which will be used for the setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
 ARG DOMAIN_NAME = DOMAIN_NAME
@@ -89,11 +89,11 @@ docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg L
 
 ### Choosing platform
 
-Currently, the docker configuration supports two platforms: `amd64`/`arm64`. In order to build image for the desired platform you need to use an appropriate `.tar.gz` package.
+Currently, the Docker configuration supports two platforms: `amd64`/`arm64`. To build an image for the desired platform, you need to use an appropriate `.tar.gz` package.
 
 * **amd64**:
 
-Put "wsc_app_**x64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an additional build flag: `--platform linux/amd64`.
+Put "wsc_app_**x64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an extra build flag: `--platform linux/amd64`.
 So, the build command needs to be updated as follows:
 ```
 docker build -t local/wsc_app:x.x.x --platform linux/amd64 --build-arg <arguments as before> -f Dockerfile .
@@ -101,15 +101,15 @@ docker build -t local/wsc_app:x.x.x --platform linux/amd64 --build-arg <argument
 
 * **arm64**:
 
-Put "wsc_app_**arm64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an additional build flag: `--platform linux/arm64/v8`.
+Put "wsc_app_**arm64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an extra build flag: `--platform linux/arm64/v8`.
 So, the build command needs to be updated as follows:
 ```
 docker build -t local/wsc_app:x.x.x --platform linux/arm64/v8 --build-arg <arguments as before> -f Dockerfile .
 ```
 
-**Cross-Platform Consideration:**
+**Cross-platform consideration:**
 
-While Docker allows the build of images across different architectures, it's important to note that cross-platform compatibility might have limitations. For instance, building an image on an ARM-based system like a Mac M1 for the amd64 platform might result in an image that's compatible with amd64 environments but might not function correctly on ARM-based systems, such as the Mac M1.
+While Docker allows building images across different architectures, it's important to note that cross-platform compatibility might have limitations. For instance, building an image on an ARM-based system like a Mac M1/M2 for the `amd64` platform might result in an image that's compatible with `amd64` environments but might not function correctly on ARM-based systems, such as the Mac M1/M2.
 
 To ensure seamless execution within your target environment, it's advisable to build the image on a platform that matches the intended deployment architecture. When in doubt, confirm the target system's architecture and build the Docker image accordingly to guarantee compatibility and optimal performance.
 
@@ -128,7 +128,7 @@ or (for the SSL version)
 docker run -d -p 443:8443 -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
 ```
 
-To use user- and company-level custom dictionaries, your need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
+To use user- and company-level custom dictionaries, you need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
 ```
 docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
@@ -144,11 +144,11 @@ where:
 
 * `-d` start a container in detached mode.
 * `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default, NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`. 
-* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionaries directory.
+* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. This is required to save the dictionaries between starts of containers. **Note!** The container user must have read and write permissions to the shared dictionary directory.
 * `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
 * `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
 
-Alternatively, these parameters can be changed on container running by passing them as enviroment variables:
+Alternatively, these parameters can be changed on the container running by passing them as environment variables:
 
 * `PROTOCOL`
 * `DOMAIN_NAME`
@@ -180,7 +180,7 @@ Learn more how to [set environment variables in Docker container](https://docs.d
 
 ## Verify work
 
-After successful launch of a container with the app (and the license activation), you can verify the version `ver` and `status` using the commands below from the browser or using `curl` in terminal:
+After the successful launch of a container with the app (and the license activation), you can verify the version `ver` and `status` using the commands below from the browser or using `curl` in the terminal:
 
 * Version: http://localhost/wscservice/api?cmd=ver
 
@@ -228,13 +228,13 @@ docker start <container_id>
 docker logs <container_id>
 ```
 
-3. If you need to configure application server (AppServer), for example, edit `AppServerX.xml`, you need to connect to a container. Use `docker exec` command to connect to a container where the app is running:
+3. If you need to configure the application server (AppServer), for example, edit `AppServerX.xml`, you need to connect to a container. Use `docker exec` command to connect to a container where the app is running:
 
 ```
 docker exec -it <container_id> /bin/bash
 ```
 
-4. It's important to keep in mind and monitor the amount of resources allocated for and consumed by the application according the the minimal hardware requirements for it's proper work. You can check the resource usage statistics of a container using the `docker stats` command as shown below. [Read more](https://docs.docker.com/engine/reference/commandline/stats/) about this command and its options in the official documentation.
+4. It's important to keep in mind and monitor the amount of resources allocated for and consumed by the application according the the minimal hardware requirements for its proper work. You can check the resource usage statistics of a container using the `docker stats` command as shown below. [Read more](https://docs.docker.com/engine/reference/commandline/stats/) about this command and its options in the official documentation.
 
 ```
 docker stats <container_id>
@@ -242,13 +242,13 @@ docker stats <container_id>
 
 ## Create image from modified Docker container
 
-If you need to make any changes to the app configuration which is running inside Docker container (e.g. changes to `AppServerX.xml`) and keep them persistent, create an image from the modified container. It can be easily done with a single command:
+If you need to make any changes to the app configuration that is running inside the Docker container (e.g. changes to `AppServerX.xml`) and keep it persistent, create an image from the modified container. It can be easily done with a single command:
 
 ```
 docker commit <existing_container_id> <new_name_image>
 ```
 
-Then check if the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run container above.
+Then check if the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run the container above.
 
 
 ## Docker Compose
@@ -273,7 +273,7 @@ services:
 ```
 
 Notes:
-1. If you have a licence key, pass it as an environment variable like that:
+1. If you have a license key, pass it as an environment variable like that:
    ```  - LICENSE_TICKET_ID=<your Licence ID>```
    The server will be activated automatically upon startup.
 2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
