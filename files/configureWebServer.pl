@@ -58,7 +58,7 @@ sub configureNginxConfig
 		if ($host ne "")
 		{
 			# Change server name inside NGINX config
-			replaceFileContent('server_name \w*;', "server_name $host;", $nginxConf);
+			replaceFileContent('server_name [\w.-]*;', "server_name $host;", $nginxConf);
 		}
 		
 		if ($virtual_dir ne "")
