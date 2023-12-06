@@ -58,13 +58,16 @@ sub configureNginxConfig
 		if ($host ne "")
 		{
 			# Change server name inside NGINX config
-			replaceFileContent('server_name \w*;', "server_name $host;", $nginxConf);
+			replaceFileContent('server_name [\w.-]*;', "server_name $host;", $nginxConf);
 		}
 		
 		if ($virtual_dir ne "")
 		{
 			# Change virtual dir inside NGINX config
-			replaceFileContent('location \/\w*', "location /$virtual_dir", $nginxConf);
+			replaceFileContent('location \/.*? {', "location /$virtual_dir {", $nginxConf);
+			replaceFileContent('location \/.*?/samples {', "location /$virtual_dir/samples {", $nginxConf);
+			replaceFileContent('location \/.*?/wscbundle/ {', "location /$virtual_dir/wscbundle/ {", $nginxConf);
+			replaceFileContent('location \/.*?/api {', "location /$virtual_dir/api {", $nginxConf);
 		}
 	}
 }
@@ -93,7 +96,7 @@ sub replaceFileContent
 	my $file = <F>;
 	close(F);
 
-	my $n = ($file =~ s/$source/$dest/g);
+	my $n = ($file =~ s/$source/$dest/);
 	if ($n > 0)
 	{
 		open(F,">$path");

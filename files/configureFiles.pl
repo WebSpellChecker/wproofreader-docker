@@ -41,10 +41,10 @@ sub configureSamples()
 		my %pairs = (
 			'serviceProtocol: \'((http)|(https))\'' => "serviceProtocol: '$protocol'",
 			'servicePort: \'\d*\'' => "servicePort: '$web_port'",
-			'serviceHost: \'\w*\'' => "serviceHost: '$host'",
-			'servicePath: \'\w*/api\'' => "servicePath: '$virtual_dir/api'",
-			'((http)|(https)):\/\/\w*:\d*\/\w*\/wscbundle\/wscbundle.js' => "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js",
-			'((http)|(https)):\/\/\w*:\d*\/\w*\/samples\/' => "$protocol://$host:$web_port/$virtual_dir/samples/"
+			'serviceHost: \'[\w.-]*\'' => "serviceHost: '$host'",
+			'servicePath: \'.*?\/api\'' => "servicePath: '$virtual_dir/api'",
+			'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/wscbundle\/wscbundle.js' => "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js",
+			'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/samples\/' => "$protocol://$host:$web_port/$virtual_dir/samples/"
 		);
 		replaceFileContent(\%pairs, "$samples_dir_path/$_");
 	}
@@ -56,7 +56,8 @@ sub configureVirtualDir()
 	
 	my $virtual_dir_file = "$installPath/WebComponents/WebInterface/index.html";
 	
-	replaceFileContent({'((http)|(https)):\/\/\w*:\d*\/\w*\/' => "$protocol://$host:$web_port/$virtual_dir/"}, $virtual_dir_file);
+	replaceFileContent({'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/api\?cmd' => "$protocol://$host:$web_port/$virtual_dir/api?cmd"}, $virtual_dir_file);
+	replaceFileContent({'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/samples\/' => "$protocol://$host:$web_port/$virtual_dir/samples/"}, $virtual_dir_file);
 	
 	print "Verify the WSC Application Operability: $protocol://$host:$web_port/$virtual_dir/ \n";
 }
