@@ -10,6 +10,7 @@ configureSsl();
 configureAppServerParams();
 configureDatabase();
 configureProxyParams();
+configureAccessKey();
 
 sub configureSamplesAndVirtualDir
 {
@@ -140,6 +141,11 @@ sub configureProxyParams
 		'ProxyPassword' => $ENV{'PROXY_PASSWORD'}
 	);
 	replaceXmlValues(\%tags, $server_config_path);
+}
+
+sub configureAccessKey()
+{
+	replaceXmlValues({ 'AccessKey' => $ENV{'ACCESS_KEY'} }, $server_config_path);
 }
 
 sub replaceFileContent

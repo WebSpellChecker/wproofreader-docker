@@ -92,6 +92,9 @@ ENV ENABLE_REQUEST_STATISTIC=false
 ENV ENABLE_USER_ACTION_STATISTIC=false
 ENV ENABLE_REQUEST_VALIDATION=false
 
+# Access Key
+ENV ACCESS_KEY=''
+
 RUN yum update -y --skip-broken && \
     yum install -y epel-release && \
     yum install -y nginx \
