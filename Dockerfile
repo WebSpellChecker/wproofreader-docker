@@ -94,6 +94,9 @@ ENV ENABLE_REQUEST_STATISTIC=false
 ENV ENABLE_USER_ACTION_STATISTIC=false
 ENV ENABLE_REQUEST_VALIDATION=false
 
+# Access Key
+ENV ACCESS_KEY=''
+
 RUN apt-get update && \
     apt-get upgrade -y perl && \
     apt-get install -y --no-install-recommends nginx default-jre wget && \
