@@ -56,6 +56,9 @@ ARG PROXY_PORT
 ARG PROXY_USER_NAME
 ARG PROXY_PASSWORD
 
+# Access Key for Custom Dictionary and Style Guide API
+ARG ACCESS_KEY
+
 ENV FILE_OWNER=${USER_ID}:${GROUP_ID}
 ENV PRODUCTS=${PRODUCTS}
 ENV LANGUAGES=${LANGUAGES}
@@ -94,8 +97,7 @@ ENV ENABLE_REQUEST_STATISTIC=false
 ENV ENABLE_USER_ACTION_STATISTIC=false
 ENV ENABLE_REQUEST_VALIDATION=false
 
-# Access Key for Custom Dictionary and Style Guide API
-ENV ACCESS_KEY=''
+ENV ACCESS_KEY=${ACCESS_KEY}
 
 RUN apt-get update && \
     apt-get upgrade -y perl && \

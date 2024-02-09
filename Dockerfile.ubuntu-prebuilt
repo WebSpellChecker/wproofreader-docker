@@ -34,6 +34,9 @@ ARG PROXY_PORT
 ARG PROXY_USER_NAME
 ARG PROXY_PASSWORD
 
+# Access Key for Custom Dictionary and Style Guide API
+ARG ACCESS_KEY
+
 ENV PROTOCOL=${PROTOCOL}
 ENV DOMAIN_NAME=${DOMAIN_NAME}
 ENV WEB_PORT=${WEB_PORT}
@@ -60,8 +63,7 @@ ENV ENABLE_REQUEST_STATISTIC=false
 ENV ENABLE_USER_ACTION_STATISTIC=false
 ENV ENABLE_REQUEST_VALIDATION=false
 
-# Access Key for Custom Dictionary and Style Guide API
-ENV ACCESS_KEY=''
+ENV ACCESS_KEY=${ACCESS_KEY}
 
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 
