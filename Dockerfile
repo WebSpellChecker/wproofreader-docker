@@ -94,7 +94,7 @@ ENV ENABLE_REQUEST_STATISTIC=false
 ENV ENABLE_USER_ACTION_STATISTIC=false
 ENV ENABLE_REQUEST_VALIDATION=false
 
-# Access Key
+# Access Key for Custom Dictionary and Style Guide API
 ENV ACCESS_KEY=''
 
 RUN apt-get update && \
