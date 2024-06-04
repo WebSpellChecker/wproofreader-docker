@@ -69,6 +69,7 @@ sub configureUserAndCustomDictionaries
 	my $cust_dicts_path = $ENV{'CUSTOM_DICTIONARIES_DIR'} eq '' ? "$dicts_path/CustomDictionaries" : $ENV{'CUSTOM_DICTIONARIES_DIR'};
 	my $cust_dict_conf = "$cust_dicts_path/CustDictConfig.xml";
 	my $user_dicts_path = $ENV{'USER_DICTIONARIES_DIR'} eq '' ? "$dicts_path/UserDictionaries" : $ENV{'USER_DICTIONARIES_DIR'};
+	my $style_guide_path = $ENV{'STYLE_GUIDE_DIR'} eq '' ? "$dicts_path/StyleGuide" : $ENV{'STYLE_GUIDE_DIR'};
 
 	replaceXmlValues({'CustDictDir' => $cust_dicts_path,
 					 'CustDictConfig' => $cust_dict_conf,
@@ -84,11 +85,19 @@ sub configureUserAndCustomDictionaries
 	{
 		mkdir $user_dicts_path;
 	}
+	
+	if (! -e $style_guide_path)
+	{
+		system("mv $serverPath/StyleGuide $style_guide_path");
+	}
 
 	if (! -e $cust_dict_conf)
 	{
 		system("mv $serverPath/CustDictConfig.xml $cust_dict_conf");
 	}
+	
+	replaceFileContent({ '<StyleGuideCheck Enabled="(true|false)">[\s]*?<DirectoryPath>[\w\\\/:]*?<\/DirectoryPath>[\s]*?<\/StyleGuideCheck>' =>
+		"<StyleGuideCheck Enabled=\"true\">\n\t\t<DirectoryPath>$style_guide_path</DirectoryPath>\n\t</StyleGuideCheck>" }, $server_config_path);
 	
 	for my $file (<$serverPath/CustomDictionaries/*.txt>)
 	{
