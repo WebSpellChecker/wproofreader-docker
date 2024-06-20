@@ -24,7 +24,6 @@ ARG PROTOCOL=2
 ARG WEB_PORT
 ARG DOMAIN_NAME=localhost
 ARG VIRTUAL_DIR=wscservice
-ARG ACTIVATE_LICENSE=0
 ARG LICENSE_TICKET_ID
 ARG PRODUCTS=4
 ARG INSTALL_SAMPLES=1
@@ -42,9 +41,8 @@ where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` �
 
 English language and autocomplete models are available for en_US (American English), en_GB (British English), en_CA (Canadian English) and en_AU (Australian English).  German – for de_DE (Germany), Spanish – for es_ES (Spain).
 
-* Activate license. Update the values for the following options:
+* Activate license. Update the value for the following option:
 ```
-ARG ACTIVATE_LICENSE=1
 ARG LICENSE_TICKET_ID=6u*************ZO
 ```
 * Specify `DOMAIN_NAME` which will be used for the setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
@@ -84,7 +82,7 @@ where:
 Also, if you don't want to modify the `Dockerfile` you can provide any installation parameter via CLI through the `--build-arg` flag. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg ACTIVATE_LICENSE=1 --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg LANGUAGES=en_US,en_GB -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg LANGUAGES=en_US,en_GB -f Dockerfile .
 ```
 
 ### Choosing platform

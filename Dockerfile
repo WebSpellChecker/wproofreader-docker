@@ -40,9 +40,7 @@ ARG PROTOCOL=2
 ARG WEB_PORT
 ARG DOMAIN_NAME=localhost
 ARG VIRTUAL_DIR=wscservice
-# Change to 1 to activate the license during the image build. 
-ARG ACTIVATE_LICENSE=0
-# Specify license ticket ID if ACTIVATE_LICENSE is set to 1. For example, LICENSE_TICKET_ID = 6u*************ZO
+# Specify license ticket ID to activate the license during the image build. For example, LICENSE_TICKET_ID = 6u*************ZO
 ARG LICENSE_TICKET_ID
 ARG PRODUCTS=4
 ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
@@ -70,7 +68,6 @@ ENV DOMAIN_NAME=${DOMAIN_NAME}
 ENV WEB_PORT=${WEB_PORT}
 ENV VIRTUAL_DIR=${VIRTUAL_DIR}
 ENV WEB_SERVER_TYPE=2
-ENV ACTIVATE_LICENSE=${ACTIVATE_LICENSE}
 ENV LICENSE_TICKET_ID=${LICENSE_TICKET_ID}
 ENV SERVICE_FILES_DIR=${SERVICE_FILES_DIR}
 ENV RESTART_WEB_SERVER=1

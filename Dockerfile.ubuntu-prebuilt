@@ -13,9 +13,7 @@ ARG PROTOCOL=2
 ARG WEB_PORT
 ARG DOMAIN_NAME=localhost
 ARG VIRTUAL_DIR=wscservice
-# Change to 1 to activate the license during the image build.
-ARG ACTIVATE_LICENSE=0
-# Specify license ticket ID if ACTIVATE_LICENSE is set to 1. For example, LICENSE_TICKET_ID = 6u*************ZO
+# Specify license ticket ID to activate the license during the image build. For example, LICENSE_TICKET_ID = 6u*************ZO
 ARG LICENSE_TICKET_ID
 ARG PRODUCTS=4
 ARG AI_MODELS=1,2
@@ -42,7 +40,6 @@ ENV DOMAIN_NAME=${DOMAIN_NAME}
 ENV WEB_PORT=${WEB_PORT}
 ENV VIRTUAL_DIR=${VIRTUAL_DIR}
 ENV WEB_SERVER_TYPE=2
-ENV ACTIVATE_LICENSE=${ACTIVATE_LICENSE}
 ENV LICENSE_TICKET_ID=${LICENSE_TICKET_ID}
 ENV RESTART_WEB_SERVER=1
 
@@ -73,7 +70,7 @@ RUN if [ -z $(egrep -i "^${USER_NAME}" /etc/group) ]; then \
 
 RUN perl ${APP_SERVER_DIR}/install_languages.pl ${APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${SERVICE_FILES_DIR}/WebSpellChecker"
 
-RUN if [ "${ACTIVATE_LICENSE}" = 1 ] && [ ! -z "${LICENSE_TICKET_ID}" ]; then \
+RUN if [ ! -z "${LICENSE_TICKET_ID}" ]; then \
         sh ${APP_SERVER_DIR}/activateLicense.sh ${LICENSE_TICKET_ID} -y; \
     fi;
 
