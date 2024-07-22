@@ -1,4 +1,4 @@
-FROM redhat/ubi9
+FROM redhat/ubi9-minimal
 
 ARG WEB_SERVER_PORT=8080
 ARG WEB_SERVER_SSL_PORT=8443
@@ -33,16 +33,16 @@ ENV WSC_AUTO_INSTALL=TRUE
 
 # Application installation parameters
 # Protocol of the NGINX web server (1 - HTTPS, 2 - HTTP)
-ARG PROTOCOL=2
+ARG PROTOCOL=1
 # Web port outside the container. If value isn't specified (e.g. empty), the default value will be used (443 for HTTPS and 80 for HTTP).
-ARG WEB_PORT
+ARG WEB_PORT=81
 ARG DOMAIN_NAME=localhost
 ARG VIRTUAL_DIR=wscservice
 # Specify license ticket ID to activate the license during the image build. For example, LICENSE_TICKET_ID = 6u*************ZO
-ARG LICENSE_TICKET_ID
+ARG LICENSE_TICKET_ID=6u66qSqwJfwdQZO
 ARG PRODUCTS=4
 ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
-ARG AI_MODELS=1,2
+ARG AI_MODELS=0
 ARG INSTALL_SAMPLES=1
 
 # Proxy server settings
@@ -96,12 +96,18 @@ ENV ENABLE_REQUEST_VALIDATION=false
 
 ENV ACCESS_KEY=${ACCESS_KEY}
 
-RUN yum update -y --skip-broken && \
-    yum install -y nginx \
+RUN microdnf upgrade \
+        --refresh \
+        --best \
+        --nodocs \
+        --noplugins \
+        --setopt=install_weak_deps=0 && \
+    microdnf install -y nginx \
         java-17-openjdk-devel \
         perl \
-        wget && \
-    yum clean all && rm -rf /var/cache/yum && \
+        wget \
+        tar && \
+    microdnf clean all && \
     rm -rf /etc/nginx/conf.d/default.conf /usr/share/nginx/html/* && \
     rm -rf /var/log/nginx/* && \
     ln -sf /dev/stderr /var/log/nginx/error.log
@@ -145,11 +151,11 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /var/run/nginx \
         /etc/nginx
 
-RUN yum remove -y python-setuptools \
-        python-urllib3 \
-        python-idna \
-        python-requests \
-        wget
+RUN microdnf remove -y wget python && \
+    rm -rf /usr/share/licenses/python3-setuptools-wheel/* && \
+    rm -rf /usr/lib64/python3.9/* && \
+    rm -rf /usr/share/python3-wheels/* && \
+    rm -rf /usr/share/licenses/webkit2gtk3-jsc
 
 USER $USER_NAME
 
