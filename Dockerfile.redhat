@@ -149,6 +149,7 @@ RUN yum remove -y python-setuptools \
         python-urllib3 \
         python-idna \
         python-requests \
+        webkit2gtk3-jsc \
         wget
 
 USER $USER_NAME
