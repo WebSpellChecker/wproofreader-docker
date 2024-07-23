@@ -1,23 +1,27 @@
 # WebSpellChecker/WProofreader Docker
 
-This is a Docker configuration that you can use to build a WebSpellChecker/WProofreader Server image based on the [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu), [CentOS Linux 7](https://hub.docker.com/_/centos) or [Red Hat Universal Base Image 8](https://hub.docker.com/r/redhat/ubi8) using `Dockerfile`, `Dockerfile.centos`, `Dockerfile.redhat`, respectively.
+This repository provides Docker configurations to build a WebSpellChecker/WProofreader Server image using [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu) or [Red Hat Universal Base Image 9](https://hub.docker.com/r/redhat/ubi9). Use `Dockerfile` for Ubuntu or `Dockerfile.redhat` for Red Hat. 
+
+Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image with WProofreader Server pre-installed on Ubuntu, available on Docker Hub since v5.30.0. This public [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) includes pre-configured languages and settings, and can be used for both evaluation and production with necessary modifications to fit your specific requirements.
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
-**Note!** For evaluation purposes, you can also use a [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) that we built and published on Docker Hub.
-
-Before you begin, make sure you've acknowledged the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
+Before you begin, make sure you meet the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
 
 ## Create Docker image
 
-For production purposes, it's recommended to create a custom Docker image. There are two approaches that you can consider: building using an installation package provided at the request by the support team or from a premade Docker image (available since v5.30.0).
+For production, create a custom Docker image using either an installation package provided by the support team or a prebuilt Docker image.
 
 The general procedure is as follows:
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases). If you already have a package that you would like to use for the installation, make sure that the WProofreader Docker release version matches that of the package. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
 If, on the other hand, you would like to use a prebuilt Docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
-2. For the installation that uses a package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to `wproofreader-docker/files` directory. Such an installation package can be requested via [contact us form](https://webspellchecker.com/contact-us/). If you are using a prebuilt image, skip this step.
-3. Tailor the installation to your needs by editing one of the Dockerfiles. Choose [Dockerfile](Dockerfile), [Dockerfile.centos](Dockerfile.centos), or [Dockerfile.redhat](Dockerfile.redhat) for installations from a package. If you're leveraging a prebuilt image from DockerHub, modify [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
+
+2. If using an installation package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to the `wproofreader-docker/files` directory. You can request an installation package via the [contact us form](https://webspellchecker.com/contact-us/). If using a prebuilt image, skip this step.
+
+3. Tailor the installation by editing one of the Dockerfiles:
+- For installations from a package, edit [Dockerfile](Dockerfile) or [Dockerfile.redhat](Dockerfile.redhat).
+- For a prebuilt image from Docker Hub, edit [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
 ```
 ARG PROTOCOL=2
@@ -33,7 +37,7 @@ ARG INSTALL_SAMPLES=1
 ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
 ARG AI_MODELS=1,2
 ```
-where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install English language model for enhanced text correction. The options for `AI_MODELS` parameter are:
+where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `AI_MODELS` parameter are:
 1. English language model
 2. English autocomplete model
 3. German language model
@@ -53,7 +57,7 @@ ARG DOMAIN_NAME = DOMAIN_NAME
 
 If `LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
-* If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added. 
+* If using a proxy server for network traffic, add the following proxy settings for automated license activation:
 
 ```
 ARG ENABLE_PROXY=1
@@ -209,7 +213,7 @@ After the successful launch of a container with the app (and the license activat
 }
 ```
 
-* Demo samples: http://localhost/wscservice/samples/
+* Getting started http://localhost/wscservice/ as well as the demo samples: http://localhost/wscservice/samples/ pages can be accessed from the browser.
 
 
 ## Working with container
@@ -272,7 +276,7 @@ services:
 
 Notes:
 1. If you have a license key, pass it as an environment variable like that:
-   ```  - LICENSE_TICKET_ID=<your Licence ID>```
+   ```  - LICENSE_TICKET_ID=<your License ID>```
    The server will be activated automatically upon startup.
 2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
  ```yaml
