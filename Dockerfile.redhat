@@ -101,6 +101,11 @@ RUN yum update -y --skip-broken && \
         java-17-openjdk-devel \
         perl \
         wget && \
+    yum remove -y webkit2gtk3-jsc \
+        python-setuptools \
+        python-urllib3 \
+        python-idna \
+        python-requests && \
     yum clean all && rm -rf /var/cache/yum && \
     rm -rf /etc/nginx/conf.d/default.conf /usr/share/nginx/html/* && \
     rm -rf /var/log/nginx/* && \
