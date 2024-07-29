@@ -97,6 +97,7 @@ ENV ENABLE_REQUEST_VALIDATION=false
 ENV ACCESS_KEY=${ACCESS_KEY}
 
 RUN yum update -y --skip-broken && \
+    yum module enable nginx:1.24 -y && \
     yum install -y nginx \
         java-17-openjdk-devel \
         perl \
