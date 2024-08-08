@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG WEB_SERVER_PORT=8080
 ARG WEB_SERVER_SSL_PORT=8443
@@ -101,7 +101,7 @@ ENV ACCESS_KEY=${ACCESS_KEY}
 RUN apt-get update && \
     apt-get upgrade -y perl && \
     apt-get install -y --no-install-recommends nginx default-jre wget && \
-    apt-get clean && apt-get upgrade -y openssl && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
     rm -rf /var/log/nginx/* && \

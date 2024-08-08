@@ -97,15 +97,16 @@ ENV ENABLE_REQUEST_VALIDATION=false
 ENV ACCESS_KEY=${ACCESS_KEY}
 
 RUN yum update -y --skip-broken && \
-    yum install -y http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    yum module enable nginx:1.24 -y && \
     yum install -y nginx \
-        java-11-openjdk-devel \
+        java-17-openjdk-devel \
         perl \
-        mod_ssl \
-        openssl \
-        wget \
-        vim \
-        nano && \
+        wget && \
+    yum remove -y webkit2gtk3-jsc \
+        python-setuptools \
+        python-urllib3 \
+        python-idna \
+        python-requests && \
     yum clean all && rm -rf /var/cache/yum && \
     rm -rf /etc/nginx/conf.d/default.conf /usr/share/nginx/html/* && \
     rm -rf /var/log/nginx/* && \
@@ -149,6 +150,11 @@ RUN chown -R ${USER_ID}:${GROUP_ID} /var/log/nginx \
         /var/lib/nginx \
         /var/run/nginx \
         /etc/nginx
+
+RUN yum remove -y wget && \
+    yum clean all && rm -rf /var/cache/yum && \
+    rm -rf /tmp/* && \
+    rm -rf /var/tmp/*
 
 USER $USER_NAME
 
