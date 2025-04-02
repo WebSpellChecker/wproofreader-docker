@@ -1,7 +1,7 @@
 # Change TAG to your specific production version (v5.30.0 or higher). It's not recommended to keep "latest".
 # The full list of tags is available here: https://hub.docker.com/r/webspellchecker/wproofreader/tags.
 # When used for the first time, it is recommended to choose the latest available.
-ARG TAG=latest
+ARG TAG=base
 FROM webspellchecker/wproofreader:${TAG}
 
 USER root
