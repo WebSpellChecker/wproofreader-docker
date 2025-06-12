@@ -6,11 +6,6 @@ my $server_config_path = "$serverPath/AppServerX.xml";
 
 configureSamplesAndVirtualDir();
 configureUserAndCustomDictionaries();
-configureSsl();
-configureAppServerParams();
-configureDatabase();
-configureProxyParams();
-configureAccessKey();
 
 sub configureSamplesAndVirtualDir
 {
@@ -107,54 +102,6 @@ sub configureUserAndCustomDictionaries
 			system("mv $file $cust_dicts_path/");
 		}
 	}
-}
-
-sub configureSsl
-{
-	replaceXmlValues({ 'VerificationMode' => 'NONE' }, $server_config_path);
-}
-
-sub configureAppServerParams
-{
-	replaceXmlValues({ 'Size' => '0' }, $server_config_path);
-	if (replaceXmlValues({ 'PathToServiceFilesDirectory' => "$ENV{'SERVICE_FILES_DIR'}" }, $server_config_path) == 0)
-	{
-		replaceFileContent({ '</ServiceName>' => "</ServiceName>\n	<PathToServiceFilesDirectory>$ENV{'SERVICE_FILES_DIR'}</PathToServiceFilesDirectory>" }, $server_config_path);
-	}
-}
-
-sub configureDatabase
-{
-	my %tags = (
-		'EnableRequestStatistic' => $ENV{'ENABLE_REQUEST_STATISTIC'},
-		'RequestStatisticDataType' => 'DATABASE',
-		'EnableRequestValidation' => $ENV{'ENABLE_REQUEST_VALIDATION'},
-		'EnableUserActionStatistic' => $ENV{'ENABLE_USER_ACTION_STATISTIC'},
-		'EnableDatabaseProvider' => $ENV{'ENABLE_DATABASE'},
-		'DatabaseHost' => $ENV{'DATABASE_HOST'},
-		'DatabasePort' => $ENV{'DATABASE_PORT'},
-		'DatabaseSchema' => $ENV{'DATABASE_SCHEMA'},
-		'DatabaseUser' => $ENV{'DATABASE_USER'},
-		'DatabasePassword' => $ENV{'DATABASE_PASSWORD'}
-	);
-	replaceXmlValues(\%tags, $server_config_path);
-}
-
-sub configureProxyParams
-{
-	my %tags = (
-		'EnableProxy' => $ENV{'ENABLE_PROXY'},
-		'ProxyHost' => $ENV{'PROXY_HOST'},
-		'ProxyPort' => $ENV{'PROXY_PORT'},
-		'ProxyUserName' => $ENV{'PROXY_USER_NAME'},
-		'ProxyPassword' => $ENV{'PROXY_PASSWORD'}
-	);
-	replaceXmlValues(\%tags, $server_config_path);
-}
-
-sub configureAccessKey()
-{
-	replaceXmlValues({ 'AccessKey' => $ENV{'ACCESS_KEY'} }, $server_config_path);
 }
 
 sub replaceFileContent

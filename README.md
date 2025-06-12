@@ -172,6 +172,10 @@ where:
 * `--env VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
 * `--env LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
 
+Additional parameters:
+
+* `--env JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
+
 The container launched by the command above will be available at the following address:
 
 ```
