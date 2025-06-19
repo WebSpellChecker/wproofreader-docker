@@ -68,13 +68,13 @@ RUN if [ -z $(egrep -i "^${USER_NAME}" /etc/group) ]; then \
         groupadd -g ${GROUP_ID} ${USER_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME};  \
     fi;
 
-RUN perl ${APP_SERVER_DIR}/install_languages.pl ${APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${SERVICE_FILES_DIR}/WebSpellChecker"
+RUN perl ${APP_SERVER_DIR}/install_languages.pl ${APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker"
 
 RUN if [ ! -z "${LICENSE_TICKET_ID}" ]; then \
         sh ${APP_SERVER_DIR}/activateLicense.sh ${LICENSE_TICKET_ID} -y; \
     fi;
 
-RUN chown -R ${USER_ID}:${GROUP_ID} ${SERVICE_FILES_DIR}/WebSpellChecker \
+RUN chown -R ${USER_ID}:${GROUP_ID} ${PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker \
     /dictionaries \
     /opt/WebSpellChecker \
     /var/run/nginx  \
