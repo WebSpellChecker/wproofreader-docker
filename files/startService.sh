@@ -18,8 +18,8 @@ touch "${ConfigureFlag}"
 fi
 
 # activate a license automatically
-LicenseFile="${SERVICE_FILES_DIR}/WebSpellChecker/license/license.xml"
-if ! [ -f "${LicenseFile}" ] && ! [ -f "${SERVICE_FILES_DIR}/wsc/license/license.xml" ]; then
+LicenseFile="${PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker/license/license.xml"
+if ! [ -f "${LicenseFile}" ] && ! [ -f "${PATH_TO_SERVICE_FILES_DIRECTORY}/wsc/license/license.xml" ]; then
    ./AppServerX -activateLicense ${LICENSE_TICKET_ID} -y
 fi
 
