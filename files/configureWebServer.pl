@@ -5,10 +5,10 @@ configureNginxConfig();
 
 sub configureNginx
 {
-	my $nginxPort = $ENV{'WEB_SERVER_PORT'};
-	my $nginxSSLPort = $ENV{'WEB_SERVER_SSL_PORT'};
+	my $nginxPort = $ENV{'WPR_WEB_SERVER_PORT'};
+	my $nginxSSLPort = $ENV{'WPR_WEB_SERVER_SSL_PORT'};
 
-	my $protocol = $ENV{'PROTOCOL'};
+	my $protocol = $ENV{'WPR_PROTOCOL'};
 
 	if (-e $nginxConf)
 	{
@@ -50,8 +50,8 @@ sub configureNginxConfig
 		replaceFileContent('    server {\n(?:.*\n){15}    }', '', $nginxMainConf);
 	}
 	
-	my $host = $ENV{'DOMAIN_NAME'};
-	my $virtual_dir = $ENV{'VIRTUAL_DIR'};
+	my $host = $ENV{'WPR_DOMAIN_NAME'};
+	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
 	
 	if (-e $nginxConf)
 	{
@@ -76,9 +76,9 @@ sub enableSSL
 {
 	my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
 
-	my $certDir = $ENV{'CERT_DIR'};
-	my $certName = $ENV{'CERT_FILE_NAME'};
-	my $keyName = $ENV{'CERT_KEY_NAME'};
+	my $certDir = $ENV{'WPR_CERT_DIR'};
+	my $certName = $ENV{'WPR_CERT_FILE_NAME'};
+	my $keyName = $ENV{'WPR_CERT_KEY_NAME'};
 
 	if (-e $nginxConf)
 	{

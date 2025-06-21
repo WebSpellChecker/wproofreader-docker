@@ -1,6 +1,6 @@
 use File::Basename;
 
-my $serverPath = $ENV{'APP_SERVER_DIR'};
+my $serverPath = $ENV{'WPR_APP_SERVER_DIR'};
 my $installPath = "$serverPath/..";
 my $server_config_path = "$serverPath/AppServerX.xml";
 
@@ -9,12 +9,12 @@ configureUserAndCustomDictionaries();
 
 sub configureSamplesAndVirtualDir
 {
-	my $protocol = $ENV{'PROTOCOL'} eq '1' ? 'https' : 'http';
-	my $host = $ENV{'DOMAIN_NAME'};
+	my $protocol = $ENV{'WPR_PROTOCOL'} eq '1' ? 'https' : 'http';
+	my $host = $ENV{'WPR_DOMAIN_NAME'};
 
 	# If user don't specify WEB_PORT, using default 80 for http and 443 for https
-	my $web_port = $ENV{'WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WEB_PORT'};
-	my $virtual_dir = $ENV{'VIRTUAL_DIR'};
+	my $web_port = $ENV{'WPR_WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WPR_WEB_PORT'};
+	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
 
 	configureVirtualDir($protocol, $host, $web_port, $virtual_dir);
 	
@@ -60,11 +60,11 @@ sub configureVirtualDir()
 
 sub configureUserAndCustomDictionaries
 {
-	my $dicts_path = $ENV{'DICTIONARIES_DIR'} eq '' ? '/dictionaries' : $ENV{'DICTIONARIES_DIR'};
-	my $cust_dicts_path = $ENV{'CUSTOM_DICTIONARIES_DIR'} eq '' ? "$dicts_path/CustomDictionaries" : $ENV{'CUSTOM_DICTIONARIES_DIR'};
+	my $dicts_path = $ENV{'WPR_DICTIONARIES_DIR'} eq '' ? '/dictionaries' : $ENV{'WPR_DICTIONARIES_DIR'};
+	my $cust_dicts_path = $ENV{'WPR_CUSTOM_DICTIONARIES_DIR'} eq '' ? "$dicts_path/CustomDictionaries" : $ENV{'WPR_CUSTOM_DICTIONARIES_DIR'};
 	my $cust_dict_conf = "$cust_dicts_path/CustDictConfig.xml";
-	my $user_dicts_path = $ENV{'USER_DICTIONARIES_DIR'} eq '' ? "$dicts_path/UserDictionaries" : $ENV{'USER_DICTIONARIES_DIR'};
-	my $style_guide_path = $ENV{'STYLE_GUIDE_DIR'} eq '' ? "$dicts_path/StyleGuide" : $ENV{'STYLE_GUIDE_DIR'};
+	my $user_dicts_path = $ENV{'WPR_USER_DICTIONARIES_DIR'} eq '' ? "$dicts_path/UserDictionaries" : $ENV{'WPR_USER_DICTIONARIES_DIR'};
+	my $style_guide_path = $ENV{'WPR_STYLE_GUIDE_DIR'} eq '' ? "$dicts_path/StyleGuide" : $ENV{'WPR_STYLE_GUIDE_DIR'};
 
 	replaceXmlValues({'CustDictDir' => $cust_dicts_path,
 					 'CustDictConfig' => $cust_dict_conf,
