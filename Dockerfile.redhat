@@ -29,7 +29,7 @@ ARG GROUP_ID=2000
 
 ENV WPR_APP_SERVER_DIR=${APP_SERVER_DIR}
 
-ENV WPR_WSC_AUTO_INSTALL=TRUE
+ENV WPR_AUTO_INSTALL=TRUE
 
 # Application installation parameters
 # Protocol of the NGINX web server (1 - HTTPS, 2 - HTTP)
