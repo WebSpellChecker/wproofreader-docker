@@ -154,4 +154,4 @@ USER $USER_NAME
 
 WORKDIR $APP_SERVER_DIR
 
-ENTRYPOINT sh ${APP_SERVER_DIR}/startService.sh
+ENTRYPOINT ["sh", "-c", "${WPR_APP_SERVER_DIR}/startService.sh"]
