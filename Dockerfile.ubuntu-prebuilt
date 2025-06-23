@@ -68,13 +68,13 @@ RUN if [ -z $(egrep -i "^${USER_NAME}" /etc/group) ]; then \
         groupadd -g ${GROUP_ID} ${USER_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME};  \
     fi;
 
-RUN perl ${APP_SERVER_DIR}/install_languages.pl ${APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker"
+RUN perl ${WPR_APP_SERVER_DIR}/install_languages.pl ${WPR_APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker"
 
-RUN if [ ! -z "${LICENSE_TICKET_ID}" ]; then \
-        sh ${APP_SERVER_DIR}/activateLicense.sh ${LICENSE_TICKET_ID} -y; \
+RUN if [ ! -z "${WPR_LICENSE_TICKET_ID}" ]; then \
+        sh ${WPR_APP_SERVER_DIR}/activateLicense.sh ${WPR_LICENSE_TICKET_ID} -y; \
     fi;
 
-RUN chown -R ${USER_ID}:${GROUP_ID} ${PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker \
+RUN chown -R ${USER_ID}:${GROUP_ID} ${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker \
     /dictionaries \
     /opt/WebSpellChecker \
     /var/run/nginx  \
@@ -87,6 +87,6 @@ RUN apt-get remove -y wget && apt-get autoremove -y && apt-get clean
 
 USER $USER_NAME
 
-WORKDIR $APP_SERVER_DIR
+WORKDIR $WPR_APP_SERVER_DIR
 
-ENTRYPOINT sh ${APP_SERVER_DIR}/startService.sh
+ENTRYPOINT ["sh", "-c", "${WPR_APP_SERVER_DIR}/startService.sh"]
