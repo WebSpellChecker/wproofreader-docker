@@ -152,29 +152,29 @@ where:
 
 Alternatively, these parameters can be changed on the container running by passing them as environment variables:
 
-* `PROTOCOL`
-* `DOMAIN_NAME`
-* `WEB_PORT`
-* `VIRTUAL_DIR`
-* `LICENSE_TICKET_ID`
+* `WPR_PROTOCOL`
+* `WPR_DOMAIN_NAME`
+* `WPR_WEB_PORT`
+* `WPR_VIRTUAL_DIR`
+* `WPR_LICENSE_TICKET_ID`
 
 For example:
 
 ```
-docker run -d -p 443:8443 --env PROTOCOL=1 --env DOMAIN_NAME=localhost --env WEB_PORT=443 --env VIRTUAL_DIR=wscservice --env LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+docker run -d -p 443:8443 --env WPR_PROTOCOL=1 --env WPR_DOMAIN_NAME=localhost --env WPR_WEB_PORT=443 --env WPR_VIRTUAL_DIR=wscservice --env WPR_LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
 ```
 
 where:
 
-* `--env PROTOCOL=1` start a container on HTTPS protocol
-* `--env DOMAIN_NAME=localhost` start a container on `localhost` domain name
-* `--env WEB_PORT=443` configure `443` port to be an external port of a container
-* `--env VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
-* `--env LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
+* `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
+* `--env WPR_DOMAIN_NAME=localhost` start a container on `localhost` domain name
+* `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
+* `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
+* `--env WPR_LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
 
 Additional parameters:
 
-* `--env JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
+* `--env WPR_JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
 
 The container launched by the command above will be available at the following address:
 
@@ -272,25 +272,25 @@ services:
     ports:
       - "80:8080"
     environment:
-      - PROTOCOL=2 
-      - WEB_PORT=80
-      - DOMAIN_NAME=localhost
-      - VIRTUAL_DIR=wscservice
+      - WPR_PROTOCOL=2
+      - WPR_WEB_PORT=80
+      - WPR_DOMAIN_NAME=localhost
+      - WPR_VIRTUAL_DIR=wscservice
 ```
 
 Notes:
 1. If you have a license key, pass it as an environment variable like that:
-   ```  - LICENSE_TICKET_ID=<your License ID>```
+   ```  - WPR_LICENSE_TICKET_ID=<your License ID>```
    The server will be activated automatically upon startup.
 2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
  ```yaml
     ports:
       - "443:8443"
     environment:
-      - PROTOCOL=1 
-      - WEB_PORT=443
-      - DOMAIN_NAME=localhost
-      - VIRTUAL_DIR=wscservice
+      - WPR_PROTOCOL=1
+      - WPR_WEB_PORT=443
+      - WPR_DOMAIN_NAME=localhost
+      - WPR_VIRTUAL_DIR=wscservice
 ```
 3. For HTTPS communication you have to provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem`, respectively. If, for instance, they are kept in a folder `/home/user/certificate`, one should add the following section to `docker-compose.yml`:
  ```yaml
@@ -313,11 +313,11 @@ services:
     ports:
       - "443:8443"
     environment:
-      - PROTOCOL=1 
-      - WEB_PORT=443
-      - DOMAIN_NAME=localhost
-      - VIRTUAL_DIR=wscservice
-      - LICENSE_TICKET_ID=ABCD1234
+      - WPR_PROTOCOL=1
+      - WPR_WEB_PORT=443
+      - WPR_DOMAIN_NAME=localhost
+      - WPR_VIRTUAL_DIR=wscservice
+      - WPR_LICENSE_TICKET_ID=ABCD1234
     volumes:
       - /home/user/certificate:/certificate
       - /home/user/dictionaries:/dictionaries
