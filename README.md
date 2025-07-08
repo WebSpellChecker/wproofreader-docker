@@ -1,6 +1,6 @@
 # WebSpellChecker/WProofreader Docker
 
-This repository provides Docker configurations to build a WebSpellChecker/WProofreader Server image using [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu) or [Red Hat Universal Base Image 9](https://hub.docker.com/r/redhat/ubi9). Use `Dockerfile` for Ubuntu or `Dockerfile.redhat` for Red Hat. 
+This repository provides Docker configurations to build a WebSpellChecker/WProofreader Server image using [Ubuntu Server 24.04](https://hub.docker.com/_/ubuntu) or [Red Hat Universal Base Image 9](https://hub.docker.com/r/redhat/ubi9). Use `Dockerfile` for Ubuntu or `Dockerfile.redhat` for Red Hat.
 
 Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image with WProofreader Server pre-installed on Ubuntu, available on Docker Hub since v5.30.0. This public [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) includes pre-configured languages and settings, and can be used for both evaluation and production with necessary modifications to fit your specific requirements.
 
