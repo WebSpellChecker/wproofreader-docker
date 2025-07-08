@@ -8,46 +8,46 @@ USER root
 
 # Application installation parameters
 # Protocol of the NGINX web server (1 - HTTPS, 2 - HTTP)
-ARG PROTOCOL=2
+ARG WPR_PROTOCOL=2
 # Web port outside the container. If value isn't specified (e.g. empty), the default value will be used (443 for HTTPS and 80 for HTTP).
-ARG WEB_PORT
-ARG DOMAIN_NAME=localhost
-ARG VIRTUAL_DIR=wscservice
+ARG WPR_WEB_PORT
+ARG WPR_DOMAIN_NAME=localhost
+ARG WPR_VIRTUAL_DIR=wscservice
 # Specify license ticket ID to activate the license during the image build. For example, LICENSE_TICKET_ID = 6u*************ZO
-ARG LICENSE_TICKET_ID
-ARG PRODUCTS=4
-ARG AI_MODELS=1,2
-ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
-ARG INSTALL_SAMPLES=1
+ARG WPR_LICENSE_TICKET_ID
+ARG WPR_PRODUCTS=4
+ARG WPR_AI_MODELS=1,2
+ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
+ARG WPR_INSTALL_SAMPLES=1
 
-ARG USER_ID=2000
-ARG GROUP_ID=2000
-ARG USER_NAME=wsc
+ARG WPR_USER_ID=2000
+ARG WPR_GROUP_ID=2000
+ARG WPR_USER_NAME=wsc
 
 # Proxy server settings
 # If you are using a proxy server to handle inbound/outbound traffic to your network, for the automated license activation step, the following proxy settings must be added.
-ARG ENABLE_PROXY=0
-ARG PROXY_HOST
-ARG PROXY_PORT
-ARG PROXY_USER_NAME
-ARG PROXY_PASSWORD
+ARG WPR_ENABLE_PROXY=0
+ARG WPR_PROXY_HOST
+ARG WPR_PROXY_PORT
+ARG WPR_PROXY_USER_NAME
+ARG WPR_PROXY_PASSWORD
 
 # Access Key for Custom Dictionary and Style Guide API
-ARG ACCESS_KEY
+ARG WPR_ACCESS_KEY
 
-ENV WPR_PROTOCOL=${PROTOCOL}
-ENV WPR_DOMAIN_NAME=${DOMAIN_NAME}
-ENV WPR_WEB_PORT=${WEB_PORT}
-ENV WPR_VIRTUAL_DIR=${VIRTUAL_DIR}
+ENV WPR_PROTOCOL=${WPR_PROTOCOL}
+ENV WPR_DOMAIN_NAME=${WPR_DOMAIN_NAME}
+ENV WPR_WEB_PORT=${WPR_WEB_PORT}
+ENV WPR_VIRTUAL_DIR=${WPR_VIRTUAL_DIR}
 ENV WPR_WEB_SERVER_TYPE=2
-ENV WPR_LICENSE_TICKET_ID=${LICENSE_TICKET_ID}
+ENV WPR_LICENSE_TICKET_ID=${WPR_LICENSE_TICKET_ID}
 ENV WPR_RESTART_WEB_SERVER=1
 
-ENV WPR_ENABLE_PROXY=${ENABLE_PROXY}
-ENV WPR_PROXY_HOST=${PROXY_HOST}
-ENV WPR_PROXY_PORT=${PROXY_PORT}
-ENV WPR_PROXY_USER_NAME=${PROXY_USER_NAME}
-ENV WPR_PROXY_PASSWORD=${PROXY_PASSWORD}
+ENV WPR_ENABLE_PROXY=${WPR_ENABLE_PROXY}
+ENV WPR_PROXY_HOST=${WPR_PROXY_HOST}
+ENV WPR_PROXY_PORT=${WPR_PROXY_PORT}
+ENV WPR_PROXY_USER_NAME=${WPR_PROXY_USER_NAME}
+ENV WPR_PROXY_PASSWORD=${WPR_PROXY_PASSWORD}
 
 # Database for collecting statistics
 ENV WPR_ENABLE_DATABASE_PROVIDER=false
@@ -60,21 +60,21 @@ ENV WPR_ENABLE_REQUEST_STATISTIC=false
 ENV WPR_ENABLE_USER_ACTION_STATISTIC=false
 ENV WPR_ENABLE_REQUEST_VALIDATION=false
 
-ENV WPR_ACCESS_KEY=${ACCESS_KEY}
+ENV WPR_ACCESS_KEY=${WPR_ACCESS_KEY}
 
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 
-RUN if [ -z $(egrep -i "^${USER_NAME}" /etc/group) ]; then \
-        groupadd -g ${GROUP_ID} ${USER_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME};  \
+RUN if [ -z $(egrep -i "^${WPR_USER_NAME}" /etc/group) ]; then \
+        groupadd -g ${WPR_GROUP_ID} ${WPR_USER_NAME} && useradd -u ${WPR_USER_ID} -g ${WPR_GROUP_ID} ${WPR_USER_NAME};  \
     fi;
 
-RUN perl ${WPR_APP_SERVER_DIR}/install_languages.pl ${WPR_APP_SERVER_DIR}/AppServerX.xml "${AI_MODELS}" "${LANGUAGES}" "${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker"
+RUN perl ${WPR_APP_SERVER_DIR}/install_languages.pl ${WPR_APP_SERVER_DIR}/AppServerX.xml "${WPR_AI_MODELS}" "${WPR_LANGUAGES}" "${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker"
 
 RUN if [ ! -z "${WPR_LICENSE_TICKET_ID}" ]; then \
         sh ${WPR_APP_SERVER_DIR}/activateLicense.sh ${WPR_LICENSE_TICKET_ID} -y; \
     fi;
 
-RUN chown -R ${USER_ID}:${GROUP_ID} ${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker \
+RUN chown -R ${WPR_USER_ID}:${WPR_GROUP_ID} ${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker \
     /dictionaries \
     /opt/WebSpellChecker \
     /var/run/nginx  \
@@ -85,7 +85,7 @@ RUN chown -R ${USER_ID}:${GROUP_ID} ${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSp
 
 RUN apt-get remove -y wget && apt-get autoremove -y && apt-get clean
 
-USER $USER_NAME
+USER $WPR_USER_NAME
 
 WORKDIR $WPR_APP_SERVER_DIR
 

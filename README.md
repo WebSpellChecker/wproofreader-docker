@@ -24,20 +24,20 @@ If, on the other hand, you would like to use a prebuilt Docker image, choose the
 - For a prebuilt image from Docker Hub, edit [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
 ```
-ARG PROTOCOL=2
-ARG WEB_PORT
-ARG DOMAIN_NAME=localhost
-ARG VIRTUAL_DIR=wscservice
-ARG LICENSE_TICKET_ID
-ARG PRODUCTS=4
-ARG INSTALL_SAMPLES=1
+ARG WPR_PROTOCOL=2
+ARG WPR_WEB_PORT
+ARG WPR_DOMAIN_NAME=localhost
+ARG WPR_VIRTUAL_DIR=wscservice
+ARG WPR_LICENSE_TICKET_ID
+ARG WPR_PRODUCTS=4
+ARG WPR_INSTALL_SAMPLES=1
 ```
 * Choose languages to be installed:
 ```
-ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
-ARG AI_MODELS=1,2
+ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
+ARG WPR_AI_MODELS=1,2
 ```
-where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `AI_MODELS` parameter are:
+where `WPR_LANGUAGES` accepts a comma-separated list of language IDs, `WPR_AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `WPR_AI_MODELS` parameter are:
 1. English language model
 2. English autocomplete model
 3. German language model
@@ -47,24 +47,24 @@ English language and autocomplete models are available for en_US (American Engli
 
 * Activate license. Update the value for the following option:
 ```
-ARG LICENSE_TICKET_ID=6u*************ZO
+ARG WPR_LICENSE_TICKET_ID=6u*************ZO
 ```
 * Specify `DOMAIN_NAME` which will be used for the setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
-ARG DOMAIN_NAME = DOMAIN_NAME
+ARG WPR_DOMAIN_NAME = DOMAIN_NAME
 ```
 
-If `LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
+If `WPR_LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
 * If using a proxy server for network traffic, add the following proxy settings for automated license activation:
 
 ```
-ARG ENABLE_PROXY=1
-ARG PROXY_HOST=host_name
-ARG PROXY_PORT=port_number
-ARG PROXY_USER_NAME=user_name
-ARG PROXY_PASSWORD=password
+ARG WPR_ENABLE_PROXY=1
+ARG WPR_PROXY_HOST=host_name
+ARG WPR_PROXY_PORT=port_number
+ARG WPR_PROXY_USER_NAME=user_name
+ARG WPR_PROXY_PASSWORD=password
 ```
 
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
@@ -86,7 +86,7 @@ where:
 Also, if you don't want to modify the `Dockerfile` you can provide any installation parameter via CLI through the `--build-arg` flag. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg LANGUAGES=en_US,en_GB -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg WPR_LICENSE_TICKET_ID=6u*************ZO --build-arg WPR_LANGUAGES=en_US,en_GB -f Dockerfile .
 ```
 
 ### Choosing platform
