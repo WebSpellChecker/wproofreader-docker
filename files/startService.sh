@@ -18,9 +18,9 @@ touch "${ConfigureFlag}"
 fi
 
 # activate a license automatically
-LicenseFile="${PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker/license/license.xml"
-if ! [ -f "${LicenseFile}" ] && ! [ -f "${PATH_TO_SERVICE_FILES_DIRECTORY}/wsc/license/license.xml" ]; then
-   ./AppServerX -activateLicense ${LICENSE_TICKET_ID} -y
+LicenseFile="${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker/license/license.xml"
+if ! [ -f "${LicenseFile}" ]; then
+   ./AppServerX -activateLicense ${WPR_LICENSE_TICKET_ID} -y
 fi
 
 #start NGINX for Ubuntu or Centos

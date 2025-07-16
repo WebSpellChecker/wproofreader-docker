@@ -1,6 +1,6 @@
 # WebSpellChecker/WProofreader Docker
 
-This repository provides Docker configurations to build a WebSpellChecker/WProofreader Server image using [Ubuntu Server 22.04](https://hub.docker.com/_/ubuntu) or [Red Hat Universal Base Image 9](https://hub.docker.com/r/redhat/ubi9). Use `Dockerfile` for Ubuntu or `Dockerfile.redhat` for Red Hat. 
+This repository provides Docker configurations to build a WebSpellChecker/WProofreader Server image using [Ubuntu Server 24.04](https://hub.docker.com/_/ubuntu) or [Red Hat Universal Base Image 9](https://hub.docker.com/r/redhat/ubi9). Use `Dockerfile` for Ubuntu or `Dockerfile.redhat` for Red Hat.
 
 Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image with WProofreader Server pre-installed on Ubuntu, available on Docker Hub since v5.30.0. This public [Docker image with WebSpellChecker/WProofreader Server](https://hub.docker.com/r/webspellchecker/wproofreader) includes pre-configured languages and settings, and can be used for both evaluation and production with necessary modifications to fit your specific requirements.
 
@@ -24,20 +24,20 @@ If, on the other hand, you would like to use a prebuilt Docker image, choose the
 - For a prebuilt image from Docker Hub, edit [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
 ```
-ARG PROTOCOL=2
-ARG WEB_PORT
-ARG DOMAIN_NAME=localhost
-ARG VIRTUAL_DIR=wscservice
-ARG LICENSE_TICKET_ID
-ARG PRODUCTS=4
-ARG INSTALL_SAMPLES=1
+ARG WPR_PROTOCOL=2
+ARG WPR_WEB_PORT
+ARG WPR_DOMAIN_NAME=localhost
+ARG WPR_VIRTUAL_DIR=wscservice
+ARG WPR_LICENSE_TICKET_ID
+ARG WPR_PRODUCTS=4
+ARG WPR_INSTALL_SAMPLES=1
 ```
 * Choose languages to be installed:
 ```
-ARG LANGUAGES=en_US,en_GB,en_CA,en_AU
-ARG AI_MODELS=1,2
+ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
+ARG WPR_AI_MODELS=1,2
 ```
-where `LANGUAGES` accepts a comma-separated list of language IDs, `AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `AI_MODELS` parameter are:
+where `WPR_LANGUAGES` accepts a comma-separated list of language IDs, `WPR_AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `WPR_AI_MODELS` parameter are:
 1. English language model
 2. English autocomplete model
 3. German language model
@@ -47,24 +47,24 @@ English language and autocomplete models are available for en_US (American Engli
 
 * Activate license. Update the value for the following option:
 ```
-ARG LICENSE_TICKET_ID=6u*************ZO
+ARG WPR_LICENSE_TICKET_ID=6u*************ZO
 ```
 * Specify `DOMAIN_NAME` which will be used for the setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
 
 ```
-ARG DOMAIN_NAME = DOMAIN_NAME
+ARG WPR_DOMAIN_NAME = DOMAIN_NAME
 ```
 
-If `LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
+If `WPR_LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
 * If using a proxy server for network traffic, add the following proxy settings for automated license activation:
 
 ```
-ARG ENABLE_PROXY=1
-ARG PROXY_HOST=host_name
-ARG PROXY_PORT=port_number
-ARG PROXY_USER_NAME=user_name
-ARG PROXY_PASSWORD=password
+ARG WPR_ENABLE_PROXY=1
+ARG WPR_PROXY_HOST=host_name
+ARG WPR_PROXY_PORT=port_number
+ARG WPR_PROXY_USER_NAME=user_name
+ARG WPR_PROXY_PASSWORD=password
 ```
 
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
@@ -86,7 +86,7 @@ where:
 Also, if you don't want to modify the `Dockerfile` you can provide any installation parameter via CLI through the `--build-arg` flag. For example:
 
 ```
-docker build -t local/wsc_app:x.x.x --build-arg LICENSE_TICKET_ID=6u*************ZO --build-arg LANGUAGES=en_US,en_GB -f Dockerfile .
+docker build -t local/wsc_app:x.x.x --build-arg WPR_LICENSE_TICKET_ID=6u*************ZO --build-arg WPR_LANGUAGES=en_US,en_GB -f Dockerfile .
 ```
 
 ### Choosing platform
@@ -152,29 +152,29 @@ where:
 
 Alternatively, these parameters can be changed on the container running by passing them as environment variables:
 
-* `PROTOCOL`
-* `DOMAIN_NAME`
-* `WEB_PORT`
-* `VIRTUAL_DIR`
-* `LICENSE_TICKET_ID`
+* `WPR_PROTOCOL`
+* `WPR_DOMAIN_NAME`
+* `WPR_WEB_PORT`
+* `WPR_VIRTUAL_DIR`
+* `WPR_LICENSE_TICKET_ID`
 
 For example:
 
 ```
-docker run -d -p 443:8443 --env PROTOCOL=1 --env DOMAIN_NAME=localhost --env WEB_PORT=443 --env VIRTUAL_DIR=wscservice --env LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+docker run -d -p 443:8443 --env WPR_PROTOCOL=1 --env WPR_DOMAIN_NAME=localhost --env WPR_WEB_PORT=443 --env WPR_VIRTUAL_DIR=wscservice --env WPR_LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
 ```
 
 where:
 
-* `--env PROTOCOL=1` start a container on HTTPS protocol
-* `--env DOMAIN_NAME=localhost` start a container on `localhost` domain name
-* `--env WEB_PORT=443` configure `443` port to be an external port of a container
-* `--env VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
-* `--env LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
+* `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
+* `--env WPR_DOMAIN_NAME=localhost` start a container on `localhost` domain name
+* `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
+* `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
+* `--env WPR_LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
 
 Additional parameters:
 
-* `--env JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
+* `--env WPR_JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
 
 The container launched by the command above will be available at the following address:
 
@@ -272,25 +272,25 @@ services:
     ports:
       - "80:8080"
     environment:
-      - PROTOCOL=2 
-      - WEB_PORT=80
-      - DOMAIN_NAME=localhost
-      - VIRTUAL_DIR=wscservice
+      - WPR_PROTOCOL=2
+      - WPR_WEB_PORT=80
+      - WPR_DOMAIN_NAME=localhost
+      - WPR_VIRTUAL_DIR=wscservice
 ```
 
 Notes:
 1. If you have a license key, pass it as an environment variable like that:
-   ```  - LICENSE_TICKET_ID=<your License ID>```
+   ```  - WPR_LICENSE_TICKET_ID=<your License ID>```
    The server will be activated automatically upon startup.
 2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
  ```yaml
     ports:
       - "443:8443"
     environment:
-      - PROTOCOL=1 
-      - WEB_PORT=443
-      - DOMAIN_NAME=localhost
-      - VIRTUAL_DIR=wscservice
+      - WPR_PROTOCOL=1
+      - WPR_WEB_PORT=443
+      - WPR_DOMAIN_NAME=localhost
+      - WPR_VIRTUAL_DIR=wscservice
 ```
 3. For HTTPS communication you have to provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem`, respectively. If, for instance, they are kept in a folder `/home/user/certificate`, one should add the following section to `docker-compose.yml`:
  ```yaml
@@ -313,11 +313,11 @@ services:
     ports:
       - "443:8443"
     environment:
-      - PROTOCOL=1 
-      - WEB_PORT=443
-      - DOMAIN_NAME=localhost
-      - VIRTUAL_DIR=wscservice
-      - LICENSE_TICKET_ID=ABCD1234
+      - WPR_PROTOCOL=1
+      - WPR_WEB_PORT=443
+      - WPR_DOMAIN_NAME=localhost
+      - WPR_VIRTUAL_DIR=wscservice
+      - WPR_LICENSE_TICKET_ID=ABCD1234
     volumes:
       - /home/user/certificate:/certificate
       - /home/user/dictionaries:/dictionaries
