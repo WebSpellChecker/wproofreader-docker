@@ -14,7 +14,13 @@ FROM webspellchecker/wproofreader:${TAG} AS wpr_install_languages
 
 USER root
 
+# Comma-separated list of language IDs to install
 ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
+# List of AI models to install:
+# 1. English language model
+# 2. English autocomplete model
+# 3. German language model
+# 4. Spanish language model
 ARG WPR_AI_MODELS=1,2
 
 ARG WPR_USER_ID
