@@ -48,6 +48,9 @@ sub configureNginxConfig
 		
 		# Remove default server from main log
 		replaceFileContent('    server {\n(?:.*\n){15}    }', '', $nginxMainConf);
+		
+		# Remove default nginx user from config
+		replaceFileContent('user\ [a-z0-9\-\_\.]+;\n', '', $nginxMainConf);
 	}
 	
 	my $host = $ENV{'WPR_DOMAIN_NAME'};
