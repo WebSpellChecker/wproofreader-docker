@@ -35,6 +35,7 @@ RUN if [ -z $(egrep -i "^${WPR_USER_NAME}" /etc/group) ]; then \
         groupadd -g ${WPR_GROUP_ID} ${WPR_USER_NAME} && useradd -u ${WPR_USER_ID} -g ${WPR_GROUP_ID} ${WPR_USER_NAME}; \
     fi;
 
+# Remove installed languages files/configuration
 RUN sed -i '/<Languages[^>]*>/,/<\/Languages>/{//!d}' ${WPR_APP_SERVER_DIR}/AppServerX.xml && \
     sed -i 's/\(<Model\ *Enabled="\)\w*"/\1false"/g' ${WPR_APP_SERVER_DIR}/AppServerX.xml && \
     rm -rf ${WPR_WSC_SERVICE_FILES_PATH}/Resources/Hunspell/ && \
