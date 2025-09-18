@@ -18,7 +18,7 @@ touch "${ConfigureFlag}"
 fi
 
 # activate a license automatically
-LicenseFile="${WPR_PATH_TO_SERVICE_FILES_DIRECTORY}/WebSpellChecker/license/license.xml"
+LicenseFile="${WPR_WSC_SERVICE_FILES_PATH}/license/license.xml"
 if ! [ -f "${LicenseFile}" ]; then
    ./AppServerX -activateLicense ${WPR_LICENSE_TICKET_ID} -y
 fi
