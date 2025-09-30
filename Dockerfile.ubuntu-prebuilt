@@ -55,7 +55,7 @@ RUN chown -R ${WPR_USER_ID}:${WPR_GROUP_ID} ${WPR_WSC_SERVICE_FILES_PATH} \
     ${WPR_CERT_DIR} \
     ${WPR_APP_INSTALL_DIR}
 
-FROM ubuntu:24.04 AS wpr_service
+FROM ubuntu:24.10 AS wpr_service
 
 USER root
 
