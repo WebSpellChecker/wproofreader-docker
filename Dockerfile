@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 AS wpr_dependencies
+FROM ubuntu:24.10 AS wpr_dependencies
 
 USER root
 
