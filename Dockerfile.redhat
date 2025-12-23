@@ -1,4 +1,4 @@
-FROM redhat/ubi9 AS wpr_dependencies
+FROM redhat/ubi9:9.7-1766364927 AS wpr_dependencies
 
 USER root
 
