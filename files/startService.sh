@@ -4,6 +4,7 @@ cd `dirname $0`
 
 # export the libraries required for the service start
 export LD_LIBRARY_PATH="$(pwd)/lib"
+export MARIADB_PLUGIN_DIR="$(pwd)/lib"
 
 ConfigureFlag="wsc_start_configured"
 if [ ! -e "$(pwd)/${ConfigureFlag}" ]; then
