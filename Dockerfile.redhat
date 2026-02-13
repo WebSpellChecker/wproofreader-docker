@@ -6,7 +6,8 @@ RUN yum update -y --skip-broken && \
     yum module enable nginx:1.24 -y && \
     yum install -y nginx \
         java-17-openjdk-devel \
-        perl && \
+        perl \
+        openssl && \
     yum remove -y webkit2gtk3-jsc \
         python-setuptools \
         python-urllib3 \
@@ -170,8 +171,8 @@ COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} $WPR_DICTIONARIES_DIR $WPR_D
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} /etc/nginx/conf.d/wscservice.conf /etc/nginx/conf.d/wscservice.conf
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} /etc/nginx/nginx.conf /etc/nginx/nginx.conf
 
-COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/$WPR_CERT_KEY_NAME $WPR_CERT_DIR/$WPR_CERT_KEY_NAME
-COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/$WPR_CERT_FILE_NAME $WPR_CERT_DIR/$WPR_CERT_FILE_NAME
+RUN mkdir -p $WPR_CERT_DIR && chown ${WPR_FILE_OWNER} $WPR_CERT_DIR
+COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/ $WPR_CERT_DIR/
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/configure* $WPR_APP_SERVER_DIR/
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/startService.sh $WPR_APP_SERVER_DIR
 

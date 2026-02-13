@@ -61,7 +61,7 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y perl && \
-    apt-get install -y --no-install-recommends nginx default-jre && \
+    apt-get install -y --no-install-recommends nginx default-jre openssl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
@@ -164,7 +164,7 @@ COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /var/li
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /etc/nginx/conf.d/wscservice.conf /etc/nginx/conf.d/wscservice.conf
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /etc/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /dictionaries ${WPR_DICTIONARIES_DIR}
-COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /certificate ${WPR_CERT_DIR}
+RUN mkdir -p $WPR_CERT_DIR && chown ${WPR_USER_ID}:${WPR_GROUP_ID} $WPR_CERT_DIR
 
 RUN mkdir -p /var/run/nginx && \
     chown -R ${WPR_USER_ID}:${WPR_GROUP_ID} /etc/nginx \
