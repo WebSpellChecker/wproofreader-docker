@@ -4,7 +4,7 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y perl && \
-    apt-get install -y --no-install-recommends nginx default-jre && \
+    apt-get install -y --no-install-recommends nginx default-jre openssl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /var/www/html/* && \
@@ -165,8 +165,8 @@ COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} $WPR_DICTIONARIES_DIR $WPR_D
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} /etc/nginx/conf.d/wscservice.conf /etc/nginx/conf.d/wscservice.conf
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} /etc/nginx/nginx.conf /etc/nginx/nginx.conf
 
-COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/$WPR_CERT_KEY_NAME $WPR_CERT_DIR/$WPR_CERT_KEY_NAME
-COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/$WPR_CERT_FILE_NAME $WPR_CERT_DIR/$WPR_CERT_FILE_NAME
+RUN mkdir -p $WPR_CERT_DIR && chown ${WPR_FILE_OWNER} $WPR_CERT_DIR
+COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/ $WPR_CERT_DIR/
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/configure* $WPR_APP_SERVER_DIR/
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/startService.sh $WPR_APP_SERVER_DIR
 
