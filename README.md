@@ -29,8 +29,6 @@ ARG WPR_WEB_PORT
 ARG WPR_DOMAIN_NAME=localhost
 ARG WPR_VIRTUAL_DIR=wscservice
 ARG WPR_LICENSE_TICKET_ID
-ARG WPR_PRODUCTS=4
-ARG WPR_INSTALL_SAMPLES=1
 ```
 * Choose languages to be installed:
 ```
@@ -69,7 +67,7 @@ ARG WPR_PROXY_PASSWORD=password
 
 For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
 
-4. If you need to use SSL (access the service via HTTPS), put your SSL certificate and key files to the `wproofreader-docker/files/certificate` directory. You need to rename your certificate files to `cert.pem` and `key.pem` accordingly.
+4. SSL certificates (optional). If you need to use SSL (access the service via HTTPS) with your own certificates, put your SSL certificate and key files in the `wproofreader-docker/files/certificate` directory. By default, the expected filenames are `cert.pem` and `key.pem`, but you can customize them with the `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME` build arguments. The files will be baked into the image at build time. Alternatively, you can mount certificates at runtime (see [Create and run Docker container](#create-and-run-docker-container)). If HTTPS is enabled and no certificates are provided, self-signed certificates will be generated automatically at container startup.
 
 5. Build a Docker image using the command below:
 
@@ -146,8 +144,10 @@ where:
 
 * `-d` start a container in detached mode.
 * `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default, NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`. 
-* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. Upon initial launch, the mounted directory may be empty. All essential subdirectories and files will be generated during initialization of the container. This is required to save the dictionaries among different containers. **Note!** The container user needs to have read and write permissions to the shared dictionary directory.
-* `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. The names of the files must be `cert.pem` and `key.pem`. If not specified, the default test SSL certificate (e.g. `ssl-cert-snakeoil`) shipped with Ubuntu will be used.  **Note!** The container user must have read permissions for the certificate files.
+* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. Upon initial launch, the mounted directory may be empty. All essential subdirectories and files will be generated during initialization of the container. This is required to save the dictionaries among different containers. 
+Note: The container user needs to have read and write permissions to the shared dictionary directory.
+* `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. By default, the expected filenames are `cert.pem` and `key.pem` (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are provided (neither baked in at build time nor mounted at runtime), self-signed certificates will be generated automatically when the container starts with HTTPS enabled.  
+Note: The container user must have read permissions for the certificate files.
 * `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
 
 Alternatively, these parameters can be changed on the container running by passing them as environment variables:
@@ -292,7 +292,7 @@ Notes:
       - WPR_DOMAIN_NAME=localhost
       - WPR_VIRTUAL_DIR=wscservice
 ```
-3. For HTTPS communication you have to provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem`, respectively. If, for instance, they are kept in a folder `/home/user/certificate`, one should add the following section to `docker-compose.yml`:
+3. For HTTPS communication you can provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem` by default (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are mounted, self-signed certificates will be generated automatically at startup. To use your own certificates — for instance, if they are kept in a folder `/home/user/certificate` — add the following section to `docker-compose.yml`:
  ```yaml
     volumes:
       - /home/user/certificate:/certificate
