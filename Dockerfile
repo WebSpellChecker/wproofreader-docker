@@ -34,7 +34,8 @@ ENV WPR_APP_SERVER_DIR=${WPR_APP_SERVER_DIR}
 ARG WPR_PROTOCOL=2
 # Web port outside the container. If value isn't specified (e.g. empty), the default value will be used (443 for HTTPS and 80 for HTTP).
 ARG WPR_WEB_PORT
-ARG WPR_DOMAIN_NAME=localhost
+# Domain name for NGINX server_name directive. Default '_' accepts any domain. Set to specific domain to restrict access.
+ARG WPR_DOMAIN_NAME=_
 ARG WPR_VIRTUAL_DIR=wscservice
 # Specify license ticket ID to activate the license during the image build. For example, WPR_LICENSE_TICKET_ID = 6u*************ZO
 ARG WPR_LICENSE_TICKET_ID

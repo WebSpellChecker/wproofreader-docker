@@ -4,10 +4,10 @@ my $serverPath = $ENV{'WPR_APP_SERVER_DIR'};
 my $installPath = "$serverPath/..";
 my $server_config_path = "$serverPath/AppServerX.xml";
 
-configureSamplesAndVirtualDir();
+printStartEndpoint();
 configureUserAndCustomDictionaries();
 
-sub configureSamplesAndVirtualDir
+sub printStartEndpoint
 {
 	my $protocol = $ENV{'WPR_PROTOCOL'} eq '1' ? 'https' : 'http';
 	my $host = $ENV{'WPR_DOMAIN_NAME'};
@@ -16,46 +16,9 @@ sub configureSamplesAndVirtualDir
 	my $web_port = $ENV{'WPR_WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WPR_WEB_PORT'};
 	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
 
-	configureVirtualDir($protocol, $host, $web_port, $virtual_dir);
-	
-	configureSamples($protocol, $host, $web_port, $virtual_dir);
-}
-
-sub configureSamples()
-{
-	my ($protocol, $host, $web_port, $virtual_dir) = @_;
-	
-	my $samples_dir_path = "$installPath/WebComponents/Samples/";
-	opendir my $dir, $samples_dir_path or return;
-	my @files = readdir $dir;
-	closedir $dir;
-
-	foreach ( @files )
-	{
-		if ( $_ eq '.' || $_ eq '..' ) { next; }
-
-		my %pairs = (
-			'serviceProtocol: \'((http)|(https))\'' => "serviceProtocol: '$protocol'",
-			'servicePort: \'\d*\'' => "servicePort: '$web_port'",
-			'serviceHost: \'[\w.-]*\'' => "serviceHost: '$host'",
-			'servicePath: \'.*?\/api\'' => "servicePath: '$virtual_dir/api'",
-			'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/wscbundle\/wscbundle.js' => "$protocol://$host:$web_port/$virtual_dir/wscbundle/wscbundle.js",
-			'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/samples\/' => "$protocol://$host:$web_port/$virtual_dir/samples/"
-		);
-		replaceFileContent(\%pairs, "$samples_dir_path/$_");
-	}
-}
-
-sub configureVirtualDir()
-{
-	my ($protocol, $host, $web_port, $virtual_dir) = @_;
-	
-	my $virtual_dir_file = "$installPath/WebComponents/WebInterface/index.html";
-	
-	replaceFileContent({'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/api\?cmd' => "$protocol://$host:$web_port/$virtual_dir/api?cmd"}, $virtual_dir_file);
-	replaceFileContent({'((http)|(https)):\/\/[\w.-]*:\d*\/.*?\/samples\/' => "$protocol://$host:$web_port/$virtual_dir/samples/"}, $virtual_dir_file);
-	
-	print "Verify the WSC Application Operability: $protocol://$host:$web_port/$virtual_dir/ \n";
+	# Print verification message
+	my $display_host = ($host eq '_') ? '<host>' : $host;
+	print "Verify the WSC Application Operability: $protocol://$display_host:$web_port/$virtual_dir/ \n";
 }
 
 sub configureUserAndCustomDictionaries

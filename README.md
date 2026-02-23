@@ -26,7 +26,7 @@ If, on the other hand, you would like to use a prebuilt Docker image, choose the
 ```
 ARG WPR_PROTOCOL=2
 ARG WPR_WEB_PORT
-ARG WPR_DOMAIN_NAME=localhost
+ARG WPR_DOMAIN_NAME=_
 ARG WPR_VIRTUAL_DIR=wscservice
 ARG WPR_LICENSE_TICKET_ID
 ```
@@ -47,10 +47,10 @@ English language and autocomplete models are available for en_US (American Engli
 ```
 ARG WPR_LICENSE_TICKET_ID=6u*************ZO
 ```
-* Specify `DOMAIN_NAME` which will be used for the setup of demo samples with WProofreader. By default, `localhost` will be used if nothing is specified.
+* Configure domain name for NGINX `server_name` directive. By default, `_` (underscore) is used, which accepts requests from any domain. To restrict access to a specific domain, set this to your domain name (e.g., `example.com`).
 
 ```
-ARG WPR_DOMAIN_NAME = DOMAIN_NAME
+ARG WPR_DOMAIN_NAME=_
 ```
 
 If `WPR_LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
@@ -167,7 +167,7 @@ docker run -d -p 443:8443 --env WPR_PROTOCOL=1 --env WPR_DOMAIN_NAME=localhost -
 where:
 
 * `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
-* `--env WPR_DOMAIN_NAME=localhost` start a container on `localhost` domain name
+* `--env WPR_DOMAIN_NAME=localhost` configure NGINX to accept requests only from `localhost` domain. Use `_` to accept requests from any domain.
 * `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
 * `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
 * `--env WPR_LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
