@@ -55,7 +55,8 @@ sub configureNginxConfig
 	
 	my $host = $ENV{'WPR_DOMAIN_NAME'};
 	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
-	
+	my $is_root_path = ($virtual_dir eq '/' || $virtual_dir eq '');
+
 	if (-e $nginxConf)
 	{
 		if ($host ne "")
@@ -63,15 +64,19 @@ sub configureNginxConfig
 			# Change server name inside NGINX config
 			replaceFileContent('server_name [\w.-]*;', "server_name $host;", $nginxConf);
 		}
-		
-		if ($virtual_dir ne "")
-		{
-			# Change virtual dir inside NGINX config
-			replaceFileContent('location \/.*? {', "location /$virtual_dir {", $nginxConf);
-			replaceFileContent('location \/.*?/samples {', "location /$virtual_dir/samples {", $nginxConf);
-			replaceFileContent('location \/.*?/wscbundle/ {', "location /$virtual_dir/wscbundle/ {", $nginxConf);
-			replaceFileContent('location \/.*?/api {', "location /$virtual_dir/api {", $nginxConf);
-		}
+
+		# Normalize virtual_dir: remove leading/trailing slashes
+		$virtual_dir =~ s/^\///;
+		$virtual_dir =~ s/\/$//;
+
+		my $vdir = $is_root_path ? '' : '/' . $virtual_dir;
+
+		# Change virtual dir inside NGINX config
+		my $main_location = $is_root_path ? '/' : $vdir;
+		replaceFileContent('location \/.*? {', "location $main_location {", $nginxConf);
+		replaceFileContent('location \/.*?/samples {', "location ${vdir}/samples {", $nginxConf);
+		replaceFileContent('location \/.*?/wscbundle/ {', "location ${vdir}/wscbundle/ {", $nginxConf);
+		replaceFileContent('location \/.*?/api {', "location ${vdir}/api {", $nginxConf);
 	}
 }
 

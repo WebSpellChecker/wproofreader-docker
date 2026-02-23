@@ -16,9 +16,15 @@ sub printStartEndpoint
 	my $web_port = $ENV{'WPR_WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WPR_WEB_PORT'};
 	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
 
+	# Normalize virtual_dir for display
+	my $is_root_path = ($virtual_dir eq '/' || $virtual_dir eq '');
+	my $vdir_part = $is_root_path ? '' : $virtual_dir;
+	$vdir_part =~ s/^\///;  # Remove leading slash if present
+	$vdir_part = '/' . $vdir_part if $vdir_part ne '';  # Add it back with proper formatting
+
 	# Print verification message
 	my $display_host = ($host eq '_') ? '<host>' : $host;
-	print "Verify the WSC Application Operability: $protocol://$display_host:$web_port/$virtual_dir/ \n";
+	print "Verify the WSC Application Operability: $protocol://$display_host:$web_port$vdir_part/ \n";
 }
 
 sub configureUserAndCustomDictionaries

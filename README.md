@@ -53,6 +53,15 @@ ARG WPR_LICENSE_TICKET_ID=6u*************ZO
 ARG WPR_DOMAIN_NAME=_
 ```
 
+* Configure virtual directory for the service. By default, `wscservice` is used, making the service accessible at `/wscservice/` (e.g., `http://localhost/wscservice/`). To deploy at the root path, set this to `/` or leave it empty:
+
+```
+ARG WPR_VIRTUAL_DIR=wscservice   # Service at /wscservice/ (default)
+ARG WPR_VIRTUAL_DIR=/            # Service at root / (captures all requests)
+```
+
+**Note:** Using root path (`/`) configures NGINX to serve the application at the domain root, which may not be suitable for shared web servers where multiple applications need different paths.
+
 If `WPR_LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
 
 * If using a proxy server for network traffic, add the following proxy settings for automated license activation:
@@ -169,7 +178,7 @@ where:
 * `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
 * `--env WPR_DOMAIN_NAME=localhost` configure NGINX to accept requests only from `localhost` domain. Use `_` to accept requests from any domain.
 * `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
-* `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual dir
+* `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual directory. Use `/` or empty string for root path.
 * `--env WPR_LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
 
 Additional parameters:
