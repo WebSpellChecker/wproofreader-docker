@@ -26,7 +26,6 @@ If, on the other hand, you would like to use a prebuilt Docker image, choose the
 ```
 ARG WPR_PROTOCOL=2
 ARG WPR_WEB_PORT
-ARG WPR_DOMAIN_NAME=_
 ARG WPR_VIRTUAL_DIR=wscservice
 ARG WPR_LICENSE_TICKET_ID
 ```
@@ -47,12 +46,6 @@ English language and autocomplete models are available for en_US (American Engli
 ```
 ARG WPR_LICENSE_TICKET_ID=6u*************ZO
 ```
-* Configure domain name for NGINX `server_name` directive. By default, `_` (underscore) is used, which accepts requests from any domain. To restrict access to a specific domain, set this to your domain name (e.g., `example.com`).
-
-```
-ARG WPR_DOMAIN_NAME=_
-```
-
 * Configure virtual directory for the service. By default, `wscservice` is used, making the service accessible at `/wscservice/` (e.g., `http://localhost/wscservice/`). To deploy at the root path, set this to `/` or leave it empty:
 
 ```
@@ -162,7 +155,6 @@ Note: The container user must have read permissions for the certificate files.
 Alternatively, these parameters can be changed on the container running by passing them as environment variables:
 
 * `WPR_PROTOCOL`
-* `WPR_DOMAIN_NAME`
 * `WPR_WEB_PORT`
 * `WPR_VIRTUAL_DIR`
 * `WPR_LICENSE_TICKET_ID`
@@ -170,13 +162,12 @@ Alternatively, these parameters can be changed on the container running by passi
 For example:
 
 ```
-docker run -d -p 443:8443 --env WPR_PROTOCOL=1 --env WPR_DOMAIN_NAME=localhost --env WPR_WEB_PORT=443 --env WPR_VIRTUAL_DIR=wscservice --env WPR_LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+docker run -d -p 443:8443 --env WPR_PROTOCOL=1 --env WPR_WEB_PORT=443 --env WPR_VIRTUAL_DIR=wscservice --env WPR_LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
 ```
 
 where:
 
 * `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
-* `--env WPR_DOMAIN_NAME=localhost` configure NGINX to accept requests only from `localhost` domain. Use `_` to accept requests from any domain.
 * `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
 * `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual directory. Use `/` or empty string for root path.
 * `--env WPR_LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
@@ -283,7 +274,6 @@ services:
     environment:
       - WPR_PROTOCOL=2
       - WPR_WEB_PORT=80
-      - WPR_DOMAIN_NAME=localhost
       - WPR_VIRTUAL_DIR=wscservice
 ```
 
@@ -298,7 +288,6 @@ Notes:
     environment:
       - WPR_PROTOCOL=1
       - WPR_WEB_PORT=443
-      - WPR_DOMAIN_NAME=localhost
       - WPR_VIRTUAL_DIR=wscservice
 ```
 3. For HTTPS communication you can provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem` by default (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are mounted, self-signed certificates will be generated automatically at startup. To use your own certificates — for instance, if they are kept in a folder `/home/user/certificate` — add the following section to `docker-compose.yml`:
@@ -324,7 +313,6 @@ services:
     environment:
       - WPR_PROTOCOL=1
       - WPR_WEB_PORT=443
-      - WPR_DOMAIN_NAME=localhost
       - WPR_VIRTUAL_DIR=wscservice
       - WPR_LICENSE_TICKET_ID=ABCD1234
     volumes:

@@ -53,18 +53,11 @@ sub configureNginxConfig
 		replaceFileContent('user\ [a-z0-9\-\_\.]+;\n', '', $nginxMainConf);
 	}
 	
-	my $host = $ENV{'WPR_DOMAIN_NAME'};
 	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
 	my $is_root_path = ($virtual_dir eq '/' || $virtual_dir eq '');
 
 	if (-e $nginxConf)
 	{
-		if ($host ne "")
-		{
-			# Change server name inside NGINX config
-			replaceFileContent('server_name [\w.-]*;', "server_name $host;", $nginxConf);
-		}
-
 		# Normalize virtual_dir: remove leading/trailing slashes
 		$virtual_dir =~ s/^\///;
 		$virtual_dir =~ s/\/$//;

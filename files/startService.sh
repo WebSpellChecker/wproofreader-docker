@@ -28,11 +28,7 @@ fi
 # Generate self-signed certificates if HTTPS is enabled and no certs are provided
 if [ "$WPR_PROTOCOL" = "1" ]; then
     if [ ! -f "${WPR_CERT_DIR}/${WPR_CERT_FILE_NAME}" ] || [ ! -f "${WPR_CERT_DIR}/${WPR_CERT_KEY_NAME}" ]; then
-        # Use localhost as CN when WPR_DOMAIN_NAME is unset, empty, or '_' (NGINX catch-all)
-        CERT_CN="${WPR_DOMAIN_NAME:-localhost}"
-        if [ "$CERT_CN" = "_" ]; then
-            CERT_CN="localhost"
-        fi
+        CERT_CN="localhost"
         echo "$(date '+%m/%d/%y:%H:%M:%S.%3N')   No SSL certificates found. Generating self-signed certificate for CN=${CERT_CN}..."
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
             -keyout "${WPR_CERT_DIR}/${WPR_CERT_KEY_NAME}" \

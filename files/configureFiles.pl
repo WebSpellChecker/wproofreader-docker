@@ -10,8 +10,6 @@ configureUserAndCustomDictionaries();
 sub printStartEndpoint
 {
 	my $protocol = $ENV{'WPR_PROTOCOL'} eq '1' ? 'https' : 'http';
-	my $host = $ENV{'WPR_DOMAIN_NAME'};
-
 	# If user don't specify WEB_PORT, using default 80 for http and 443 for https
 	my $web_port = $ENV{'WPR_WEB_PORT'} eq "" ? ($protocol eq "https" ? "443" : "80") : $ENV{'WPR_WEB_PORT'};
 	my $virtual_dir = $ENV{'WPR_VIRTUAL_DIR'};
@@ -22,9 +20,7 @@ sub printStartEndpoint
 	$vdir_part =~ s/^\///;  # Remove leading slash if present
 	$vdir_part = '/' . $vdir_part if $vdir_part ne '';  # Add it back with proper formatting
 
-	# Print verification message
-	my $display_host = ($host eq '_') ? '<host>' : $host;
-	print "Verify the WSC Application Operability: $protocol://$display_host:$web_port$vdir_part/ \n";
+	print "Verify the WSC Application Operability: $protocol://<host>:$web_port$vdir_part/ \n";
 }
 
 sub configureUserAndCustomDictionaries
