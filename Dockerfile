@@ -167,6 +167,7 @@ RUN mkdir -p $WPR_CERT_DIR && chown ${WPR_FILE_OWNER} $WPR_CERT_DIR
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/certificate/ $WPR_CERT_DIR/
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/configure* $WPR_APP_SERVER_DIR/
 COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/startService.sh $WPR_APP_SERVER_DIR
+COPY --chown=${WPR_FILE_OWNER} $WPR_FILES_DIR/opennlp-cves.vex.json /opt/vex/opennlp-cves.vex.json
 
 RUN chmod +x $WPR_APP_SERVER_DIR/startService.sh
 

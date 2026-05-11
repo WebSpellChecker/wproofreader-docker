@@ -1,0 +1,39 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://webspellchecker.com/vex/wproofreader-opennlp-2026-05-11",
+  "author": "WebSpellChecker <support@webspellchecker.net>",
+  "timestamp": "2026-05-11T00:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": { "name": "CVE-2026-42027" },
+      "products": [
+        {
+          "@id": "pkg:maven/org.apache.opennlp/opennlp-tools@1.9.4"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_cannot_be_controlled_by_adversary"
+    },
+    {
+      "vulnerability": { "name": "CVE-2026-40682" },
+      "products": [
+        {
+          "@id": "pkg:maven/org.apache.opennlp/opennlp-tools@1.9.4"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_cannot_be_controlled_by_adversary"
+    },
+    {
+      "vulnerability": { "name": "CVE-2026-42440" },
+      "products": [
+        {
+          "@id": "pkg:maven/org.apache.opennlp/opennlp-tools@1.9.4"
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_cannot_be_controlled_by_adversary"
+    }
+  ]
+}
