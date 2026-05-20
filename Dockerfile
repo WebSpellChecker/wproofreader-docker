@@ -23,6 +23,7 @@ ARG WPR_APP_INSTALL_DIR=/opt/WebSpellChecker
 ARG WPR_APP_SERVER_DIR=$WPR_APP_INSTALL_DIR/AppServer
 ARG WPR_PATH_TO_SERVICE_FILES_DIRECTORY=/var/lib
 ARG WPR_WSC_SERVICE_FILES_PATH=$WPR_PATH_TO_SERVICE_FILES_DIRECTORY/WebSpellChecker
+ARG WPR_VEX_DIR=$WPR_PATH_TO_SERVICE_FILES_DIRECTORY/vex
 ARG WPR_USER_ID=2000
 ARG WPR_GROUP_ID=2000
 ARG WPR_USER_NAME=wsc
@@ -100,6 +101,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget
 ARG WPR_APP_NAME_MASK=wsc_app*tar.gz
 ARG WPR_DEPLOYMENT_DIR=/home
 ARG WPR_APP_ROOT_DIR=$WPR_DEPLOYMENT_DIR/WSC
+ARG WPR_VEX_FILE_URL=https://files.webspellchecker.com/security/vex/opennlp-cves.vex.json
 
 # Comma-separated list of language IDs to install
 ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
@@ -122,7 +124,9 @@ ENV WPR_AUTO_INSTALL=TRUE
 RUN mkdir -p $WPR_CUSTOM_DICTIONARIES_DIR \
              $WPR_USER_DICTIONARIES_DIR \
              $WPR_WSC_SERVICE_FILES_PATH \
-             /var/run/nginx
+             $WPR_VEX_DIR \
+             /var/run/nginx && \
+    wget -O $WPR_VEX_DIR/opennlp-cves.vex.json $WPR_VEX_FILE_URL
 
 COPY $WPR_FILES_DIR/$WPR_APP_NAME_MASK $WPR_DEPLOYMENT_DIR/
 RUN PACKAGE_FILE=$(ls -1t $WPR_DEPLOYMENT_DIR/$WPR_APP_NAME_MASK 2>/dev/null | head -n 1) && \
@@ -160,6 +164,7 @@ RUN mkdir -p /var/run/nginx && chown -R ${WPR_FILE_OWNER} /var/run/nginx
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} $WPR_APP_INSTALL_DIR $WPR_APP_INSTALL_DIR
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} $WPR_WSC_SERVICE_FILES_PATH $WPR_WSC_SERVICE_FILES_PATH
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} $WPR_DICTIONARIES_DIR $WPR_DICTIONARIES_DIR
+COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} $WPR_VEX_DIR $WPR_VEX_DIR
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} /etc/nginx/conf.d/wscservice.conf /etc/nginx/conf.d/wscservice.conf
 COPY --from=wpr_installer --chown=${WPR_FILE_OWNER} /etc/nginx/nginx.conf /etc/nginx/nginx.conf
 
