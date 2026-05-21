@@ -101,7 +101,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget
 ARG WPR_APP_NAME_MASK=wsc_app*tar.gz
 ARG WPR_DEPLOYMENT_DIR=/home
 ARG WPR_APP_ROOT_DIR=$WPR_DEPLOYMENT_DIR/WSC
-ARG WPR_VEX_FILE_URL=https://files.webspellchecker.com/security/vex/opennlp-cves.vex.json
+ARG WPR_VEX_FILE_URL=https://files.webspellchecker.com/security/vex/opennlp-cves-v2.0.0.vex.json
 
 # Comma-separated list of language IDs to install
 ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
