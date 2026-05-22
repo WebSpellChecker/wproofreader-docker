@@ -56,8 +56,8 @@ sub configureUserAndCustomDictionaries
 		system("mv $serverPath/CustDictConfig.xml $cust_dict_conf");
 	}
 	
-	replaceFileContent({ '<StyleGuideCheck Enabled="(true|false)">[\s]*?<DirectoryPath>[\w\\\/:]*?<\/DirectoryPath>[\s]*?<\/StyleGuideCheck>' =>
-		"<StyleGuideCheck Enabled=\"true\">\n\t\t<DirectoryPath>$style_guide_path</DirectoryPath>\n\t</StyleGuideCheck>" }, $server_config_path);
+	replaceFileContent({ '<StyleGuideCheck Enabled="(true|false)">[\s]*?<DirectoryPath>[\w\\\/:]*?<\/DirectoryPath>' =>
+		"<StyleGuideCheck Enabled=\"true\">\n\t\t<DirectoryPath>$style_guide_path</DirectoryPath>" }, $server_config_path);
 	
 	for my $file (<$serverPath/CustomDictionaries/*.txt>)
 	{
