@@ -93,7 +93,6 @@ ARG WPR_APP_INSTALL_DIR=/opt/WebSpellChecker
 ARG WPR_APP_SERVER_DIR=$WPR_APP_INSTALL_DIR/AppServer
 ARG WPR_PATH_TO_SERVICE_FILES_DIRECTORY=/var/lib
 ARG WPR_WSC_SERVICE_FILES_PATH=$WPR_PATH_TO_SERVICE_FILES_DIRECTORY/WebSpellChecker
-ARG WPR_VEX_DIR=$WPR_PATH_TO_SERVICE_FILES_DIRECTORY/vex
 
 ENV WPR_APP_SERVER_DIR=${WPR_APP_SERVER_DIR}
 
@@ -160,7 +159,6 @@ RUN groupadd --gid ${WPR_GROUP_ID} $WPR_USER_NAME && useradd --no-log-init --uid
 
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /opt/WebSpellChecker ${WPR_APP_INSTALL_DIR}
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /var/lib/WebSpellChecker ${WPR_WSC_SERVICE_FILES_PATH}
-COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} ${WPR_VEX_DIR} ${WPR_VEX_DIR}
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /etc/nginx/conf.d/wscservice.conf /etc/nginx/conf.d/wscservice.conf
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /etc/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=wpr_install_languages --chown=${WPR_USER_ID}:${WPR_GROUP_ID} /dictionaries ${WPR_DICTIONARIES_DIR}
