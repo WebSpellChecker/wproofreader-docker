@@ -21,7 +21,11 @@ fi
 
 # activate a license automatically
 LicenseFile="${WPR_WSC_SERVICE_FILES_PATH}/license/license.xml"
-if ! [ -f "${LicenseFile}" ]; then
+
+# An unactivated license.xml is empty rather than absent: AppServer creates it on its first load
+# so that the inode the license is bound to exists. Test for content, not for existence, or a
+# container started once without a ticket would never activate again.
+if [ ! -s "${LicenseFile}" ]; then
    ./AppServerX -activateLicense ${WPR_LICENSE_TICKET_ID} -y
 fi
 
