@@ -6,6 +6,8 @@ Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image wit
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
+The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. If you also want App-manager, the web panel for administering the server, run the same image together with App-manager, MySQL and db-manager as shown in [Run WProofreader with App-manager](#run-wproofreader-with-app-manager). On Kubernetes, use the [WProofreader](https://github.com/WebSpellChecker/wproofreader-helm) and [App-manager](https://github.com/WebSpellChecker/app-manager-helm) Helm charts.
+
 Before you begin, make sure you meet the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
 
 ## Create Docker image
@@ -15,98 +17,123 @@ For production, create a custom Docker image using either an installation packag
 The general procedure is as follows:
 
 1. Clone [WProofreader Docker repo](https://github.com/WebSpellChecker/wproofreader-docker/releases). If you already have a package that you would like to use for the installation, make sure that the WProofreader Docker release version matches that of the package. The version is specified in its name: wsc_app_x64_**5.X.X**.x_xx.tar.gz. **NOTE!** Both the package and Dockerfile versions should match as certain configuration features require appropriate changes in the application itself.
-If, on the other hand, you would like to use a prebuilt Docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
+   If, on the other hand, you would like to use a prebuilt Docker image, choose the same version, as the app version you would like to have installed (e.g. latest).
 
 2. If using an installation package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to the `wproofreader-docker/files` directory. You can request an installation package via the [contact us form](https://webspellchecker.com/contact-us/). If using a prebuilt image, skip this step.
 
 3. Tailor the installation by editing one of the Dockerfiles:
-- For installations from a package, edit [Dockerfile](Dockerfile) or [Dockerfile.redhat](Dockerfile.redhat).
-- For a prebuilt image from Docker Hub, edit [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
-```
-ARG WPR_PROTOCOL=2
-ARG WPR_WEB_PORT
-ARG WPR_VIRTUAL_DIR=wscservice
-ARG WPR_LICENSE_TICKET_ID
-```
-* Choose languages to be installed:
-```
-ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
-ARG WPR_AI_MODELS=1,2
-```
-where `WPR_LANGUAGES` accepts a comma-separated list of language IDs, `WPR_AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `WPR_AI_MODELS` parameter are:
-1. English language model
-2. English autocomplete model
-3. German language model
-4. Spanish language model
+   - For installations from a package, edit [Dockerfile](Dockerfile) or [Dockerfile.redhat](Dockerfile.redhat).
+   - For a prebuilt image from Docker Hub, edit [Dockerfile.ubuntu-prebuilt](Dockerfile.ubuntu-prebuilt):
 
-English language and autocomplete models are available for en_US (American English), en_GB (British English), en_CA (Canadian English) and en_AU (Australian English).  German – for de_DE (Germany), Spanish – for es_ES (Spain).
+   ```bash
+   ARG WPR_PROTOCOL=2
+   ARG WPR_WEB_PORT
+   ARG WPR_VIRTUAL_DIR=wscservice
+   ARG WPR_LICENSE_TICKET_ID
+   ```
 
-* Activate license. Update the value for the following option:
-```
-ARG WPR_LICENSE_TICKET_ID=6u*************ZO
-```
-* Configure virtual directory for the service. By default, `wscservice` is used, making the service accessible at `/wscservice/` (e.g., `http://localhost/wscservice/`). To deploy at the root path, set this to `/` or leave it empty:
+   - Choose languages to be installed:
 
-```
-ARG WPR_VIRTUAL_DIR=wscservice   # Service at /wscservice/ (default)
-ARG WPR_VIRTUAL_DIR=/            # Service at root / (captures all requests)
-```
+   ```bash
+   ARG WPR_LANGUAGES=en_US,en_GB,en_CA,en_AU
+   ARG WPR_AI_MODELS=1,2
+   ```
 
-**Note:** Using root path (`/`) configures NGINX to serve the application at the domain root, which may not be suitable for shared web servers where multiple applications need different paths.
+   where `WPR_LANGUAGES` accepts a comma-separated list of language IDs, `WPR_AI_MODELS` – a list of AI models to be included, provided that a compatible language is installed. For example, if you select at least one of the compatible English language IDs, you will be able to install the English language model for enhanced text correction. The options for `WPR_AI_MODELS` parameter are:
 
-If `WPR_LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
+   - `1` - English language model
+   - `2` - English autocomplete model
+   - `3` - German language model
+   - `4` - Spanish language model
 
-* If using a proxy server for network traffic, add the following proxy settings for automated license activation:
+   English language and autocomplete models are available for en_US (American English), en_GB (British English), en_CA (Canadian English) and en_AU (Australian English).  German – for de_DE (Germany), Spanish – for es_ES (Spain).
 
-```
-ARG WPR_ENABLE_PROXY=1
-ARG WPR_PROXY_HOST=host_name
-ARG WPR_PROXY_PORT=port_number
-ARG WPR_PROXY_USER_NAME=user_name
-ARG WPR_PROXY_PASSWORD=password
-```
+   - Activate license. The ticket can be passed at build time:
 
-For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
+   ```bash
+   ARG WPR_LICENSE_TICKET_ID=*****************
+   ```
 
-4. SSL certificates (optional). If you need to use SSL (access the service via HTTPS) with your own certificates, put your SSL certificate and key files in the `wproofreader-docker/files/certificate` directory. By default, the expected filenames are `cert.pem` and `key.pem`, but you can customize them with the `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME` build arguments. The files will be baked into the image at build time. Alternatively, you can mount certificates at runtime (see [Create and run Docker container](#create-and-run-docker-container)). If HTTPS is enabled and no certificates are provided, self-signed certificates will be generated automatically at container startup.
+   Keep in mind that the Dockerfile turns this build argument into an image environment variable, so anyone who can pull the image can read the ticket with `docker inspect`. Prefer passing it when the container starts, with `--env WPR_LICENSE_TICKET_ID` or an env file (see [Create and run Docker container](#create-and-run-docker-container)). Bake it in only for a private image that stays in your own registry, and never publish such an image.
+
+   - Configure virtual directory for the service. By default, `wscservice` is used, making the service accessible at `/wscservice/` (e.g., `http://localhost/wscservice/`). To deploy at the root path, set this to `/` or leave it empty:
+
+   ```bash
+   ARG WPR_VIRTUAL_DIR=wscservice   # default, served at /wscservice/
+   ARG WPR_VIRTUAL_DIR=/            # root path, captures all requests
+   ```
+
+   > **Note:** Using root path (`/`) configures NGINX to serve the application at the domain root, which may not be suitable for shared web servers where multiple applications need different paths.
+
+   If `WPR_LICENSE_TICKET_ID` was specified during the image creation, you don't need to specify it during the launch of `docker run` command.
+
+   - If using a proxy server for network traffic, add the following proxy settings for automated license activation:
+
+   ```bash
+   ARG WPR_ENABLE_PROXY=1
+   ARG WPR_PROXY_HOST=host_name
+   ARG WPR_PROXY_PORT=port_number
+   ARG WPR_PROXY_USER_NAME=user_name
+   ARG WPR_PROXY_PASSWORD=password
+   ```
+
+   The same applies here: `WPR_PROXY_PASSWORD` ends up in the image environment. Unless the image is private, pass the proxy settings at container start with `--env` instead.
+
+   For details on the available options, refer to [Automated Installing WebSpellChecker on Linux](https://docs.webspellchecker.net/display/WebSpellCheckerServer55x/Automated+Installing+WebSpellChecker+on+Linux) guide.
+
+4. SSL certificates (optional). To serve HTTPS with your own certificate, mount the certificate and key into the container at runtime (see [Create and run Docker container](#create-and-run-docker-container)). This keeps the private key out of the image. By default, the expected filenames are `cert.pem` and `key.pem`; change them with the `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME` build arguments. If HTTPS is enabled and no certificates are provided, self-signed certificates are generated at container startup.
+
+   As an option, you can bake the files into a private image: put them in `wproofreader-docker/files/certificate` before the build. Do not commit them to git, and do not push an image that contains a private key to a public registry.
 
 5. Build a Docker image using the command below:
 
-```
-docker build -t local/wsc_app:x.x.x -f <Dockerfile_name> <path_to_Dockerfile_directory>
-```
+   ```bash
+   docker build -t local/wsc_app:x.x.x \
+     -f <Dockerfile_name> <path_to_Dockerfile_directory>
+   ```
 
-where:
+   where:
 
-* `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
-* `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
-* `<path_to_Dockerfile_directory>` the path to the Dockerfile directory, not to the Dockerfile itself. If the Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you can use `.` instead of the path.
+   - `-t` assign a tag name `local/wsc_app:x.x.x`, where `x.x.x` is a package version.
+   - `<Dockerfile_name>` a Dockerfile name, e.g. `Dockerfile`, `DockerfileCentOS` or `DockerfileRedHat`
+   - `<path_to_Dockerfile_directory>` the path to the Dockerfile directory, not to the Dockerfile itself. If the Dockerfile is in the same directory, e.g. `/wproofreader-docker/`, you can use `.` instead of the path.
 
-Also, if you don't want to modify the `Dockerfile` you can provide any installation parameter via CLI through the `--build-arg` flag. For example:
+   Also, if you don't want to modify the `Dockerfile` you can provide any installation parameter via CLI through the `--build-arg` flag. For example:
 
-```
-docker build -t local/wsc_app:x.x.x --build-arg WPR_LICENSE_TICKET_ID=6u*************ZO --build-arg WPR_LANGUAGES=en_US,en_GB -f Dockerfile .
-```
+   ```bash
+   docker build -t local/wsc_app:x.x.x \
+     --build-arg WPR_LICENSE_TICKET_ID=******************* \
+     --build-arg WPR_LANGUAGES=en_US,en_GB \
+     -f Dockerfile .
+   ```
 
 ### Choosing platform
 
 Currently, the Docker configuration supports two platforms: `amd64`/`arm64`. To build an image for the desired platform, you need to use an appropriate `.tar.gz` package.
 
-* **amd64**:
+- **amd64**:
 
 Put "wsc_app_**x64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an extra build flag: `--platform linux/amd64`.
 So, the build command needs to be updated as follows:
-```
-docker build -t local/wsc_app:x.x.x --platform linux/amd64 --build-arg <arguments as before> -f Dockerfile .
+
+```bash
+docker build -t local/wsc_app:x.x.x \
+  --platform linux/amd64 \
+  --build-arg <arguments as before> \
+  -f Dockerfile .
 ```
 
-* **arm64**:
+- **arm64**:
 
 Put "wsc_app_**arm64**_x.xx.x.x_xxx.tar.gz" package into the `wproofreader-docker/files` directory and add an extra build flag: `--platform linux/arm64/v8`.
 So, the build command needs to be updated as follows:
-```
-docker build -t local/wsc_app:x.x.x --platform linux/arm64/v8 --build-arg <arguments as before> -f Dockerfile .
+
+```bash
+docker build -t local/wsc_app:x.x.x \
+  --platform linux/arm64/v8 \
+  --build-arg <arguments as before> \
+  -f Dockerfile .
 ```
 
 **Cross-platform consideration**
@@ -115,70 +142,84 @@ While Docker allows building images across different architectures, it's importa
 
 To ensure seamless execution within your target environment, it's advisable to build the image on a platform that matches the intended deployment architecture. When in doubt, confirm the target system's architecture and build the Docker image accordingly to guarantee compatibility and optimal performance.
 
-
 ## Create and run Docker container
 
 Create and run a Docker container from the latest Docker image with the following options:
 
-```
+```bash
 docker run -d -p 80:8080 local/wsc_app:x.x.x
 ```
 
 or (for the SSL version)
 
-```
-docker run -d -p 443:8443 -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
+```bash
+docker run -d -p 443:8443 \
+  -v <certificate_directory_path>:/certificate \
+  local/wsc_app:x.x.x
 ```
 
 To use user- and company-level custom dictionaries, you need to share a directory for the dictionaries with the Docker container. To do so, run a container as follows:
 
-```
-docker run -d -p 80:8080 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
+```bash
+docker run -d -p 80:8080 \
+  -v <directory_path>:/dictionaries \
+  -v <certificate_directory_path>:/certificate \
+  local/wsc_app:x.x.x
 ```
 
 or (for the SSL version)
 
-```
-docker run -d -p 443:8443 -v <directory_path>:/dictionaries -v <certificate_directory_path>:/certificate local/wsc_app:x.x.x
+```bash
+docker run -d -p 443:8443 \
+  -v <directory_path>:/dictionaries \
+  -v <certificate_directory_path>:/certificate \
+  local/wsc_app:x.x.x
 ```
 
 where:
 
-* `-d` start a container in detached mode.
-* `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default, NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`. 
-* `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. Upon initial launch, the mounted directory may be empty. All essential subdirectories and files will be generated during initialization of the container. This is required to save the dictionaries among different containers. 
+- `-d` start a container in detached mode.
+- `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default, NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`.
+- `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. Upon initial launch, the mounted directory may be empty. All essential subdirectories and files will be generated during initialization of the container. This is required to save the dictionaries among different containers.
 Note: The container user needs to have read and write permissions to the shared dictionary directory.
-* `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. By default, the expected filenames are `cert.pem` and `key.pem` (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are provided (neither baked in at build time nor mounted at runtime), self-signed certificates will be generated automatically when the container starts with HTTPS enabled.  
+- `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. By default, the expected filenames are `cert.pem` and `key.pem` (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are provided (neither baked in at build time nor mounted at runtime), self-signed certificates will be generated automatically when the container starts with HTTPS enabled.  
 Note: The container user must have read permissions for the certificate files.
-* `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
+- `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
 
 Alternatively, these parameters can be changed on the container running by passing them as environment variables:
 
-* `WPR_PROTOCOL`
-* `WPR_WEB_PORT`
-* `WPR_VIRTUAL_DIR`
-* `WPR_LICENSE_TICKET_ID`
+- `WPR_PROTOCOL`
+- `WPR_WEB_PORT`
+- `WPR_VIRTUAL_DIR`
+- `WPR_LICENSE_TICKET_ID`
 
 For example:
 
-```
-docker run -d -p 443:8443 --env WPR_PROTOCOL=1 --env WPR_WEB_PORT=443 --env WPR_VIRTUAL_DIR=wscservice --env WPR_LICENSE_TICKET_ID=6u*************ZO local/wsc_app:x.x.x
+```bash
+docker run -d -p 443:8443 \
+  --env WPR_PROTOCOL=1 \
+  --env WPR_WEB_PORT=443 \
+  --env WPR_VIRTUAL_DIR=wscservice \
+  --env WPR_LICENSE_TICKET_ID=******************* \
+  local/wsc_app:x.x.x
 ```
 
 where:
 
-* `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
-* `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
-* `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual directory. Use `/` or empty string for root path.
-* `--env WPR_LICENSE_TICKET_ID=6u*************ZO` activate license on container start with `6u*************ZO` license ticket id
+- `--env WPR_PROTOCOL=1` start a container on HTTPS protocol
+- `--env WPR_WEB_PORT=443` configure `443` port to be an external port of a container
+- `--env WPR_VIRTUAL_DIR=wscservice` start a container with `wscservice` as virtual directory. Use `/` or empty string for root path.
+- `--env WPR_LICENSE_TICKET_ID=*****************` activate license on container start with `*****************` license ticket id
+
+To keep the license ticket and proxy password out of your shell history, put them in an env file and pass it with `--env-file wproofreader.env`. Keep that file out of git.
 
 Additional parameters:
 
-* `--env WPR_JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
+- `--env WPR_JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
 
 The container launched by the command above will be available at the following address:
 
-```
+```bash
 https://localhost:443/wscservice/api?cmd=status
 ```
 
@@ -188,13 +229,19 @@ Learn more how to [set environment variables in Docker container](https://docs.d
 
 After the successful launch of a container with the app (and the license activation), you can verify the version `ver` and `status` using the commands below from the browser or using `curl` in the terminal:
 
-* Version: http://localhost/wscservice/api?cmd=ver
+- Version: <http://localhost/wscservice/api?cmd=ver>
 
-```{"COPYRIGHT":"(c) 2000-202x WebSpellChecker LLC","PRODUCT WEBSITE":"webspellchecker.com","PROGRAM VERSION":"5.x.x.0 x64 master:xxxxxxx (xxxx) #xx"}```
-
-* Status: http://localhost/wscservice/api?cmd=status
-
+```json
+{
+    "COPYRIGHT": "(c) 2000-202x WebSpellChecker LLC",
+    "PRODUCT WEBSITE": "webspellchecker.com",
+    "PROGRAM VERSION": "5.x.x.0 x64 master:xxxxxxx (xxxx) #xx"
+}
 ```
+
+- Status: <http://localhost/wscservice/api?cmd=status>
+
+```bash
 {
     "SpellCheckEngine": {
         "active": true
@@ -217,93 +264,115 @@ After the successful launch of a container with the app (and the license activat
 }
 ```
 
-* Getting started http://localhost/wscservice/ as well as the demo samples: http://localhost/wscservice/samples/ pages can be accessed from the browser.
-
+- Getting started <http://localhost/wscservice/> as well as the demo samples: <http://localhost/wscservice/samples/> pages can be accessed from the browser.
 
 ## Working with container
 
 1. Going further if you need to restart the service or container, you should use Docker [start](https://docs.docker.com/engine/reference/commandline/start/) or [stop](https://docs.docker.com/engine/reference/commandline/stop/) commands with a container Id as an option.
 
-```
-docker start <container_id>
-```
+     ```bash
+     docker start <container_id>
+     ```
 
 2. If you need to troubleshoot issues with the application, you may want to check logs. All application logs are stored in container [logs](https://docs.docker.com/engine/reference/commandline/logs/):
 
-```
-docker logs <container_id>
-```
+     ```bash
+     docker logs <container_id>
+     ```
 
 3. If you need to configure the application server (AppServer), for example, edit `AppServerX.xml`, you need to connect to a container. Use `docker exec` command to connect to a container where the app is running:
 
-```
-docker exec -it <container_id> /bin/bash
-```
+   ```bash
+   docker exec -it <container_id> /bin/bash
+   ```
 
 4. It's important to keep in mind and monitor the amount of resources allocated for and consumed by the application according the the minimal hardware requirements for its proper work. You can check the resource usage statistics of a container using the `docker stats` command as shown below. [Read more](https://docs.docker.com/engine/reference/commandline/stats/) about this command and its options in the official documentation.
 
-```
-docker stats <container_id>
-```
+   ```bash
+   docker stats <container_id>
+   ```
 
 ## Create image from modified Docker container
 
-If you need to make any changes to the app configuration that is running inside the Docker container (e.g. changes to `AppServerX.xml`) and keep it persistent, create an image from the modified container. It can be easily done with a single command:
+Changes made inside a running container, for example to `AppServerX.xml`, are lost when the container is removed. The reproducible way to keep them is a small Dockerfile on top of your image that copies the edited file in:
 
+```Dockerfile
+FROM local/wsc_app:x.x.x
+COPY --chown=wsc:wsc AppServerX.xml \
+  /opt/WebSpellChecker/AppServer/AppServerX.xml
 ```
-docker commit <existing_container_id> <new_name_image>
+
+Copy the original out of a container first, edit it, then build the derived image:
+
+```bash
+docker cp \
+  <container_id>:/opt/WebSpellChecker/AppServer/AppServerX.xml .
+docker build -t local/wsc_app:x.x.x-custom .
 ```
 
-Then check if the image has been successfully created, using `docker images` command. You will see the list of existing images. Use this new image to create new containers following the instructions on how to run the container above.
+When a new version of the base image comes out, the same change is applied by rebuilding. The container still applies the `WPR_*` environment variables to this file at startup, so keep those settings in the environment rather than in the file.
 
+If you prefer to edit the file on the host, mount it into the container instead: `-v /home/user/AppServerX.xml:/opt/WebSpellChecker/AppServer/AppServerX.xml`. Mount it read-write, the startup script updates it.
 
-## Docker Compose
+As a quick option, `docker commit <existing_container_id> <new_name_image>` turns the running container into an image, which you can then check with `docker images` and run like any other. The result is not reproducible, though, and it contains everything written inside the container, including logs and activation data. Do not publish an image made this way.
 
-Instead of using lengthy `docker run` commands, it is possible to keep all the configuration in a `docker-compose.yml` file (name is important, extension can be `yaml` or `yml`) and deploy it using `docker compose up` command from the same directory. For more information, please refer to the [documentation](https://docs.docker.com/compose/).
+## Run WProofreader with Docker Compose
 
+This basic configuration runs WProofreader Server without App-manager. Instead of using a lengthy `docker run` command, keep the configuration in a `docker-compose.yml` file and run `docker compose up` from the same directory.
+For more information, see the [Docker Compose documentation](https://docs.docker.com/compose/).
 
 Sample `docker-compose.yml` content:
+
 ```yaml
-version: "3"
 services:
-  wproofreader:
-    image: webspellchecker/wproofreader:latest
-    container_name: wproofreader-server
-    ports:
-      - "80:8080"
-    environment:
-      - WPR_PROTOCOL=2
-      - WPR_WEB_PORT=80
-      - WPR_VIRTUAL_DIR=wscservice
+   wproofreader:
+      image: webspellchecker/wproofreader:latest
+      container_name: wproofreader-server
+      ports:
+         - "80:8080"
+      environment:
+         - WPR_PROTOCOL=2
+         - WPR_WEB_PORT=80
+         - WPR_VIRTUAL_DIR=wscservice
 ```
 
 Notes:
-1. If you have a license key, pass it as an environment variable like that:
-   ```  - WPR_LICENSE_TICKET_ID=<your License ID>```
-   The server will be activated automatically upon startup.
-2. This deploys the WProofreader Server working with HTTP protocol. To use it over HTTPS please change the following sections to:
- ```yaml
+
+1. If you have a license key, pass it as an environment variable. The server is activated automatically on startup:
+
+   ```yaml
+    environment:
+      - WPR_LICENSE_TICKET_ID=<your License ID>
+   ```
+
+2. This deploys WProofreader Server over HTTP. To use HTTPS, change the following sections to:
+
+   ```yaml
     ports:
       - "443:8443"
     environment:
       - WPR_PROTOCOL=1
       - WPR_WEB_PORT=443
       - WPR_VIRTUAL_DIR=wscservice
-```
-3. For HTTPS communication you can provide your certificate file and key, as a pair of files named `cert.pem` and `key.pem` by default (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are mounted, self-signed certificates will be generated automatically at startup. To use your own certificates — for instance, if they are kept in a folder `/home/user/certificate` — add the following section to `docker-compose.yml`:
- ```yaml
+   ```
+
+3. For HTTPS you can provide your own certificate and key, as a pair of files named `cert.pem` and `key.pem` by default (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are mounted, self-signed certificates are generated at startup. To use your own, for instance from `/home/user/certificate`, add this section to `docker-compose.yml`:
+
+   ```yaml
     volumes:
       - /home/user/certificate:/certificate
- ```
-4. If you have to use custom dictionaries, mount the folder they are located in the docker container the same way:
-  ```yaml
+   ```
+
+4. To use custom dictionaries, mount their folder into the container the same way:
+
+   ```yaml
     volumes:
       - /home/user/dictionaries:/dictionaries
-  ```
+   ```
 
 Finally, the whole config with activation, custom dictionaries and HTTPS would look like this:
+
 ```yaml
-version: "3"
 services:
   wproofreader:
     image: webspellchecker/wproofreader:latest
@@ -320,9 +389,40 @@ services:
       - /home/user/dictionaries:/dictionaries
 ```
 
+### Run WProofreader with App-manager
+
+App-manager is a web panel for administering your WProofreader Server: teams and users, custom dictionaries, style guides and service settings. The full configuration runs four containers on one host: MySQL, db-manager (a one-off job that creates and migrates the service database), WProofreader Server and App-manager.
+
+Everything it needs is in `examples/app-manager`:
+
+```text
+examples/app-manager/
+├── .env.example        # every setting, with comments
+├── .gitignore          # keeps .env and backups out of Git
+├── docker-compose.yml  # all four containers
+└── README.md           # setup and operations guide
+```
+
+Keep these files together. `.env.example` is committed and documents the settings. Your own `.env`, created next to it, holds the license ticket, the App-manager encryption key and the database passwords; it is ignored by Git through the `.gitignore` in the same directory.
+
+To start:
+
+```bash
+cd examples/app-manager
+cp .env.example .env
+# edit .env: license ticket, APP_KEY, four passwords
+# optional: check the file before starting
+docker compose config --quiet
+docker compose up -d
+```
+
+Compose reads `.env` from the current directory, so run every `docker compose` command from `examples/app-manager`. The first start pulls the images, provisions the service database, then brings up WProofreader Server and App-manager in that order. The [guide](examples/app-manager/README.md) in the same directory covers the first-run setup link, verification, upgrades, backups and troubleshooting.
+
+On Kubernetes, use the [WProofreader](https://github.com/WebSpellChecker/wproofreader-helm) and [App-manager](https://github.com/WebSpellChecker/app-manager-helm) Helm charts instead.
+
 ## Further steps
 
 Once a docker container with the app is up and running, you can integrate JavaScript libs/components or plugin it into your web app.
 
-* [WProofreader SDK API options](https://webspellchecker.com/docs/api/wscbundle/Options.html)
-* [WProofreader SDK demos](https://demos.webspellchecker.com/)
+- [WProofreader SDK API options](https://webspellchecker.com/docs/api/wscbundle/Options.html)
+- [WProofreader SDK demos](https://demos.webspellchecker.com/)
