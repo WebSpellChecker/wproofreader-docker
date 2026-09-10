@@ -1,0 +1,7 @@
+# Local configuration contains credentials and must not be committed.
+.env
+.env.*
+!.env.example
+
+# The documented backup command writes database contents here by default.
+backup*.sql
