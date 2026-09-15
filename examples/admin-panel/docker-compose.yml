@@ -1,4 +1,4 @@
-# WProofreader Server + App-manager on a single host.
+# WProofreader Server + Admin-panel on a single host.
 #
 #   cp .env.example .env   # fill in the values
 #   docker compose up -d
@@ -17,9 +17,9 @@ services:
       # MySQL is not published to the host, so this account stays on the private
       # Compose network.
       MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: app_manager_db
-      MYSQL_USER: app_manager
-      MYSQL_PASSWORD: ${APP_MANAGER_DB_PASSWORD:?set APP_MANAGER_DB_PASSWORD in .env}
+      MYSQL_DATABASE: admin_panel_db
+      MYSQL_USER: admin_panel
+      MYSQL_PASSWORD: ${ADMIN_PANEL_DB_PASSWORD:?set ADMIN_PANEL_DB_PASSWORD in .env}
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -86,28 +86,28 @@ services:
       db-manager:
         condition: service_completed_successfully
 
-  app-manager:
-    image: ${APP_MANAGER_IMAGE:-webspellchecker/app-manager}:${APP_MANAGER_VERSION:-latest}
+  admin-panel:
+    image: ${ADMIN_PANEL_IMAGE:-webspellchecker/admin-panel}:${ADMIN_PANEL_VERSION:-latest}
     restart: unless-stopped
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${APP_MANAGER_PORT:-8080}:8080"
+      - "${BIND_ADDRESS:-127.0.0.1}:${ADMIN_PANEL_PORT:-8080}:8080"
     environment:
       APP_EDITION: onprem
       APP_ENV: production
       APP_DEBUG: "false"
       APP_KEY: ${APP_KEY:?set APP_KEY in .env}
-      APP_URL: ${APP_MANAGER_URL:-http://localhost:${APP_MANAGER_PORT:-8080}}
+      APP_URL: ${ADMIN_PANEL_URL:-http://localhost:${ADMIN_PANEL_PORT:-8080}}
       APP_SERVER_URL: ${APPSERVER_URL:-http://localhost:${APPSERVER_PORT:-8081}/wscservice/api}
       APP_SERVER_INTERNAL_URL: http://appserver:8080/wscservice/api
-      LOG_OUTPUT_LEVEL: ${APP_MANAGER_LOG_LEVEL:-info}
+      LOG_OUTPUT_LEVEL: ${ADMIN_PANEL_LOG_LEVEL:-info}
       SSL_MODE: "off"
       PROXY_TYPE: ${PROXY_TYPE:-generic}
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: "3306"
-      DB_DATABASE: app_manager_db
-      DB_USERNAME: app_manager
-      DB_PASSWORD: ${APP_MANAGER_DB_PASSWORD}
+      DB_DATABASE: admin_panel_db
+      DB_USERNAME: admin_panel
+      DB_PASSWORD: ${ADMIN_PANEL_DB_PASSWORD}
       SERVICE_DB_HOST: mysql
       SERVICE_DB_PORT: "3306"
       SERVICE_DB_DATABASE: cloud_service
@@ -124,14 +124,14 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
-      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-app-manager@example.com}
-      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-App-manager}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-admin-panel@example.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Admin-panel}
       LARAVEL_ENVIRONMENT_VALIDATION: "true"
       LARAVEL_PROVISION_APP_MANAGER_DB: "true"
       LARAVEL_SEED_APP_MANAGER_DB: "false"
       LARAVEL_MIGRATION_WAIT_DB_TIMEOUT: "120"
     volumes:
-      - app-manager-storage:/var/www/html/storage/app
+      - admin-panel-storage:/var/www/html/storage/app
     healthcheck:
       start_period: 120s
     depends_on:
@@ -143,4 +143,4 @@ services:
 volumes:
   mysql-data:
   appserver-dictionaries:
-  app-manager-storage:
+  admin-panel-storage:

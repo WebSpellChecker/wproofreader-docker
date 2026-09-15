@@ -1,28 +1,28 @@
-# Run WProofreader Server and App-manager with Docker Compose
+# Run WProofreader Server and Admin-panel with Docker Compose
 
 This folder provides a self-contained Docker Compose setup for running
-WProofreader Server, App-manager (On-Prem), and MySQL on a single host. There
+WProofreader Server, Admin-panel (On-Prem), and MySQL on a single host. There
 is no build step, and you do not need any other files from this repository.
 
 This setup is a good fit for evaluation, demonstrations, and small installations.
 For a resilient production deployment, use an architecture with regular backups,
-a reverse proxy or load balancer, a managed database, and multiple App-manager
+a reverse proxy or load balancer, a managed database, and multiple Admin-panel
 instances.
 
 ## What the stack includes
 
 | Service | Image | What it does |
 | --- | --- | --- |
-| `mysql` | `mysql:8.4` | Stores two databases: `app_manager_db` for App-manager and `cloud_service` for WProofreader Server. |
+| `mysql` | `mysql:8.4` | Stores two databases: `admin_panel_db` for Admin-panel and `cloud_service` for WProofreader Server. |
 | `db-manager` | `webspellchecker/db-manager` | Runs once at startup to create `cloud_service`, apply its schema and seed data, and create the `appserver` and `app_service` database users. It exits when finished. |
 | `appserver` | `webspellchecker/wproofreader` | Runs WProofreader Server with its database provider enabled. |
-| `app-manager` | `webspellchecker/app-manager` | Runs the App-manager web application, queue worker, and scheduler. It applies its own database migrations during startup. |
+| `admin-panel` | `webspellchecker/admin-panel` | Runs the Admin-panel web application, queue worker, and scheduler. It applies its own database migrations during startup. |
 
 Docker Compose starts the services in the required order:
 
 1. MySQL starts and becomes healthy.
 2. db-manager provisions the WProofreader database.
-3. WProofreader Server and App-manager start.
+3. WProofreader Server and Admin-panel start.
 
 If db-manager fails, the two application services do not start. This prevents
 them from running against a missing or incomplete database schema.
@@ -39,7 +39,7 @@ Make sure the host has:
 - Free ports `8080` and `8081` on the loopback interface, unless you plan to
   change them in `.env`.
 
-Run all commands in this guide from the `examples/app-manager` directory.
+Run all commands in this guide from the `examples/admin-panel` directory.
 
 ## Configure the stack
 
@@ -49,7 +49,7 @@ Run all commands in this guide from the `examples/app-manager` directory.
    cp .env.example .env
    ```
 
-2. Generate an encryption key for App-manager:
+2. Generate an encryption key for Admin-panel:
 
    ```bash
    openssl rand -base64 32 | sed 's/^/base64:/'
@@ -65,8 +65,8 @@ Run all commands in this guide from the `examples/app-manager` directory.
    | --- | --- |
    | `LICENSE_TICKET_ID` | Activates WProofreader Server. |
    | `MYSQL_ROOT_PASSWORD` | MySQL administrative password. |
-   | `APP_MANAGER_DB_PASSWORD` | Password App-manager uses for `app_manager_db`. |
-   | `SERVICE_DB_PASSWORD` | Password App-manager uses for `cloud_service`. |
+   | `ADMIN_PANEL_DB_PASSWORD` | Password Admin-panel uses for `admin_panel_db`. |
+   | `SERVICE_DB_PASSWORD` | Password Admin-panel uses for `cloud_service`. |
    | `APPSERVER_DB_PASSWORD` | Password WProofreader Server uses for `cloud_service`. |
 
    Choose strong, unique database passwords before the first start. MySQL uses
@@ -83,10 +83,10 @@ Run all commands in this guide from the `examples/app-manager` directory.
 
    If you were given image repositories other than the `webspellchecker`
    defaults, set `WPROOFREADER_IMAGE`, `DB_MANAGER_IMAGE`, or
-   `APP_MANAGER_IMAGE` to the repository name without a tag, and log in to
+   `ADMIN_PANEL_IMAGE` to the repository name without a tag, and log in to
    that registry before continuing.
 
-5. Optional: change `APP_MANAGER_PORT`, `APPSERVER_PORT`, mail settings, or the
+5. Optional: change `ADMIN_PANEL_PORT`, `APPSERVER_PORT`, mail settings, or the
    public URLs. The defaults are suitable for local access.
 
 6. Check the completed configuration for Compose errors:
@@ -114,24 +114,24 @@ docker compose ps --all
 
 When startup is complete:
 
-- `mysql`, `appserver`, and `app-manager` should be running and healthy.
+- `mysql`, `appserver`, and `admin-panel` should be running and healthy.
 - `db-manager` should show `Exited (0)`. This is expected: it is a one-time job,
   not a long-running service.
 
 The applications are available at:
 
-- App-manager: <http://localhost:8080>
+- Admin-panel: <http://localhost:8080>
 - WProofreader Server: <http://localhost:8081/wscservice/>
 
 If you changed either port in `.env`, use the new port in these URLs.
 
 ### Create the first administrator
 
-App-manager generates a one-time setup link during its first startup.
+Admin-panel generates a one-time setup link during its first startup.
 Display it with:
 
 ```bash
-docker compose logs app-manager | grep -A1 'Setup URL'
+docker compose logs admin-panel | grep -A1 'Setup URL'
 ```
 
 Open the URL in a browser and create the first administrator account.
@@ -140,7 +140,7 @@ The setup token expires after 24 hours. If it is no longer visible in the logs,
 you can read it from the container until setup is completed:
 
 ```bash
-docker compose exec app-manager \
+docker compose exec admin-panel \
   cat storage/app/onprem-setup-token
 ```
 
@@ -164,22 +164,22 @@ the container state with `docker compose ps --all` and its logs with
 | --- | --- |
 | Show all service state and health | `docker compose ps --all` |
 | Follow all logs | `docker compose logs -f` |
-| Follow one service | `docker compose logs -f app-manager` |
+| Follow one service | `docker compose logs -f admin-panel` |
 | Stop the stack without removing containers | `docker compose stop` |
 | Start stopped containers | `docker compose start` |
 | Remove containers while keeping data | `docker compose down` |
 
 > **Warning:** `docker compose down -v` permanently deletes the MySQL databases,
-> App-manager storage, and WProofreader dictionaries. Use it only when you
+> Admin-panel storage, and WProofreader dictionaries. Use it only when you
 > intentionally want to start again from an empty installation.
 
-### App-manager operator commands
+### Admin-panel operator commands
 
-Run Artisan commands inside the App-manager container. For example, generate a
+Run Artisan commands inside the Admin-panel container. For example, generate a
 new setup token after the previous token expires:
 
 ```bash
-docker compose exec app-manager \
+docker compose exec admin-panel \
   php artisan app:setup-token --regenerate
 ```
 
@@ -194,7 +194,7 @@ Other useful commands include:
 Use the same pattern for each command:
 
 ```bash
-docker compose exec app-manager php artisan <command>
+docker compose exec admin-panel php artisan <command>
 ```
 
 ## Upgrade the stack
@@ -211,7 +211,7 @@ Confirm that `backup.sql` exists and is not empty before continuing.
 
 Then:
 
-1. Update `WPROOFREADER_VERSION` or `APP_MANAGER_VERSION` in `.env`.
+1. Update `WPROOFREADER_VERSION` or `ADMIN_PANEL_VERSION` in `.env`.
 2. Download the new images and recreate the services:
 
    ```bash
@@ -223,11 +223,11 @@ Then:
 
    ```bash
    docker compose ps --all
-   docker compose logs db-manager app-manager
+   docker compose logs db-manager admin-panel
    ```
 
 db-manager applies the changesets included in the selected WProofreader release,
-and App-manager applies its own migrations during startup. Changesets that have
+and Admin-panel applies its own migrations during startup. Changesets that have
 already run are skipped, so running `docker compose up -d` again is safe.
 
 ## HTTPS and public hostnames
@@ -239,17 +239,17 @@ loopback binding when the proxy runs on the same host. If your network design
 requires another binding, change `BIND_ADDRESS` and restrict access with a
 firewall or security group.
 
-Set the public URLs in `.env` so App-manager generates correct links and the
+Set the public URLs in `.env` so Admin-panel generates correct links and the
 browser reaches both services over HTTPS:
 
 ```bash
-APP_MANAGER_URL=https://app-manager.example.com
+ADMIN_PANEL_URL=https://admin-panel.example.com
 APPSERVER_URL=https://wproofreader.example.com/wscservice/api
 PROXY_TYPE=generic
 ```
 
 `PROXY_TYPE` also accepts `aws` and `cloudflare`. Use the same scheme for both
-public URLs; browsers block mixed HTTP and HTTPS content. App-manager continues
+public URLs; browsers block mixed HTTP and HTTPS content. Admin-panel continues
 to use the internal Compose network when communicating with WProofreader Server,
 so its internal address does not need to change.
 
@@ -265,9 +265,9 @@ docker compose up -d
 ```
 
 db-manager runs again, sets the new password on the existing account, and
-Compose recreates WProofreader Server and App-manager with the new value.
+Compose recreates WProofreader Server and Admin-panel with the new value.
 
-`app_manager` and `root` are created by the MySQL image, which reads `.env`
+`admin_panel` and `root` are created by the MySQL image, which reads `.env`
 only when the data volume is initialised. Changing them always takes the
 manual steps: update MySQL first, then `.env`, then recreate the containers.
 
@@ -281,7 +281,7 @@ manual steps: update MySQL first, then `.env`, then recreate the containers.
 2. At the `mysql>` prompt, change the account. For example:
 
    ```sql
-   ALTER USER 'app_manager'@'%'
+   ALTER USER 'admin_panel'@'%'
      IDENTIFIED BY 'replace-with-new-password';
    ```
 
@@ -289,7 +289,7 @@ manual steps: update MySQL first, then `.env`, then recreate the containers.
 
    | MySQL account | Host | Variable to update in `.env` |
    | --- | --- | --- |
-   | `app_manager` | `%` | `APP_MANAGER_DB_PASSWORD` |
+   | `admin_panel` | `%` | `ADMIN_PANEL_DB_PASSWORD` |
    | `app_service` | `%` | `SERVICE_DB_PASSWORD` |
    | `appserver` | `%` | `APPSERVER_DB_PASSWORD` |
    | `root` | `localhost` and `%` | `MYSQL_ROOT_PASSWORD` |
@@ -368,18 +368,18 @@ Common causes are an incorrect `MYSQL_ROOT_PASSWORD`, mismatched image versions,
 or MySQL taking longer than expected to initialize on a slow disk. After fixing
 the cause, run `docker compose up -d` again.
 
-### App-manager remains `starting` or becomes `unhealthy`
+### Admin-panel remains `starting` or becomes `unhealthy`
 
 ```bash
-docker compose logs app-manager
+docker compose logs admin-panel
 ```
 
-App-manager waits up to two minutes for MySQL and then runs its migrations. Any
+Admin-panel waits up to two minutes for MySQL and then runs its migrations. Any
 database connection or migration error appears in this log.
 
 ### A port is already in use
 
-Change `APP_MANAGER_PORT` or `APPSERVER_PORT` in `.env`, then run:
+Change `ADMIN_PANEL_PORT` or `APPSERVER_PORT` in `.env`, then run:
 
 ```bash
 docker compose up -d
@@ -390,14 +390,14 @@ docker compose up -d
 Setup tokens expire after 24 hours. Generate a replacement:
 
 ```bash
-docker compose exec app-manager \
+docker compose exec admin-panel \
   php artisan app:setup-token --regenerate
 ```
 
 ### Start again from an empty installation
 
 > **Warning:** The following command permanently removes both databases,
-> WProofreader dictionaries, and App-manager storage.
+> WProofreader dictionaries, and Admin-panel storage.
 
 ```bash
 docker compose down -v

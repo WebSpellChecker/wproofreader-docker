@@ -6,7 +6,7 @@ Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image wit
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
-The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. If you also want App-manager for administering the server, run the same image together with App-manager, MySQL and db-manager as shown in [Run WProofreader with App-manager](#run-wproofreader-with-app-manager). On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm).
+The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. If you also want Admin-panel for administering the server, run the same image together with Admin-panel, MySQL and db-manager as shown in [Run WProofreader with Admin-panel](#run-wproofreader-with-admin-panel). On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm).
 
 Before you begin, make sure you meet the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
 
@@ -318,7 +318,7 @@ As a quick option, `docker commit <existing_container_id> <new_name_image>` turn
 
 ## Run WProofreader with Docker Compose
 
-This basic configuration runs WProofreader Server without App-manager. Instead of using a lengthy `docker run` command, keep the configuration in a `docker-compose.yml` file and run `docker compose up` from the same directory.
+This basic configuration runs WProofreader Server without Admin-panel. Instead of using a lengthy `docker run` command, keep the configuration in a `docker-compose.yml` file and run `docker compose up` from the same directory.
 For more information, see the [Docker Compose documentation](https://docs.docker.com/compose/).
 
 Sample `docker-compose.yml` content:
@@ -389,26 +389,26 @@ services:
       - /home/user/dictionaries:/dictionaries
 ```
 
-### Run WProofreader with App-manager
+### Run WProofreader with Admin-panel
 
-App-manager is a web application for administering your WProofreader Server: teams and users, custom dictionaries, style guides and service settings. The full configuration runs four containers on one host: MySQL, db-manager (a one-off job that creates and migrates the service database), WProofreader Server and App-manager.
+Admin-panel is a web application for administering your WProofreader Server: teams and users, custom dictionaries, style guides and service settings. The full configuration runs four containers on one host: MySQL, db-manager (a one-off job that creates and migrates the service database), WProofreader Server and Admin-panel.
 
-Everything it needs is in `examples/app-manager`:
+Everything it needs is in `examples/admin-panel`:
 
 ```text
-examples/app-manager/
+examples/admin-panel/
 ├── .env.example        # every setting, with comments
 ├── .gitignore          # keeps .env and backups out of Git
 ├── docker-compose.yml  # all four containers
 └── README.md           # setup and operations guide
 ```
 
-Keep these files together. `.env.example` is committed and documents the settings. Your own `.env`, created next to it, holds the license ticket, the App-manager encryption key and the database passwords; it is ignored by Git through the `.gitignore` in the same directory.
+Keep these files together. `.env.example` is committed and documents the settings. Your own `.env`, created next to it, holds the license ticket, the Admin-panel encryption key and the database passwords; it is ignored by Git through the `.gitignore` in the same directory.
 
 To start:
 
 ```bash
-cd examples/app-manager
+cd examples/admin-panel
 cp .env.example .env
 # edit .env: license ticket, APP_KEY, four passwords
 # optional: check the file before starting
@@ -416,7 +416,7 @@ docker compose config --quiet
 docker compose up -d
 ```
 
-Compose reads `.env` from the current directory, so run every `docker compose` command from `examples/app-manager`. The first start pulls the images, provisions the service database, then brings up WProofreader Server and App-manager in that order. The [guide](examples/app-manager/README.md) in the same directory covers the first-run setup link, verification, upgrades, backups and troubleshooting.
+Compose reads `.env` from the current directory, so run every `docker compose` command from `examples/admin-panel`. The first start pulls the images, provisions the service database, then brings up WProofreader Server and Admin-panel in that order. The [guide](examples/admin-panel/README.md) in the same directory covers the first-run setup link, verification, upgrades, backups and troubleshooting.
 
 On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm) instead.
 
