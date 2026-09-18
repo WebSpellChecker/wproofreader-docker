@@ -1,4 +1,5 @@
 my $nginxConf = '/etc/nginx/conf.d/wscservice.conf';
+my $isDatabaseProvider = lc($ENV{'WPR_ENABLE_DATABASE_PROVIDER'} // '') eq 'true';
 
 configureNginx();
 configureNginxConfig();
@@ -67,7 +68,16 @@ sub configureNginxConfig
 		# Change virtual dir inside NGINX config
 		my $main_location = $is_root_path ? '/' : $vdir;
 		replaceFileContent('location \/.*? {', "location $main_location {", $nginxConf);
-		replaceFileContent('location \/.*?/samples {', "location ${vdir}/samples {", $nginxConf);
+		if ($isDatabaseProvider)
+		{
+			# Samples are not operable with the database provider enabled.
+			# A block commented out by the installer is left as is
+			replaceFileContent('(?m)^[ \t]*location [^\n{]*\/samples[ \t]*\{[^{}]*\}[ \t]*\n', '', $nginxConf);
+		}
+		else
+		{
+			replaceFileContent('location \/.*?/samples {', "location ${vdir}/samples {", $nginxConf);
+		}
 		replaceFileContent('location \/.*?/wscbundle/ {', "location ${vdir}/wscbundle/ {", $nginxConf);
 		replaceFileContent('location \/.*?/api {', "location ${vdir}/api {", $nginxConf);
 	}
