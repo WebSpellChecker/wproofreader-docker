@@ -1,0 +1,88 @@
+# WProofreader Server with its MySQL database on a single host.
+#
+#   cp .env.example .env   # fill in the values
+#   docker compose up -d
+#
+# Guide: README.md
+
+name: wproofreader-db
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      # db-manager connects from another container to create and migrate the DB.
+      # MySQL is not published to the host, so this account stays private.
+      MYSQL_ROOT_HOST: "%"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      # TCP on purpose: the init-phase server listens on the socket only.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  # One-shot: creates cloud_service, applies its schema and seed data, and
+  # creates the least-privileged appserver account. Safe to re-run.
+  db-manager:
+    image: ${DB_MANAGER_IMAGE:-webspellchecker/db-manager}:${DB_MANAGER_VERSION:-${WPROOFREADER_VERSION:-latest}}
+    restart: "no"
+    command: ["migrate"]
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: cloud_service
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_CONTEXTS: external,seed
+      MIGRATION_MODE: bootstrap
+      # Create only the account this stack needs. USAGE lets db-manager create
+      # the account before the schema exists; after migration it replaces that
+      # with the standard per-table appserver grants bundled in the image.
+      APP_USERS: '{"appserver":{"password_env":"APPSERVER_PASSWORD","grants":["USAGE"],"host":"%"}}'
+      APPSERVER_USERNAME: appserver
+      APPSERVER_PASSWORD: ${APPSERVER_DB_PASSWORD:?set APPSERVER_DB_PASSWORD in .env}
+      PROVISION_PREDEFINED_USERS: "false"
+      LOG_LEVEL: ${DB_MANAGER_LOG_LEVEL:-INFO}
+      DB_MAX_RETRIES: "30"
+      DB_RETRY_INTERVAL: "2"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  appserver:
+    image: ${WPROOFREADER_IMAGE:-webspellchecker/wproofreader}:${WPROOFREADER_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${WPROOFREADER_PORT:-8080}:8080"
+    environment:
+      WPR_LICENSE_TICKET_ID: ${LICENSE_TICKET_ID:?set LICENSE_TICKET_ID in .env}
+      WPR_ENABLE_DATABASE_PROVIDER: "true"
+      WPR_DATABASE_HOST: mysql
+      WPR_DATABASE_PORT: "3306"
+      WPR_DATABASE_SCHEMA: cloud_service
+      WPR_DATABASE_USER: appserver
+      WPR_DATABASE_PASSWORD: ${APPSERVER_DB_PASSWORD}
+      WPR_ENABLE_REQUEST_STATISTIC: "true"
+      WPR_ENABLE_USER_ACTION_STATISTIC: "true"
+      WPR_ENABLE_REQUEST_VALIDATION: "true"
+    volumes:
+      - appserver-dictionaries:/dictionaries
+    healthcheck:
+      # health_check confirms that the process answers, not that the license is valid.
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /wscservice/api?cmd=health_check HTTP/1.0\\r\\n\\r\\n' >&3 && head -1 <&3 | grep -q ' 200 '"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    depends_on:
+      db-manager:
+        condition: service_completed_successfully
+
+volumes:
+  mysql-data:
+  appserver-dictionaries:
