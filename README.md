@@ -391,7 +391,7 @@ services:
 
 ### Run WProofreader with Admin-panel
 
-Admin-panel is a web application for administering your WProofreader Server: teams and users, custom dictionaries, style guides and service settings. The full configuration runs four containers on one host: MySQL, db-manager (a one-off job that creates and migrates the service database), WProofreader Server and Admin-panel.
+Admin-panel is a web application for administering your WProofreader Server: teams and users, custom dictionaries, style guides and service settings. The full configuration runs six containers on one host: MySQL, db-manager (a one-off job that creates and migrates the service database), WProofreader Server, and Admin-panel as three containers from one image: the web application, the queue worker and the scheduler.
 
 Everything it needs is in `examples/admin-panel`:
 
@@ -399,7 +399,7 @@ Everything it needs is in `examples/admin-panel`:
 examples/admin-panel/
 ├── .env.example        # every setting, with comments
 ├── .gitignore          # keeps .env and backups out of Git
-├── docker-compose.yml  # all four containers
+├── docker-compose.yml  # all six containers
 └── README.md           # setup and operations guide
 ```
 
@@ -416,7 +416,7 @@ docker compose config --quiet
 docker compose up -d
 ```
 
-Compose reads `.env` from the current directory, so run every `docker compose` command from `examples/admin-panel`. The first start pulls the images, provisions the service database, then brings up WProofreader Server and Admin-panel in that order. The [guide](examples/admin-panel/README.md) in the same directory covers the first-run setup link, verification, upgrades, backups and troubleshooting.
+Compose reads `.env` from the current directory, so run every `docker compose` command from `examples/admin-panel`. The first start pulls the images, provisions the service database, then brings up WProofreader Server, the Admin-panel web application, and finally its worker and scheduler. The [guide](examples/admin-panel/README.md) in the same directory covers the first-run setup link, verification, upgrades, backups and troubleshooting.
 
 On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm) instead.
 

@@ -4,8 +4,46 @@
 #   docker compose up -d
 #
 # Guide: README.md
+#
+# Admin-panel runs as three containers from one image: the web application,
+# the queue worker (invitation mail, background jobs) and the scheduler
+# (hourly maintenance). They share the settings below.
 
 name: wproofreader
+
+x-admin-panel-environment: &admin-panel-environment
+  APP_EDITION: onprem
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?set APP_KEY in .env}
+  APP_URL: ${ADMIN_PANEL_URL:-http://localhost:${ADMIN_PANEL_PORT:-8080}}
+  APP_SERVER_URL: ${APPSERVER_URL:-http://localhost:${APPSERVER_PORT:-8081}/wscservice/api}
+  APP_SERVER_INTERNAL_URL: http://appserver:8080/wscservice/api
+  LOG_OUTPUT_LEVEL: ${ADMIN_PANEL_LOG_LEVEL:-info}
+  DB_CONNECTION: mysql
+  DB_HOST: mysql
+  DB_PORT: "3306"
+  DB_DATABASE: admin_panel_db
+  DB_USERNAME: admin_panel
+  DB_PASSWORD: ${ADMIN_PANEL_DB_PASSWORD}
+  SERVICE_DB_HOST: mysql
+  SERVICE_DB_PORT: "3306"
+  SERVICE_DB_DATABASE: cloud_service
+  SERVICE_DB_USERNAME: app_service
+  SERVICE_DB_PASSWORD: ${SERVICE_DB_PASSWORD}
+  SESSION_DRIVER: database
+  CACHE_STORE: database
+  QUEUE_CONNECTION: database
+  FILESYSTEM_DISK: local
+  JETSTREAM_PROFILE_PHOTO_DISK: public
+  MAIL_MAILER: ${MAIL_MAILER:-log}
+  MAIL_HOST: ${MAIL_HOST:-}
+  MAIL_PORT: ${MAIL_PORT:-587}
+  MAIL_USERNAME: ${MAIL_USERNAME:-}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+  MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-admin-panel@example.com}
+  MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Admin-panel}
 
 services:
   mysql:
@@ -86,49 +124,20 @@ services:
       db-manager:
         condition: service_completed_successfully
 
+  # Web application. The only Admin-panel container that runs the startup
+  # scripts: it validates the settings and applies the database migrations.
   admin-panel:
     image: ${ADMIN_PANEL_IMAGE:-webspellchecker/admin-panel}:${ADMIN_PANEL_VERSION:-latest}
     restart: unless-stopped
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${ADMIN_PANEL_PORT:-8080}:8080"
     environment:
-      APP_EDITION: onprem
-      APP_ENV: production
-      APP_DEBUG: "false"
-      APP_KEY: ${APP_KEY:?set APP_KEY in .env}
-      APP_URL: ${ADMIN_PANEL_URL:-http://localhost:${ADMIN_PANEL_PORT:-8080}}
-      APP_SERVER_URL: ${APPSERVER_URL:-http://localhost:${APPSERVER_PORT:-8081}/wscservice/api}
-      APP_SERVER_INTERNAL_URL: http://appserver:8080/wscservice/api
-      LOG_OUTPUT_LEVEL: ${ADMIN_PANEL_LOG_LEVEL:-info}
+      <<: *admin-panel-environment
       SSL_MODE: "off"
       PROXY_TYPE: ${PROXY_TYPE:-generic}
-      DB_CONNECTION: mysql
-      DB_HOST: mysql
-      DB_PORT: "3306"
-      DB_DATABASE: admin_panel_db
-      DB_USERNAME: admin_panel
-      DB_PASSWORD: ${ADMIN_PANEL_DB_PASSWORD}
-      SERVICE_DB_HOST: mysql
-      SERVICE_DB_PORT: "3306"
-      SERVICE_DB_DATABASE: cloud_service
-      SERVICE_DB_USERNAME: app_service
-      SERVICE_DB_PASSWORD: ${SERVICE_DB_PASSWORD}
-      SESSION_DRIVER: database
-      CACHE_STORE: database
-      QUEUE_CONNECTION: database
-      FILESYSTEM_DISK: local
-      JETSTREAM_PROFILE_PHOTO_DISK: public
-      MAIL_MAILER: ${MAIL_MAILER:-log}
-      MAIL_HOST: ${MAIL_HOST:-}
-      MAIL_PORT: ${MAIL_PORT:-587}
-      MAIL_USERNAME: ${MAIL_USERNAME:-}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
-      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
-      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-admin-panel@example.com}
-      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Admin-panel}
       LARAVEL_ENVIRONMENT_VALIDATION: "true"
-      LARAVEL_PROVISION_APP_MANAGER_DB: "true"
-      LARAVEL_SEED_APP_MANAGER_DB: "false"
+      LARAVEL_PROVISION_ADMIN_PANEL_DB: "true"
+      LARAVEL_SEED_ADMIN_PANEL_DB: "false"
       LARAVEL_MIGRATION_WAIT_DB_TIMEOUT: "120"
     volumes:
       - admin-panel-storage:/var/www/html/storage/app
@@ -139,6 +148,51 @@ services:
         condition: service_healthy
       db-manager:
         condition: service_completed_successfully
+
+  # Queue worker: sends invitation mail and runs background jobs. Starts after
+  # the web container is healthy, so the migrations have already run.
+  admin-panel-worker:
+    image: ${ADMIN_PANEL_IMAGE:-webspellchecker/admin-panel}:${ADMIN_PANEL_VERSION:-latest}
+    restart: unless-stopped
+    command: ["php", "artisan", "queue:work", "--queue=default", "--verbose", "--sleep=3", "--tries=3", "--max-time=3600"]
+    # The worker finishes the job in hand when stopped; give it time.
+    stop_grace_period: 300s
+    environment:
+      <<: *admin-panel-environment
+      # No web server here: skip the startup scripts.
+      SKIP_ENTRYPOINT_CONFIG: "true"
+    volumes:
+      - admin-panel-storage:/var/www/html/storage/app
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "artisan queue:work"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      admin-panel:
+        condition: service_healthy
+
+  # Scheduler: runs the hourly maintenance (onprem:reconcile-services).
+  # Exactly one of these; a second one would run every task twice.
+  admin-panel-scheduler:
+    image: ${ADMIN_PANEL_IMAGE:-webspellchecker/admin-panel}:${ADMIN_PANEL_VERSION:-latest}
+    restart: unless-stopped
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      <<: *admin-panel-environment
+      SKIP_ENTRYPOINT_CONFIG: "true"
+    volumes:
+      - admin-panel-storage:/var/www/html/storage/app
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "artisan schedule:work"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      admin-panel:
+        condition: service_healthy
 
 volumes:
   mysql-data:

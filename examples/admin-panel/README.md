@@ -16,13 +16,20 @@ instances.
 | `mysql` | `mysql:8.4` | Stores two databases: `admin_panel_db` for Admin-panel and `cloud_service` for WProofreader Server. |
 | `db-manager` | `webspellchecker/db-manager` | Runs once at startup to create `cloud_service`, apply its schema and seed data, and create the `appserver` and `app_service` database users. It exits when finished. |
 | `appserver` | `webspellchecker/wproofreader` | Runs WProofreader Server with its database provider enabled. |
-| `admin-panel` | `webspellchecker/admin-panel` | Runs the Admin-panel web application, queue worker, and scheduler. It applies its own database migrations during startup. |
+| `admin-panel` | `webspellchecker/admin-panel` | Runs the Admin-panel web application. It applies its own database migrations during startup. |
+| `admin-panel-worker` | `webspellchecker/admin-panel` | Runs the queue worker: sends invitation e-mails and runs background jobs. |
+| `admin-panel-scheduler` | `webspellchecker/admin-panel` | Runs the scheduler: the hourly `onprem:reconcile-services` maintenance. |
+
+The three Admin-panel containers run the same image with the same settings; only
+the web container runs the startup scripts and the migrations. Keep exactly one
+scheduler: a second one would run every task twice.
 
 Docker Compose starts the services in the required order:
 
 1. MySQL starts and becomes healthy.
 2. db-manager provisions the WProofreader database.
-3. WProofreader Server and Admin-panel start.
+3. WProofreader Server and the Admin-panel web application start.
+4. The Admin-panel worker and scheduler start once the web application is healthy.
 
 If db-manager fails, the two application services do not start. This prevents
 them from running against a missing or incomplete database schema.
@@ -114,7 +121,8 @@ docker compose ps --all
 
 When startup is complete:
 
-- `mysql`, `appserver`, and `admin-panel` should be running and healthy.
+- `mysql`, `appserver`, `admin-panel`, `admin-panel-worker`, and
+  `admin-panel-scheduler` should be running and healthy.
 - `db-manager` should show `Exited (0)`. This is expected: it is a one-time job,
   not a long-running service.
 
@@ -165,6 +173,7 @@ the container state with `docker compose ps --all` and its logs with
 | Show all service state and health | `docker compose ps --all` |
 | Follow all logs | `docker compose logs -f` |
 | Follow one service | `docker compose logs -f admin-panel` |
+| See invitation e-mails when `MAIL_MAILER=log` | `docker compose logs admin-panel-worker` |
 | Stop the stack without removing containers | `docker compose stop` |
 | Start stopped containers | `docker compose start` |
 | Remove containers while keeping data | `docker compose down` |
@@ -189,7 +198,7 @@ Other useful commands include:
 | --- | --- |
 | `admin:create` | Create the first administrator from the command line. |
 | `user:reset-password` | Reset a user's password. |
-| `onprem:reconcile-services` | Repair product activations. This also runs automatically every hour. |
+| `onprem:reconcile-services` | Repair product activations. The `admin-panel-scheduler` container also runs it every hour. |
 
 Use the same pattern for each command:
 
@@ -229,6 +238,13 @@ Then:
 db-manager applies the changesets included in the selected WProofreader release,
 and Admin-panel applies its own migrations during startup. Changesets that have
 already run are skipped, so running `docker compose up -d` again is safe.
+
+Upgrading from an Admin-panel release before 3.0.0: that image ran the queue
+worker and the scheduler inside the single `admin-panel` container. From 3.0.0
+they are the `admin-panel-worker` and `admin-panel-scheduler` services in this
+Compose file, so take the current `docker-compose.yml` together with the new
+version. Without the two services, invitation e-mails stay queued and the hourly
+maintenance does not run.
 
 ## HTTPS and public hostnames
 
@@ -375,7 +391,21 @@ docker compose logs admin-panel
 ```
 
 Admin-panel waits up to two minutes for MySQL and then runs its migrations. Any
-database connection or migration error appears in this log.
+database connection or migration error appears in this log. The worker and the
+scheduler wait for the web container to become healthy, so they show `Created`
+until then.
+
+### Invitations are not sent, or a job never completes
+
+Queued work is done by `admin-panel-worker`. Check that it is running and read
+its log:
+
+```bash
+docker compose ps admin-panel-worker
+docker compose logs admin-panel-worker
+```
+
+With `MAIL_MAILER=log` the invitation e-mail itself appears in that log.
 
 ### A port is already in use
 
