@@ -88,6 +88,11 @@ Run all commands in this guide from the `examples/admin-panel` directory.
    should remain aligned. Use `DB_MANAGER_VERSION` only when you intentionally
    need a different db-manager build.
 
+   This Compose file requires Admin-panel 3.0.0 or newer. It uses the provisioning
+   variable names introduced in 3.0.0 and runs the queue worker and scheduler as
+   separate containers. Keep `ADMIN_PANEL_VERSION` on an explicit compatible tag;
+   do not use this Compose file with an older Admin-panel image.
+
    If you were given image repositories other than the `webspellchecker`
    defaults, set `WPROOFREADER_IMAGE`, `DB_MANAGER_IMAGE`, or
    `ADMIN_PANEL_IMAGE` to the repository name without a tag, and log in to
@@ -245,6 +250,12 @@ they are the `admin-panel-worker` and `admin-panel-scheduler` services in this
 Compose file, so take the current `docker-compose.yml` together with the new
 version. Without the two services, invitation e-mails stay queued and the hourly
 maintenance does not run.
+
+The reverse also applies: do not downgrade `ADMIN_PANEL_VERSION` below 3.0.0
+while keeping this Compose file. Stop and remove the standalone worker and
+scheduler containers, then restore the pre-3.0 Compose layout before starting
+the older image. Otherwise migrations are disabled and the embedded and
+standalone worker and scheduler processes run at the same time.
 
 ## HTTPS and public hostnames
 

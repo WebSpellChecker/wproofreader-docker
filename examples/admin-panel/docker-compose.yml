@@ -7,7 +7,8 @@
 #
 # Admin-panel runs as three containers from one image: the web application,
 # the queue worker (invitation mail, background jobs) and the scheduler
-# (hourly maintenance). They share the settings below.
+# (hourly maintenance). They share the settings below. This layout requires
+# Admin-panel 3.0.0 or newer.
 
 name: wproofreader
 

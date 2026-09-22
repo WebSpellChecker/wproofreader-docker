@@ -6,7 +6,7 @@ Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image wit
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
-The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. If you also want Admin-panel for administering the server, run the same image together with Admin-panel, MySQL and db-manager as shown in [Run WProofreader with Admin-panel](#run-wproofreader-with-admin-panel). On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm).
+The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. For database-backed statistics and request validation, see [Run WProofreader with a database](#run-wproofreader-with-a-database). If you also want Admin-panel for administering the server, use the full stack in [Run WProofreader with Admin-panel](#run-wproofreader-with-admin-panel). On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm).
 
 Before you begin, make sure you meet the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
 
@@ -182,7 +182,7 @@ where:
 - `-p 80:8080` map the host port `80:` and the exposed port of container `8080`, where port `8080` is a web server port (by default, NGINX). With the SSL connection, you must use port `443` like `-p 443:8443`.
 - `-v <shared_dictionaries_directory>:/dictionaries` mount a shared directory where user and company custom dictionaries will be created and stored. Upon initial launch, the mounted directory may be empty. All essential subdirectories and files will be generated during initialization of the container. This is required to save the dictionaries among different containers.
 Note: The container user needs to have read and write permissions to the shared dictionary directory.
-- `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. By default, the expected filenames are `cert.pem` and `key.pem` (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are provided (neither baked in at build time nor mounted at runtime), self-signed certificates will be generated automatically when the container starts with HTTPS enabled.  
+- `-v <certificate_directory_path>:/certificate` mount a shared directory where your SSL certificates are located. Use this option if you plan to work under SSL and you want to use a specific certificate for this container. By default, the expected filenames are `cert.pem` and `key.pem` (configurable via `WPR_CERT_FILE_NAME` and `WPR_CERT_KEY_NAME`). If no certificates are provided (neither baked in at build time nor mounted at runtime), self-signed certificates will be generated automatically when the container starts with HTTPS enabled.
 Note: The container user must have read permissions for the certificate files.
 - `local/wsc_app:x.x.x` the tag of WebSpellChecker Server Docker image.
 
@@ -318,7 +318,7 @@ As a quick option, `docker commit <existing_container_id> <new_name_image>` turn
 
 ## Run WProofreader with Docker Compose
 
-This basic configuration runs WProofreader Server without Admin-panel. Instead of using a lengthy `docker run` command, keep the configuration in a `docker-compose.yml` file and run `docker compose up` from the same directory.
+This basic configuration runs WProofreader Server without a database or Admin-panel. Instead of using a lengthy `docker run` command, keep the configuration in a `docker-compose.yml` file and run `docker compose up` from the same directory.
 For more information, see the [Docker Compose documentation](https://docs.docker.com/compose/).
 
 Sample `docker-compose.yml` content:
@@ -389,9 +389,39 @@ services:
       - /home/user/dictionaries:/dictionaries
 ```
 
+### Run WProofreader with a database
+
+To enable database-backed statistics and request validation without running
+Admin-panel, use the three-service example in `examples/wproofreader`. It runs
+MySQL, db-manager as a one-time provisioning job, and WProofreader Server.
+
+```text
+examples/wproofreader/
+├── .env.example        # image versions, license and database passwords
+├── .gitignore          # keeps .env and backups out of Git
+├── docker-compose.yml  # MySQL, db-manager and WProofreader Server
+└── README.md           # setup, upgrades, backups and troubleshooting
+```
+
+To start:
+
+```bash
+cd examples/wproofreader
+cp .env.example .env
+# edit .env: license ticket and two database passwords
+docker compose config --quiet
+docker compose up -d
+```
+
+See the [database-backed Compose guide](examples/wproofreader/README.md) for the
+full setup and operations procedure.
+
 ### Run WProofreader with Admin-panel
 
 Admin-panel is a web application for administering your WProofreader Server: teams and users, custom dictionaries, style guides and service settings. The full configuration runs six containers on one host: MySQL, db-manager (a one-off job that creates and migrates the service database), WProofreader Server, and Admin-panel as three containers from one image: the web application, the queue worker and the scheduler.
+
+The Compose example requires Admin-panel 3.0.0 or newer because that release
+moved the worker and scheduler out of the web container.
 
 Everything it needs is in `examples/admin-panel`:
 
