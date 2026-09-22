@@ -6,6 +6,20 @@ my $server_config_path = "$serverPath/AppServerX.xml";
 
 printStartEndpoint();
 configureUserAndCustomDictionaries();
+removeSamples() if lc($ENV{'WPR_ENABLE_DATABASE_PROVIDER'} // '') eq 'true';
+
+sub removeSamples
+{
+	my $samples_path = "$installPath/WebComponents/Samples";
+
+	if (-e $samples_path)
+	{
+		# Samples are not operable with the database provider enabled
+		system("rm -rf $samples_path");
+
+		print "Demo samples are disabled because the database provider is enabled.\n";
+	}
+}
 
 sub printStartEndpoint
 {
