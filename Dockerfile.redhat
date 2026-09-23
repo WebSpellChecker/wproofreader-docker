@@ -5,7 +5,7 @@ USER root
 RUN yum update -y --skip-broken && \
     yum module enable nginx:1.24 -y && \
     yum install -y nginx \
-        java-17-openjdk-devel \
+        java-17-openjdk-headless \
         perl \
         openssl && \
     yum remove -y webkit2gtk3-jsc \

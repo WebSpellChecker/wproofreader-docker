@@ -217,7 +217,7 @@ After the successful launch of a container with the app (and the license activat
 }
 ```
 
-* Getting started http://localhost/wscservice/ as well as the demo samples: http://localhost/wscservice/samples/ pages can be accessed from the browser.
+* Getting started http://localhost/wscservice/ as well as the demo samples: http://localhost/wscservice/samples/ pages can be accessed from the browser. The demo samples are not available when `WPR_ENABLE_DATABASE_PROVIDER` is set to `true`: they are removed on container start up.
 
 
 ## Working with container
