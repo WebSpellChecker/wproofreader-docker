@@ -88,11 +88,6 @@ Run all commands in this guide from the `examples/admin-panel` directory.
    should remain aligned. Use `DB_MANAGER_VERSION` only when you intentionally
    need a different db-manager build.
 
-   The db-manager release must support `ADMIN_PANEL_USERNAME` and
-   `ADMIN_PANEL_PASSWORD`. This Compose file passes `app_service` and
-   `SERVICE_DB_PASSWORD` through those settings to provision Admin-panel's
-   service-database user.
-
    This Compose file requires Admin-panel 3.0.0 or newer. It uses the provisioning
    variable names introduced in 3.0.0 and runs the queue worker and scheduler as
    separate containers. Keep `ADMIN_PANEL_VERSION` on an explicit compatible tag;
@@ -248,10 +243,6 @@ Then:
 db-manager applies the changesets included in the selected WProofreader release,
 and Admin-panel applies its own migrations during startup. Changesets that have
 already run are skipped, so running `docker compose up -d` again is safe.
-
-When adopting this Compose file, update db-manager to a release supporting
-`ADMIN_PANEL_USERNAME` and `ADMIN_PANEL_PASSWORD` before starting the stack.
-Keep `SERVICE_DB_PASSWORD` unchanged unless you intend to rotate that password.
 
 Upgrading from an Admin-panel release before 3.0.0: that image ran the queue
 worker and the scheduler inside the single `admin-panel` container. From 3.0.0
