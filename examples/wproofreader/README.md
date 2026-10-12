@@ -9,6 +9,18 @@ user-action statistics, and request validation, but you do not need the
 Admin-panel UI. For the full management stack, use the
 [Admin-panel Compose example](../admin-panel/README.md).
 
+## Contents
+
+- [What the stack includes](#what-the-stack-includes)
+- [Before you begin](#before-you-begin)
+- [Configure and start the stack](#configure-and-start-the-stack)
+- [Verify the server](#verify-the-server)
+- [Day-to-day operations](#day-to-day-operations)
+- [Upgrade](#upgrade)
+- [Change a database password](#change-a-database-password)
+- [Public access and HTTPS](#public-access-and-https)
+- [Troubleshooting](#troubleshooting)
+
 ## What the stack includes
 
 | Service | Image | What it does |

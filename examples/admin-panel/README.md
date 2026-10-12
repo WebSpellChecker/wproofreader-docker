@@ -9,6 +9,28 @@ For a resilient production deployment, use an architecture with regular backups,
 a reverse proxy or load balancer, a managed database, and multiple Admin-panel
 instances.
 
+## Contents
+
+- [What the stack includes](#what-the-stack-includes)
+- [Before you begin](#before-you-begin)
+- [Configure the stack](#configure-the-stack)
+- [Start the stack](#start-the-stack)
+  - [Create the first administrator](#create-the-first-administrator)
+  - [Verify WProofreader Server](#verify-wproofreader-server)
+- [Day-to-day operations](#day-to-day-operations)
+  - [Admin-panel operator commands](#admin-panel-operator-commands)
+- [Upgrade the stack](#upgrade-the-stack)
+- [HTTPS and public hostnames](#https-and-public-hostnames)
+- [Change a database password](#change-a-database-password)
+- [Troubleshooting](#troubleshooting)
+  - [WProofreader Server rejects requests with "License is absent"](#wproofreader-server-rejects-requests-with-license-is-absent)
+  - [db-manager exits with code 1](#db-manager-exits-with-code-1)
+  - [Admin-panel remains `starting` or becomes `unhealthy`](#admin-panel-remains-starting-or-becomes-unhealthy)
+  - [Invitations are not sent, or a job never completes](#invitations-are-not-sent-or-a-job-never-completes)
+  - [A port is already in use](#a-port-is-already-in-use)
+  - [The setup token is invalid or expired](#the-setup-token-is-invalid-or-expired)
+  - [Start again from an empty installation](#start-again-from-an-empty-installation)
+
 ## What the stack includes
 
 | Service | Image | What it does |
