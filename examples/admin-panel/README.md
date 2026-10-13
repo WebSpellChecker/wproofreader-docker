@@ -120,7 +120,7 @@ Run all commands in this guide from the `examples/admin-panel` directory.
    `ADMIN_PANEL_IMAGE` to the repository name without a tag, and log in to
    that registry before continuing.
 
-5. Optional: change `ADMIN_PANEL_PORT`, `APPSERVER_PORT`, mail settings, or the
+5. Optional: change `ADMIN_PANEL_PORT`, `WPROOFREADER_PORT`, mail settings, or the
    public URLs. The defaults are suitable for local access.
 
 6. Check the completed configuration for Compose errors:
@@ -155,8 +155,8 @@ When startup is complete:
 
 The applications are available at:
 
-- Admin-panel: <http://localhost:8080>
-- WProofreader Server: <http://localhost:8081/wscservice/>
+- Admin-panel: <http://localhost:8081>
+- WProofreader Server: <http://localhost:8080/wscservice/>
 
 If you changed either port in `.env`, use the new port in these URLs.
 
@@ -184,7 +184,7 @@ docker compose exec admin-panel \
 Check the status endpoint:
 
 ```bash
-curl 'http://localhost:8081/wscservice/api?cmd=status'
+curl 'http://localhost:8080/wscservice/api?cmd=status'
 ```
 
 A successful response confirms that WProofreader Server is reachable and
@@ -293,7 +293,7 @@ browser reaches both services over HTTPS:
 
 ```bash
 ADMIN_PANEL_URL=https://admin-panel.example.com
-APPSERVER_URL=https://wproofreader.example.com/wscservice/api
+WPROOFREADER_URL=https://wproofreader.example.com/wscservice/api
 PROXY_TYPE=generic
 ```
 
@@ -372,7 +372,7 @@ health check only confirms that the process answers. Every API request is
 rejected instead:
 
 ```bash
-curl 'http://localhost:8081/wscservice/api?cmd=status'
+curl 'http://localhost:8080/wscservice/api?cmd=status'
 ```
 
 ```json
@@ -442,7 +442,7 @@ With `MAIL_MAILER=log` the invitation e-mail itself appears in that log.
 
 ### A port is already in use
 
-Change `ADMIN_PANEL_PORT` or `APPSERVER_PORT` in `.env`, then run:
+Change `ADMIN_PANEL_PORT` or `WPROOFREADER_PORT` in `.env`, then run:
 
 ```bash
 docker compose up -d

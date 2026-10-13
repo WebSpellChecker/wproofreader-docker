@@ -17,8 +17,8 @@ x-admin-panel-environment: &admin-panel-environment
   APP_ENV: production
   APP_DEBUG: "false"
   APP_KEY: ${APP_KEY:?set APP_KEY in .env}
-  APP_URL: ${ADMIN_PANEL_URL:-http://localhost:${ADMIN_PANEL_PORT:-8080}}
-  APP_SERVER_URL: ${APPSERVER_URL:-http://localhost:${APPSERVER_PORT:-8081}/wscservice/api}
+  APP_URL: ${ADMIN_PANEL_URL:-http://localhost:${ADMIN_PANEL_PORT:-8081}}
+  APP_SERVER_URL: ${WPROOFREADER_URL:-http://localhost:${WPROOFREADER_PORT:-8080}/wscservice/api}
   APP_SERVER_INTERNAL_URL: http://appserver:8080/wscservice/api
   LOG_OUTPUT_LEVEL: ${ADMIN_PANEL_LOG_LEVEL:-info}
   DB_CONNECTION: mysql
@@ -99,7 +99,7 @@ services:
     image: ${WPROOFREADER_IMAGE:-webspellchecker/wproofreader}:${WPROOFREADER_VERSION:-latest}
     restart: unless-stopped
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${APPSERVER_PORT:-8081}:8080"
+      - "${BIND_ADDRESS:-127.0.0.1}:${WPROOFREADER_PORT:-8080}:8080"
     environment:
       WPR_LICENSE_TICKET_ID: ${LICENSE_TICKET_ID:?set LICENSE_TICKET_ID in .env}
       WPR_ENABLE_DATABASE_PROVIDER: "true"
@@ -131,7 +131,7 @@ services:
     image: ${ADMIN_PANEL_IMAGE:-webspellchecker/admin-panel}:${ADMIN_PANEL_VERSION:-latest}
     restart: unless-stopped
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${ADMIN_PANEL_PORT:-8080}:8080"
+      - "${BIND_ADDRESS:-127.0.0.1}:${ADMIN_PANEL_PORT:-8081}:8080"
     environment:
       <<: *admin-panel-environment
       SSL_MODE: "off"
