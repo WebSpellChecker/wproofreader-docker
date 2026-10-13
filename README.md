@@ -6,7 +6,7 @@ Additionally, `Dockerfile.ubuntu-prebuilt` leverages a prebuilt Docker image wit
 
 All configurations use **NGINX** as a default web server for processing static files and service requests.
 
-The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. For database-backed statistics and request validation, see [Run WProofreader with a database](#run-wproofreader-with-a-database). If you also want Admin-panel for administering the server, use the full stack in [Run WProofreader with Admin-panel](#run-wproofreader-with-admin-panel). On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm).
+The guide below describes the default setup: WProofreader Server on its own, with its API, the getting-started page and the demo samples, for integrating the WProofreader frontend components into your application. For statistics and request validation, use the full stack in [Run WProofreader with Admin-panel](#run-wproofreader-with-admin-panel): these features need service IDs, and you create them in Admin-panel. On Kubernetes, use the [WProofreader Helm chart](https://github.com/WebSpellChecker/wproofreader-helm).
 
 Before you begin, make sure you meet the [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
 
@@ -391,9 +391,12 @@ services:
 
 ### Run WProofreader with a database
 
-To enable database-backed statistics and request validation without running
-Admin-panel, use the three-service example in `examples/wproofreader`. It runs
-MySQL, db-manager as a one-time provisioning job, and WProofreader Server.
+The example in `examples/wproofreader` runs MySQL, db-manager as a one-time provisioning job,
+and WProofreader Server, without Admin-panel.
+With the database provider enabled, WProofreader Server accepts only requests with a valid service ID,
+and you create service IDs in Admin-panel.
+Use this example to test WProofreader Server with a database.
+For statistics and request validation, use [Run WProofreader with Admin-panel](#run-wproofreader-with-admin-panel).
 
 ```text
 examples/wproofreader/

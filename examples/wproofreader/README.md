@@ -1,13 +1,13 @@
 # Run WProofreader Server with MySQL
 
-This folder provides a self-contained Docker Compose setup for WProofreader
-Server with its database provider enabled. It runs MySQL, db-manager, and
-WProofreader Server without Admin-panel.
+This example runs MySQL, db-manager, and WProofreader Server with its
+database provider enabled. Use it to test database provisioning and server
+startup.
 
-Use this stack when WProofreader needs database-backed request statistics,
-user-action statistics, and request validation, but you do not need the
-Admin-panel UI. For the full management stack, use the
-[Admin-panel Compose example](../admin-panel/README.md).
+Request validation is enabled, so checking requests require a valid service
+ID. Service IDs are created in Admin-panel, which is not included in this
+stack. For a complete setup with service-ID management and
+request validation, use the [Admin-panel Compose example](../admin-panel/README.md).
 
 ## Contents
 
