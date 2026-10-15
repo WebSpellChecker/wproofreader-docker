@@ -111,6 +111,7 @@ services:
       WPR_ENABLE_REQUEST_STATISTIC: "true"
       WPR_ENABLE_USER_ACTION_STATISTIC: "true"
       WPR_ENABLE_REQUEST_VALIDATION: "true"
+      WPR_UD_SEPARATION_BY_CID_ENABLED: "true"
     volumes:
       - appserver-dictionaries:/dictionaries
     healthcheck:
