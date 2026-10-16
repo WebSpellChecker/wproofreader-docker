@@ -39,7 +39,7 @@ Make sure the host has:
 - Docker Engine 24 or newer with the Compose plugin.
 - A valid WProofreader license ticket.
 - Enough memory for WProofreader Server. See the
-  [installation requirements](https://docs.webspellchecker.com/display/WebSpellCheckerServer55x/Installation+requirements).
+  [hardware requirements](https://docs.wproofreader.com/deployment/installation-requirements/hardware-requirements).
 - Port `8080` free on the loopback interface, unless you change it in `.env`.
 
 Run all commands in this guide from the `examples/wproofreader` directory.
