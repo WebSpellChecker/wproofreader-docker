@@ -215,7 +215,7 @@ To keep the license ticket and proxy password out of your shell history, put the
 
 Additional parameters:
 
-- `--env WPR_JVM_MAX_MEMORY_SIZE_MB=2048` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 2048 MB.
+- `--env WPR_JVM_MAX_MEMORY_SIZE_MB=4096` in case of errors related to Java heap space, we recommend increasing the default JVM heap size to 4096 MB.
 
 The container launched by the command above will be available at the following address:
 
