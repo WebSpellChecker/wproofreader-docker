@@ -21,6 +21,12 @@ The general procedure is as follows:
 
 2. If using an installation package, copy the file (e.g. `wsc_app_x64_5.x.x.x_xx.tar.gz`) to the `wproofreader-docker/files` directory. You can request an installation package via the [contact us form](https://webspellchecker.com/contact-us/). If using a prebuilt image, skip this step.
 
+   Optionally, copy the SBOM (software bill of materials) of the package to the same directory. It has the name of the package with `_sbom.json` in place of `.tar.gz` (e.g. `wsc_app_x64_5.x.x.x_xx_sbom.json`). The build checks that the SBOM carries the SHA-256 of the package, fails if it does not, and puts it in the image as `/opt/WebSpellChecker/sbom/wproofreader.cdx.json`. Image scanners that read SBOM files found in an image, such as Trivy and Docker Scout, then also report the components of WProofreader Server. Without an SBOM file the image is built as before. To read the SBOM of an image:
+
+   ```bash
+   docker run --rm --entrypoint cat <image> /opt/WebSpellChecker/sbom/wproofreader.cdx.json > wproofreader.cdx.json
+   ```
+
 3. Tailor the installation by editing one of the Dockerfiles:
 
    - For installations from a package, edit [Dockerfile](Dockerfile) or [Dockerfile.redhat](Dockerfile.redhat).
