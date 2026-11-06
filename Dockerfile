@@ -101,6 +101,8 @@ FROM wpr_dependencies AS wpr_installer
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 
 ARG WPR_APP_NAME_MASK=wsc_app*tar.gz
+# Optional SBOM of the package, named as the package with _sbom.json in place of .tar.gz
+ARG WPR_SBOM_NAME_MASK=wsc_app*_sbom.json
 ARG WPR_DEPLOYMENT_DIR=/home
 ARG WPR_APP_ROOT_DIR=$WPR_DEPLOYMENT_DIR/WSC
 
@@ -127,13 +129,26 @@ RUN mkdir -p $WPR_CUSTOM_DICTIONARIES_DIR \
              $WPR_WSC_SERVICE_FILES_PATH \
              /var/run/nginx
 
-COPY $WPR_FILES_DIR/$WPR_APP_NAME_MASK $WPR_DEPLOYMENT_DIR/
+# The SBOM is copied only if it is in files/ next to the package. If it is there, it must carry
+# the SHA-256 of the package and goes to $WPR_APP_INSTALL_DIR/sbom/wproofreader.cdx.json, where
+# image scanners find it. Without it the image is built as before.
+COPY $WPR_FILES_DIR/$WPR_APP_NAME_MASK $WPR_FILES_DIR/$WPR_SBOM_NAME_MASK $WPR_DEPLOYMENT_DIR/
 RUN PACKAGE_FILE=$(ls -1t $WPR_DEPLOYMENT_DIR/$WPR_APP_NAME_MASK 2>/dev/null | head -n 1) && \
     [ -z "$PACKAGE_FILE" ] && exit 1 || \
     echo "Using package file: $PACKAGE_FILE" && \
     tar -xvf $PACKAGE_FILE -C $WPR_DEPLOYMENT_DIR/ && \
     perl $WPR_APP_ROOT_DIR*/automated_install.pl || exit 1 && \
-    rm -rf $WPR_APP_ROOT_DIR* $WPR_DEPLOYMENT_DIR/$WPR_APP_NAME_MASK && \
+    SBOM_FILE="${PACKAGE_FILE%.tar.gz}_sbom.json" && \
+    if [ -f "$SBOM_FILE" ]; then \
+        grep -q "$(sha256sum "$PACKAGE_FILE" | cut -d ' ' -f 1)" "$SBOM_FILE" || \
+            { echo "$SBOM_FILE does not carry the SHA-256 of $PACKAGE_FILE"; exit 1; }; \
+        mkdir -p $WPR_APP_INSTALL_DIR/sbom && \
+        cp "$SBOM_FILE" $WPR_APP_INSTALL_DIR/sbom/wproofreader.cdx.json && \
+        echo "Using SBOM file: $SBOM_FILE"; \
+    else \
+        echo "No SBOM file for $PACKAGE_FILE, the image has none"; \
+    fi && \
+    rm -rf $WPR_APP_ROOT_DIR* $WPR_DEPLOYMENT_DIR/$WPR_APP_NAME_MASK $WPR_DEPLOYMENT_DIR/$WPR_SBOM_NAME_MASK && \
     mkdir -p $WPR_APP_SERVER_DIR/Logs && \
     cp -r $WPR_APP_SERVER_DIR/Logs $WPR_APP_SERVER_DIR/Build_Logs && \
     rm -rf $WPR_APP_SERVER_DIR/Logs/* && \
