@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 AS wpr_dependencies
+FROM docker.io/library/ubuntu:24.04 AS wpr_dependencies
 
 USER root
 

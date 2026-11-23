@@ -1,4 +1,4 @@
-FROM redhat/ubi9 AS wpr_dependencies
+FROM docker.io/redhat/ubi9 AS wpr_dependencies
 
 USER root
 

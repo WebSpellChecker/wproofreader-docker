@@ -10,7 +10,7 @@ ARG WPR_USER_ID=2000
 ARG WPR_GROUP_ID=2000
 ARG WPR_USER_NAME=wsc
 
-FROM webspellchecker/wproofreader:${TAG} AS wpr_install_languages
+FROM docker.io/webspellchecker/wproofreader:${TAG} AS wpr_install_languages
 
 USER root
 
@@ -55,7 +55,7 @@ RUN chown -R ${WPR_USER_ID}:${WPR_GROUP_ID} ${WPR_WSC_SERVICE_FILES_PATH} \
     ${WPR_CERT_DIR} \
     ${WPR_APP_INSTALL_DIR}
 
-FROM ubuntu:24.04 AS wpr_service
+FROM docker.io/library/ubuntu:24.04 AS wpr_service
 
 USER root
 
