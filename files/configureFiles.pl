@@ -47,7 +47,8 @@ sub configureUserAndCustomDictionaries
 
 	replaceXmlValues({'CustDictDir' => $cust_dicts_path,
 					 'CustDictConfig' => $cust_dict_conf,
-					 'UserDictDir' => $user_dicts_path},
+					 'UserDictDir' => $user_dicts_path,
+					 'ClientRulesDirectoryPath' => $style_guide_path},
 					 $server_config_path);
 
 	if (! -e $cust_dicts_path)
@@ -60,19 +61,18 @@ sub configureUserAndCustomDictionaries
 		mkdir $user_dicts_path;
 	}
 	
+	# Core style guide rules stay in the image, only client rules go to the volume
 	if (! -e $style_guide_path)
 	{
-		system("mv $serverPath/StyleGuide $style_guide_path");
+		mkdir $style_guide_path;
+		system("mv $serverPath/StyleGuide/client $style_guide_path/") if -e "$serverPath/StyleGuide/client";
 	}
 
 	if (! -e $cust_dict_conf)
 	{
 		system("mv $serverPath/CustDictConfig.xml $cust_dict_conf");
 	}
-	
-	replaceFileContent({ '<StyleGuideCheck Enabled="(true|false)">[\s]*?<DirectoryPath>[\w\\\/:]*?<\/DirectoryPath>' =>
-		"<StyleGuideCheck Enabled=\"true\">\n\t\t<DirectoryPath>$style_guide_path</DirectoryPath>" }, $server_config_path);
-	
+
 	for my $file (<$serverPath/CustomDictionaries/*.txt>)
 	{
 		my $file_name = basename($file);
